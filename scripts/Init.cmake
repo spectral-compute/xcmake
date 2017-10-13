@@ -2,6 +2,10 @@
 # It also sets things up so project() itself will include PostProject.cmake at the end.
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../dependencies)
+set(XCMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_DIR})
+
+include(Utils)
+include(Log)
 
 # We must always have a build type.
 if (NOT CMAKE_BUILD_TYPE)
@@ -19,3 +23,10 @@ elseif("${CMAKE_BUILD_TYPE}" STREQUAL "RELWITHDEBINFO")
 else()
     message(FATAL_ERROR "Unsupported build type: ${CMAKE_BUILD_TYPE}")
 endif()
+
+
+# Include the rest of xcmake, for convenience.
+include(ArgHandle)
+include(ExternalProj)
+include(Properties)
+include(Targets)

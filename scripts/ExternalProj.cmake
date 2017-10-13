@@ -1,8 +1,5 @@
 ### A more elaborate ExternalProject module that provides imported targets.
-
-include(ArgHandle)
 include(ExternalProject)
-include(Log)
 
 # Path to which external projects get installed in the build tree.
 set(EP_INSTALL_DIR "${CMAKE_BINARY_DIR}/external_projects" CACHE INTERNAL "")
