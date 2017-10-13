@@ -2,7 +2,9 @@
 # It also sets things up so project() itself will include PostProject.cmake at the end.
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../dependencies)
+
 set(XCMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_DIR})
+set(XCMAKE_TOOLS_DIR ${CMAKE_CURRENT_LIST_DIR}/../tools)
 
 include(Utils)
 include(Log)

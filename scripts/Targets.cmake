@@ -32,6 +32,15 @@ function(apply_effect_groups TARGET)
     endforeach()
 endfunction()
 
+# Global effects are basically global flags that define a function to run on targets.
+function(apply_global_effects TARGET)
+    foreach (_P ${XCMAKE_GLOBAL_PROPERTIES})
+        if (XCMAKE_${_P})
+            dynamic_call(${_P}_EFFECTS ${TARGET})
+        endif()
+    endforeach()
+endfunction()
+
 macro(ensure_not_imported TARGET)
     # If it's an imported target, stop
     get_target_property(IS_IMPORTED ${TARGET} IMPORTED)
@@ -47,6 +56,7 @@ function(add_library TARGET)
     # Apply our custom properties...
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
+    apply_global_effects(${TARGET})
 endfunction()
 
 function(add_executable TARGET)
@@ -54,4 +64,5 @@ function(add_executable TARGET)
     ensure_not_imported(${TARGET})
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
+    apply_global_effects(${TARGET})
 endfunction()

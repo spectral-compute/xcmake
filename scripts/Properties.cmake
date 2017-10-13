@@ -36,13 +36,27 @@ macro(define_xcmake_target_property NAME)
         add_library(${NAME}_EFFECTS INTERFACE)
     endif()
 
-    message("BEFORE: ${XCMAKE_TGT_PROPERTIES}")
-
     list(APPEND XCMAKE_TGT_PROPERTIES ${NAME})
+endmacro()
+
+macro(define_xcmake_global_property NAME)
+    set(flags FLAG)
+    set(oneValueArgs DEFAULT)
+    set(multiValueArgs)
+
+    cmake_parse_arguments("tp" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    if (NOT tp_DEFAULT)
+        set(tp_DEFAULT OFF)
+    endif ()
+
+    default_value(XCMAKE_CLANG_TIDY ${tp_DEFAULT})
+    list(APPEND XCMAKE_GLOBAL_PROPERTIES ${NAME})
 endmacro()
 
 # Include all the property definition fragments.
 set(XCMAKE_TGT_PROPERTIES "")
+set(XCMAKE_GLOBAL_PROPERTIES "")
 foreach (_F IN LISTS PROPS)
     include("${_F}")
 endforeach()
