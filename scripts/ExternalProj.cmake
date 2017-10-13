@@ -170,9 +170,7 @@ function(AddExternalProject TARGET)
 
     # If it's a cmake buildsystem, sort out some of the cmake arguments ourselves.
     if (ep_CMAKE_ARGS)
-        message_colour(STATUS Blue "${EXTRA_ARGS}")
         remove_argument(MULTI EXTRA_ARGS CMAKE_ARGS "${oneValueArgs};${multiValueArgs}")
-        message_colour(STATUS Green "${EXTRA_ARGS}")
 
         list(APPEND ep_CMAKE_ARGS
              -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
@@ -180,7 +178,6 @@ function(AddExternalProject TARGET)
              -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
         )
         list(APPEND EXTRA_ARGS CMAKE_ARGS "${ep_CMAKE_ARGS}")
-        print_list(STATUS BoldGreen "${EXTRA_ARGS}")
     endif ()
 
     ExternalProject_Add(
@@ -194,7 +191,6 @@ function(AddExternalProject TARGET)
 
     # Configure the exported targets...
     foreach (_LIB ${ep_STATIC_LIBRARIES})
-        message_colour(STATUS BoldBlue ${_LIB})
         add_library(${_LIB} STATIC IMPORTED GLOBAL)
 
         # If the imported library is requested, actually build it.
