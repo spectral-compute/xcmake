@@ -15,18 +15,22 @@ macro (remove_argument TYPE LIST NAME)
     if (NOT ${KEY_INDEX} LESS 0)
         list(REMOVE_AT ${LIST} ${KEY_INDEX})
 
-        if (TYPE STREQUAL "FLAG")
+        if ("${TYPE}" STREQUAL "FLAG")
             # A flag is only a key - so we're done.
-        elseif(TYPE STREQUAL "SINGLE")
+        elseif("${TYPE}" STREQUAL "SINGLE")
             # Remove the value - which must exist if the argument list is well-formed.
             list(REMOVE_AT ${LIST} ${KEY_INDEX})
-        elseif(TYPE STREQUAL "MULTI")
+        elseif("${TYPE}" STREQUAL "MULTI")
+            set(KEYWORDS ${ARGN})
+
             # Keep removing values until we find something that's a key, or outside the list.
             list(LENGTH ${LIST} LIST_LENGTH)
             while(LIST_LENGTH GREATER KEY_INDEX)
                 list(GET ${LIST} ${KEY_INDEX} NEXT_DELETION)
-                list(FIND ARGN ${NEXT_DELETION} SENTINEL)
-                if (SENTINEL LESS 0)
+
+                list(FIND KEYWORDS "${NEXT_DELETION}" SENTINEL)
+                if (SENTINEL GREATER_EQUAL 0)
+                    list(GET KEYWORDS ${SENTINEL} WHAAAT)
                     break()
                 endif()
 
