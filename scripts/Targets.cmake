@@ -32,17 +32,26 @@ function(apply_effect_groups TARGET)
     endforeach()
 endfunction()
 
-function(add_library TARGET)
-    _add_library(${TARGET} ${ARGN})
-
-    # If it's an imported target, you're done. Don't want to try setting flags and stuff...
+macro(ensure_not_imported TARGET)
+    # If it's an imported target, stop
     get_target_property(IS_IMPORTED ${TARGET} IMPORTED)
     if (IS_IMPORTED)
         return()
-    endif()
+    endif ()
+endmacro()
 
-    apply_default_properties(${TARGET})
-    apply_effect_groups(${TARGET})
+function(add_library TARGET)
+    _add_library(${TARGET} ${ARGN})
+    ensure_not_imported(${TARGET})
 
     # Apply our custom properties...
+    apply_default_properties(${TARGET})
+    apply_effect_groups(${TARGET})
+endfunction()
+
+function(add_executable TARGET)
+    _add_library(${TARGET} ${ARGN})
+    ensure_not_imported(${TARGET})
+    apply_default_properties(${TARGET})
+    apply_effect_groups(${TARGET})
 endfunction()
