@@ -10,6 +10,9 @@ include(Log)
 # Default to building shared libraries
 default_value(BUILD_SHARED_LIBS ON)
 
+# This gets annoying, since we recursively invoke cmake...
+set(CMAKE_INSTALL_MESSAGE NEVER)
+
 # We must always have a build type.
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
