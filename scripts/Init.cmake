@@ -7,6 +7,9 @@ set(XCMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_DIR})
 include(Utils)
 include(Log)
 
+# Default to building shared libraries
+default_value(BUILD_SHARED_LIBS ON)
+
 # We must always have a build type.
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
