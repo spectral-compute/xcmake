@@ -8,5 +8,4 @@ function(CLANG_TIDY_EFFECTS TARGET)
         ${TARGET}
         PROPERTIES CXX_CLANG_TIDY ${XCMAKE_TOOLS_DIR}/clang-tidy.sh
     )
-    message(${XCMAKE_TOOLS_DIR}/clang-tidy.sh)
 endfunction()

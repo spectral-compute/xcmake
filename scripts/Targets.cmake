@@ -49,14 +49,29 @@ macro(ensure_not_imported TARGET)
     endif ()
 endmacro()
 
+macro(ensure_not_object TARGET)
+    # If it's an object library target, stop
+    get_target_property(T_TYPE ${TARGET} TYPE)
+    if ("${T_TYPE}" STREQUAL "OBJECT_LIBRARY")
+        return()
+    endif ()
+endmacro()
+
 function(add_library TARGET)
     _add_library(${TARGET} ${ARGN})
+
+    # Imported targets definitely do not need to have their properties futzed with.
     ensure_not_imported(${TARGET})
+
+    apply_global_effects(${TARGET})
+
+    # Object libraries inherit their target properties from what they get assimilated by,
+    # so they stop here.
+    ensure_not_object(${TARGET})
 
     # Apply our custom properties...
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
-    apply_global_effects(${TARGET})
 endfunction()
 
 function(add_executable TARGET)
