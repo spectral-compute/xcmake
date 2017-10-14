@@ -1,6 +1,8 @@
 # This script is included before project(), and can do initial envrionment configuration.
 # It also sets things up so project() itself will include PostProject.cmake at the end.
 
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/../toolchain/toolchain.cmake)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../dependencies)
 
 set(XCMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_DIR})
