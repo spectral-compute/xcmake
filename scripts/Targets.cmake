@@ -75,7 +75,7 @@ function(add_library TARGET)
 endfunction()
 
 function(add_executable TARGET)
-    _add_library(${TARGET} ${ARGN})
+    _add_executable(${TARGET} ${ARGN})
     ensure_not_imported(${TARGET})
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
