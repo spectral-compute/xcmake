@@ -31,14 +31,7 @@ function(add_cuda TARGET)
     # Firstly, add CUDA to the primary target.
     target_include_directories(${TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
     target_compile_options(${TARGET} PRIVATE ${CUDA_CLANG_FLAGS})
-
-    # According to the cmake manual, static cudart is not viable on Mac.
-    if (APPLE)
-        # This is just the dynamic cudart library, ostensibly...
-        target_link_libraries(${TARGET} PRIVATE ${CUDA_LIBRARIES})
-    else ()
-        target_link_libraries(${TARGET} PRIVATE ${CUDA_cudart_static_LIBRARY})
-    endif ()
+    target_link_libraries(${TARGET} PRIVATE ${CUDA_LIBRARIES})
 
     # Now let's set up the object target...
     add_library(${OBJ_TARGET_NAME} OBJECT ${ARGN})
