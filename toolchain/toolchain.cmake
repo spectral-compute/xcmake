@@ -55,7 +55,7 @@ endif()
 include(${CMAKE_CURRENT_LIST_DIR}/fragments/common.cmake)
 
 # Handle the XCMAKE_SHOW_TRIBBLE case.
-if (XCMAKE_SHOW_TRIBBLE)
+if (XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
     foreach (_var IN ITEMS CMAKE_C_COMPILER
                            CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN
                            CMAKE_C_COMPILER_TARGET
