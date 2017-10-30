@@ -54,6 +54,30 @@ endif()
 # Include the common cmake file.
 include(${CMAKE_CURRENT_LIST_DIR}/fragments/common.cmake)
 
+set(TARGET_AMD_GPUS "")
+set(TARGET_CUDA_COMPUTE_CAPABILITIES "")
+
+# Desugar the GPU information into something sensible...
+foreach (_TGT IN LISTS XCMAKE_GPUS)
+    # Very scientifically detect NVIDIA targets as being ones that start with sm_
+    string(SUBSTRING "${_TGT}" 0 3 PREFIX)
+    if ("${PREFIX}" STREQUAL "sm_")
+        string(SUBSTRING "${_TGT}" 3 -1 CC)
+        list(APPEND TARGET_CUDA_COMPUTE_CAPABILITIES ${CC})
+        set(TARGET_GPU_TYPE "NVIDIA")
+    else()
+        list(APPEND TARGET_AMD_GPUS ${_TGT})
+        set(TARGET_GPU_TYPE "AMD")
+    endif()
+endforeach()
+
+# Make sure we don't have a mixture of GPU targets...
+list(LENGTH TARGET_AMD_GPUS AMD_GPU_LENGTH)
+list(LENGTH TARGET_CUDA_COMPUTE_CAPABILITIES NVIDIA_GPU_LENGTH)
+if (${AMD_GPU_LENGTH} GREATER 0 AND ${NVIDIA_GPU_LENGTH} GREATER 0)
+    message(FATAL_ERROR "You specified a mixture of AMD and NVIDIA GPU targets: ${XCMAKE_GPUS}")
+endif()
+
 # Handle the XCMAKE_SHOW_TRIBBLE case.
 if (XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
     foreach (_var IN ITEMS CMAKE_C_COMPILER
