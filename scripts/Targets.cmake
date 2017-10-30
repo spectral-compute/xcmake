@@ -41,6 +41,13 @@ function(apply_global_effects TARGET)
     endforeach()
 endfunction()
 
+# Apply standard CMake properties that we set to specific values.
+function(apply_default_standard_properties TARGET)
+    set_property(TARGET ${TARGET} PROPERTY CXX_EXTENSIONS OFF)
+    set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 17)
+    set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD_REQUIRED ON)
+endfunction()
+
 macro(ensure_not_imported TARGET)
     # If it's an imported target, stop
     get_target_property(IS_IMPORTED ${TARGET} IMPORTED)
@@ -70,6 +77,7 @@ function(add_library TARGET)
     ensure_not_object(${TARGET})
 
     # Apply our custom properties...
+    apply_default_standard_properties(${TARGET})
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
 endfunction()
@@ -77,6 +85,7 @@ endfunction()
 function(add_executable TARGET)
     _add_executable(${TARGET} ${ARGN})
     ensure_not_imported(${TARGET})
+    apply_default_standard_properties(${TARGET})
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
     apply_global_effects(${TARGET})
