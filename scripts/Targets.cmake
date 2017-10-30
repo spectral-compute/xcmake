@@ -1,3 +1,5 @@
+include(GenerateExportHeader)
+
 # Apply the default values (from the XCMAKE_* global variables) of all our custom target properties.
 function(apply_default_properties TARGET)
     foreach (_I ${XCMAKE_TGT_PROPERTIES})
@@ -83,6 +85,18 @@ function(add_library TARGET)
     apply_default_standard_properties(${TARGET})
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
+
+    # Libraries need export headers!
+    set_target_properties(${TARGET} PROPERTIES
+        CXX_VISIBILITY_PRESET "hidden"
+        VISIBILITY_INLINES_HIDDEN ON
+    )
+    set(EXPORT_HEADER_DIR ${CMAKE_BINARY_DIR}/generated/exportheaders)
+    file(MAKE_DIRECTORY ${EXPORT_HEADER_DIR})
+    target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR})
+    set(EXPORT_HDR_PATH ${EXPORT_HEADER_DIR}/${TARGET}-export.h)
+    generate_export_header(${TARGET} EXPORT_FILE_NAME ${EXPORT_HDR_PATH})
+    install(FILES ${EXPORT_HDR_PATH} DESTINATION ./include/ RENAME ${TARGET}-export.h)
 endfunction()
 
 function(add_executable TARGET)
