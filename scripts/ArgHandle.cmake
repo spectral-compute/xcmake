@@ -43,3 +43,8 @@ macro (remove_argument TYPE LIST NAME)
         endif()
     endif ()
 endmacro()
+
+macro(subtract_lists LIST REMOVE_ITEMS)
+    foreach(_I IN LISTS ${REMOVE_ITEMS})
+    endforeach()
+endmacro()
