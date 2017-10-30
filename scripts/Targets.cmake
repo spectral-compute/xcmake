@@ -51,6 +51,10 @@ function(apply_default_standard_properties TARGET)
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
     )
+
+    target_compile_options(${TARGET} PRIVATE
+        -Wall -Wextra -Wpedantic -Wdocumentation
+    )
 endfunction()
 
 macro(ensure_not_imported TARGET)
