@@ -43,9 +43,12 @@ endfunction()
 
 # Apply standard CMake properties that we set to specific values.
 function(apply_default_standard_properties TARGET)
-    set_property(TARGET ${TARGET} PROPERTY CXX_EXTENSIONS OFF)
-    set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD 17)
-    set_property(TARGET ${TARGET} PROPERTY CXX_STANDARD_REQUIRED ON)
+    # C++17, always.
+    set_target_properties(${TARGET} PROPERTIES
+        CXX_EXTENSIONS OFF
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
 endfunction()
 
 macro(ensure_not_imported TARGET)
