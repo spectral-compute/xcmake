@@ -53,7 +53,7 @@ function(apply_default_standard_properties TARGET)
     )
 
     target_compile_options(${TARGET} PRIVATE
-        -Wall -Wextra -Wpedantic -Wdocumentation
+        -Wall -Wextra -Wpedantic -Wdocumentation -Werror
     )
 endfunction()
 
