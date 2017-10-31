@@ -90,6 +90,12 @@ function(add_library TARGET)
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
 
+    install(
+        TARGETS ${TARGET}
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+    )
+
     # Libraries need export headers!
     set_target_properties(${TARGET} PROPERTIES
         CXX_VISIBILITY_PRESET "hidden"
@@ -110,4 +116,9 @@ function(add_executable TARGET)
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
     apply_global_effects(${TARGET})
+
+    install(
+        TARGETS ${TARGET}
+        RUNTIME DESTINATION bin
+    )
 endfunction()
