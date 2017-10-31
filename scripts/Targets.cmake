@@ -53,7 +53,13 @@ function(apply_default_standard_properties TARGET)
     )
 
     target_compile_options(${TARGET} PRIVATE
-        -Wall -Wextra -Wpedantic -Wdocumentation -Werror
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wdocumentation
+        -Werror
+        -Wnewline-eof
+        -fdiagnostics-show-template-tree
     )
 endfunction()
 
