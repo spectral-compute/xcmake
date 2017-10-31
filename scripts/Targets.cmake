@@ -106,7 +106,7 @@ function(add_library TARGET)
     target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR})
     set(EXPORT_HDR_PATH ${EXPORT_HEADER_DIR}/${TARGET}/export.h)
     generate_export_header(${TARGET} EXPORT_FILE_NAME ${EXPORT_HDR_PATH})
-    install(FILES ${EXPORT_HDR_PATH} DESTINATION ./include/ RENAME ${TARGET}-export.h)
+    install(FILES ${EXPORT_HDR_PATH} DESTINATION ./include/${TARGET} RENAME export.h)
 endfunction()
 
 function(add_executable TARGET)
