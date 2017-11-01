@@ -79,6 +79,49 @@ macro(ensure_not_object TARGET)
     endif ()
 endmacro()
 
+# Sets the library's default symbol visivility to hidden, and generate an export header.
+#
+# Mandatory single variable arguments:
+#    TARGET The target to apply the symbol hiding to.
+#
+# Optional single variable arguments:
+#    BASE_NAME The base name to give to generate_export_header(). By default, ${TARGET} is used.
+#    EXPORT_FILE_NAME The file path to for the generated header to give to generate_export_header(). Note: this is
+#                     always prefixed by a directory into which xcmake puts generated files. The installation location
+#                     is prefixed by "include".
+function(add_export_header TARGET)
+    # Parse arguments.
+    cmake_parse_arguments(args "" "BASE_NAME;EXPORT_FILE_NAME" "" ${ARGN})
+
+    set(BASE_NAME ${TARGET})
+    if (args_BASE_NAME)
+        set(BASE_NAME ${args_BASE_NAME})
+    endif()
+
+    set(EXPORT_FILE_NAME ${TARGET}/export.h)
+    if (args_EXPORT_FILE_NAME)
+        set(EXPORT_FILE_NAME ${args_EXPORT_FILE_NAME})
+    endif()
+
+    # Set the default visibility to hidden.
+    set_target_properties(${TARGET} PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON)
+
+    # Make somewhere to put the header.
+    set(EXPORT_HEADER_DIR ${CMAKE_BINARY_DIR}/generated/exportheaders)
+    file(MAKE_DIRECTORY ${EXPORT_HEADER_DIR})
+    target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR})
+
+    # Calculate the absolute header path, and the relative directory for the header.
+    set(EXPORT_HDR_PATH ${EXPORT_HEADER_DIR}/${EXPORT_FILE_NAME})
+    get_filename_component(EXPORT_DIRECTORY_NAME "${EXPORT_FILE_NAME}" DIRECTORY)
+
+    # Generate the header.
+    generate_export_header(${TARGET} BASE_NAME "${BASE_NAME}" EXPORT_FILE_NAME "${EXPORT_HDR_PATH}")
+
+    # Install the header.
+    install(FILES "${EXPORT_HDR_PATH}" DESTINATION "./include/${EXPORT_DIRECTORY_NAME}")
+endfunction()
+
 function(add_library TARGET)
     _add_library(${TARGET} ${ARGN})
 
@@ -101,18 +144,6 @@ function(add_library TARGET)
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
     )
-
-    # Libraries need export headers!
-    set_target_properties(${TARGET} PROPERTIES
-        CXX_VISIBILITY_PRESET "hidden"
-        VISIBILITY_INLINES_HIDDEN ON
-    )
-    set(EXPORT_HEADER_DIR ${CMAKE_BINARY_DIR}/generated/exportheaders)
-    file(MAKE_DIRECTORY ${EXPORT_HEADER_DIR})
-    target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR})
-    set(EXPORT_HDR_PATH ${EXPORT_HEADER_DIR}/${TARGET}/export.h)
-    generate_export_header(${TARGET} EXPORT_FILE_NAME ${EXPORT_HDR_PATH})
-    install(FILES ${EXPORT_HDR_PATH} DESTINATION ./include/${TARGET} RENAME export.h)
 endfunction()
 
 function(add_executable TARGET)
