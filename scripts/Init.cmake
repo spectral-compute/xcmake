@@ -1,5 +1,7 @@
 # This script is included before project(), and can do initial envrionment configuration.
 
+cmake_policy(VERSION 3.8.2)
+
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/../toolchain/toolchain.cmake)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../dependencies)
