@@ -2,7 +2,7 @@ include(ArgHandle)
 
 # The nop source file - a handy cmake workaround for cases where cmake insists you must have
 # a source file, but I don't want to have one.
-file(WRITE "${CMAKE_BINARY_DIR}/generated/nop.cpp" "// I like trains")
+file(WRITE "${CMAKE_BINARY_DIR}/generated/nop.cpp" "// I like trains\n")
 set(NOP_SOURCE_FILE "${CMAKE_BINARY_DIR}/generated/nop.cpp")
 
 # Configure a library or executable target for CUDA, given the list of source files.
