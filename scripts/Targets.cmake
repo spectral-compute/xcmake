@@ -1,5 +1,36 @@
 include(GenerateExportHeader)
 
+# Find all the source files for enabled languages according to the given pattern.
+function(find_sources OUT SRCDIR)
+    # Build the glob pattern using the list of enabled languages.
+    set(GLOB_PATTERN "")
+    get_property(LANGS_ENABLED GLOBAL PROPERTY ENABLED_LANGUAGES)
+    foreach (_L ${LANGS_ENABLED})
+        # A most useful global variable
+        set(SOURCE_EXTENSIONS ${CMAKE_${_L}_SOURCE_FILE_EXTENSIONS})
+
+        if (${_L} STREQUAL "CXX")
+            # cmake's CUDA support conflicts with our own, so we have to carefully work around it.
+            # We teach cmake that *.cu is C++, not CUDA.
+            list(APPEND SOURCE_EXTENSIONS "cu")
+
+            # For improved IDE support, include header files as source in IDEs, causing complete
+            # indexing :D
+            if ($ENV{CLION_IDE})
+                list(APPEND SOURCE_EXTENSIONS "h" "hpp" "cuh")
+            endif ()
+        endif()
+
+        # Construct the glob expression from the source extensions.
+        foreach (_E ${SOURCE_EXTENSIONS})
+            list(APPEND GLOB_PATTERN ${SRCDIR}/*.${_E})
+        endforeach()
+    endforeach()
+
+    file(GLOB_RECURSE FOUND_SOURCES ${GLOB_PATTERN})
+    set(${OUT} ${FOUND_SOURCES} PARENT_SCOPE)
+endfunction()
+
 # Apply the default values (from the XCMAKE_* global variables) of all our custom target properties.
 function(apply_default_properties TARGET)
     foreach (_I ${XCMAKE_TGT_PROPERTIES})
