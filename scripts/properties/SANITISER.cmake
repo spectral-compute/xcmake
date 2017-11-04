@@ -23,14 +23,23 @@ target_compile_options(Address_SANITISER_EFFECTS INTERFACE
     -fsanitize=address
     -fsanitize-address-use-after-scope
 )
+target_link_libraries(Address_SANITISER_EFFECTS INTERFACE -fsanitize=address)
+
 target_compile_options(Leak_SANITISER_EFFECTS INTERFACE -fsanitize=leak)
+target_link_libraries(Leak_SANITISER_EFFECTS INTERFACE -fsanitize=leak)
+
 target_compile_options(Memory_SANITISER_EFFECTS INTERFACE -fsanitize=memory)
+target_link_libraries(Memory_SANITISER_EFFECTS INTERFACE -fsanitize=memory)
+
 target_compile_options(Thread_SANITISER_EFFECTS INTERFACE -fsanitize=thread)
+target_link_libraries(Thread_SANITISER_EFFECTS INTERFACE -fsanitize=thread)
+
 target_compile_options(Undefined_SANITISER_EFFECTS INTERFACE
     -fsanitize=undefined
     -fno-sanitize-recover=undefined
     -fsanitize=unsigned-integer-overflow
 )
+target_link_libraries(Undefined_SANITISER_EFFECTS INTERFACE -fsanitize=undefined)
 
 target_link_libraries(Address_SANITISER_EFFECTS INTERFACE common_SANITISER_EFFECTS)
 target_link_libraries(Leak_SANITISER_EFFECTS INTERFACE common_SANITISER_EFFECTS)
