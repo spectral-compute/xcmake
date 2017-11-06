@@ -5,6 +5,13 @@ macro(default_value NAME VALUE)
     endif()
 endmacro()
 
+# Use *sparingly*
+macro(default_cache_value NAME VALUE)
+    if (NOT DEFINED ${NAME})
+        set(${NAME} ${VALUE} CACHE INTERNAL "")
+    endif()
+endmacro()
+
 # Invoke a function, macro, or command by name.
 # This is, clearly, completely insane. All args given are forwarded to the target routine.
 macro(dynamic_call FN_NAME)
