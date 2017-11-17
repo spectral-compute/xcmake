@@ -144,7 +144,7 @@ function(add_export_header TARGET)
     # Make somewhere to put the header.
     set(EXPORT_HEADER_DIR ${CMAKE_BINARY_DIR}/generated/exportheaders)
     file(MAKE_DIRECTORY ${EXPORT_HEADER_DIR})
-    target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR}/${args_INCLUDE_PATH_SUFFIX})
+    target_include_directories(${TARGET} PUBLIC $<BUILD_INTERFACE:${EXPORT_HEADER_DIR}/${args_INCLUDE_PATH_SUFFIX}>)
 
     # Calculate the absolute header path, and the relative directory for the header.
     set(EXPORT_HDR_PATH ${EXPORT_HEADER_DIR}/${EXPORT_FILE_NAME})
