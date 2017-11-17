@@ -121,9 +121,12 @@ endmacro()
 #    EXPORT_FILE_NAME The file path to for the generated header to give to generate_export_header(). Note: this is
 #                     always prefixed by a directory into which xcmake puts generated files. The installation location
 #                     is prefixed by "include".
+#    INCLUDE_PATH_SUFFIX Append this suffix to the include directory added to the target. This is useful if, for
+#                        example, the header would normally be included relative to other installed headers which would
+#                        be placed on the include path with the given suffix.
 function(add_export_header TARGET)
     # Parse arguments.
-    cmake_parse_arguments(args "" "BASE_NAME;EXPORT_FILE_NAME" "" ${ARGN})
+    cmake_parse_arguments(args "" "BASE_NAME;EXPORT_FILE_NAME;INCLUDE_PATH_SUFFIX" "" ${ARGN})
 
     set(BASE_NAME ${TARGET})
     if (args_BASE_NAME)
@@ -141,7 +144,7 @@ function(add_export_header TARGET)
     # Make somewhere to put the header.
     set(EXPORT_HEADER_DIR ${CMAKE_BINARY_DIR}/generated/exportheaders)
     file(MAKE_DIRECTORY ${EXPORT_HEADER_DIR})
-    target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR})
+    target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR}/${args_INCLUDE_PATH_SUFFIX})
 
     # Calculate the absolute header path, and the relative directory for the header.
     set(EXPORT_HDR_PATH ${EXPORT_HEADER_DIR}/${EXPORT_FILE_NAME})
