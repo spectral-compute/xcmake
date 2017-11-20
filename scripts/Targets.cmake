@@ -1,7 +1,7 @@
 include(GenerateExportHeader)
 
 # Find all the source files for enabled languages according to the given pattern.
-function(find_sources OUT SRCDIR)
+function(find_sources OUT)
     # Build the glob pattern using the list of enabled languages.
     set(GLOB_PATTERN "")
     get_property(LANGS_ENABLED GLOBAL PROPERTY ENABLED_LANGUAGES)
@@ -23,7 +23,9 @@ function(find_sources OUT SRCDIR)
 
         # Construct the glob expression from the source extensions.
         foreach (_E ${SOURCE_EXTENSIONS})
-            list(APPEND GLOB_PATTERN ${SRCDIR}/*.${_E})
+            foreach (_SRCDIR ${ARGN})
+                list(APPEND GLOB_PATTERN ${_SRCDIR}/*.${_E})
+            endforeach()
         endforeach()
     endforeach()
 
