@@ -160,7 +160,9 @@ function(add_export_header TARGET)
 endfunction()
 
 function(add_library TARGET)
-    _add_library(${TARGET} ${ARGN})
+    cmake_parse_arguments(args "NOINSTALL" "" "" ${ARGN})
+
+    _add_library(${TARGET} ${args_UNPARSED_ARGUMENTS})
 
     # Imported targets definitely do not need to have their properties futzed with.
     ensure_not_imported(${TARGET})
@@ -176,11 +178,9 @@ function(add_library TARGET)
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
 
-    install(
-        TARGETS ${TARGET}
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-    )
+    if (NOT args_NOINSTALL)
+        install(TARGETS ${TARGET} ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+    endif()
 endfunction()
 
 function(add_executable TARGET)
