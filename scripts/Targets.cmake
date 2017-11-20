@@ -184,15 +184,16 @@ function(add_library TARGET)
 endfunction()
 
 function(add_executable TARGET)
-    _add_executable(${TARGET} ${ARGN})
+    cmake_parse_arguments(args "NOINSTALL" "" "" ${ARGN})
+
+    _add_executable(${TARGET} ${args_UNPARSED_ARGUMENTS})
     ensure_not_imported(${TARGET})
     apply_default_standard_properties(${TARGET})
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
     apply_global_effects(${TARGET})
 
-    install(
-        TARGETS ${TARGET}
-        RUNTIME DESTINATION bin
-    )
+    if (NOT args_NOINSTALL)
+        install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
+    endif()
 endfunction()
