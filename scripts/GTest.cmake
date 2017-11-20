@@ -12,7 +12,7 @@ function(add_gtest_executable TARGET)
     cmake_parse_arguments("gt" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     remove_argument(FLAG EXTRA_ARGS CUSTOM_MAIN)
-    add_executable(${TARGET} ${EXTRA_ARGS})
+    add_executable(${TARGET} ${EXTRA_ARGS} NOINSTALL)
 
     # Find and add GoogleTest/GoogleMock.
     # GTest provides nifty imported targets (which handle the threads dependency for us), but
