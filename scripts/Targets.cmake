@@ -140,9 +140,6 @@ function(add_export_header TARGET)
         set(EXPORT_FILE_NAME ${args_EXPORT_FILE_NAME})
     endif()
 
-    # Set the default visibility to hidden.
-    set_target_properties(${TARGET} PROPERTIES CXX_VISIBILITY_PRESET "hidden" VISIBILITY_INLINES_HIDDEN ON)
-
     # Make somewhere to put the header.
     set(EXPORT_HEADER_DIR ${CMAKE_BINARY_DIR}/generated/exportheaders)
     file(MAKE_DIRECTORY ${EXPORT_HEADER_DIR})
@@ -197,3 +194,8 @@ function(add_executable TARGET)
         install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
     endif()
 endfunction()
+
+# All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
+# build others' libraries with that toolchain.
+default_value(CMAKE_CXX_VISIBILITY_PRESET "hidden")
+default_value(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
