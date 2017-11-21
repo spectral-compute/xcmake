@@ -41,6 +41,7 @@ cross compilation variables, XCMake sets the following variables (if not already
  `XCMAKE_GENERIC_TRIBBLE`     | The generic tuplish: binaries from this tribble that are compatible, but less optimized. 
  `XCMAKE_MICROARCH`           | The `microarch` component from the target tribble.
  `XCMAKE_OS`                  | The `os` component from the target tribble.
+ `XCMAKE_INTEGRATED_GPU`      | True iff the target's GPU shares the same memory as the CPU (such as a tx2).
 
 ## Fragments
 Fragments provide information to XCMake's toolchain file in the form of variables. These variables are not intended to

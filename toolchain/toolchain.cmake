@@ -78,6 +78,11 @@ if (${AMD_GPU_LENGTH} GREATER 0 AND ${NVIDIA_GPU_LENGTH} GREATER 0)
     message(FATAL_ERROR "You specified a mixture of AMD and NVIDIA GPU targets: ${XCMAKE_GPUS}")
 endif()
 
+# Set the global macro definition for integrated GPU targets.
+if (XCMAKE_INTEGRATED_GPU)
+    add_definitions(-DINTEGRATED_GPU)
+endif()
+
 # Handle the XCMAKE_SHOW_TRIBBLE case.
 if (XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
     foreach (_var IN ITEMS CMAKE_C_COMPILER
