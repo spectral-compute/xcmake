@@ -1,1 +1,1 @@
-set(XCMAKE_COMPILER_FLAGS "-mcpu=cortex-a53")
+list(APPEND XCMAKE_COMPILER_FLAGS -mcpu=cortex-a53)

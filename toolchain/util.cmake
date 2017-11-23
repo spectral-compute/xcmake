@@ -10,3 +10,8 @@ macro(defaultTcValue VAR)
         set(${VAR} ${ARGN})
     endif()
 endmacro()
+
+# Stringify a list, putting ${SEPARATOR} between the elements.
+macro(listJoin OUT LIST SEPARATOR)
+    string(REPLACE ";" "${SEPARATOR}" ${OUT} "${${LIST}}")
+endmacro()
