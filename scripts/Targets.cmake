@@ -154,6 +154,9 @@ function(add_export_header TARGET)
 
     # Install the header.
     install(FILES "${EXPORT_HDR_PATH}" DESTINATION "./include/${EXPORT_DIRECTORY_NAME}")
+
+    # Fix IDE indexing of the header.
+    target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR})
 endfunction()
 
 function(add_library TARGET)
