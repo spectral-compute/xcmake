@@ -1,1 +1,1 @@
-setTcValue(XCMAKE_COMPILER_FLAGS "-mcpu=cortex-a53")
+set(XCMAKE_COMPILER_FLAGS "-mcpu=cortex-a53")

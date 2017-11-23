@@ -2,9 +2,6 @@
 # Include some things we use.
 include(${CMAKE_CURRENT_LIST_DIR}/util.cmake)
 
-# The toolchain file gets called more than once. We only want to keep the things that applied the last time we ran.
-resetTcValues()
-
 # Toolchain options.
 option(XCMAKE_SHOW_TRIBBLE "Show the values of the variables set by the toolchain file" Off)
 set(XCMAKE_TRIBBLE native CACHE STRING "The XCMake target tribble to use")

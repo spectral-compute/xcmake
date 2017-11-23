@@ -1,1 +1,1 @@
-setTcValue(XCMAKE_COMPILER_FLAGS "-mcpu=generic")
+set(XCMAKE_COMPILER_FLAGS "-mcpu=generic")
