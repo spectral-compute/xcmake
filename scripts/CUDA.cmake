@@ -28,65 +28,25 @@ function(configure_for_cuda TARGET)
     target_link_libraries(${TARGET} PRIVATE ${CUDA_LIBRARIES})
 endfunction()
 
-# Set up an AMD CUDA target. This runs hipify-clang over the source files, and compiles them with
-# the AMD compiler.
+# Set up an AMD CUDA target.
 function(configure_for_amd TARGET)
-    # We're not going to get far without hipify!
-    find_program(HIPIFY_EXECUTABLE hipify-clang)
-    if (NOT HIPIFY_EXECUTABLE)
-        message(FATAL_ERROR "Unable to find hipify-clang. Did you install it?")
-    endif ()
-    message_colour(STATUS Yellow "Using hipify: ${HIPIFY_EXECUTABLE}")
+    find_package(AmdCuda REQUIRED)
 
-    # We need the CUDA includes for hipification...
-    find_package(CUDA 8.0 REQUIRED)
+    # This disables cmake's built-in CUDA support, which only does NVCC. This stops
+    # cmake doing automatic things that derail our attempts to do this properly...
+    set_source_files_properties(${ARGN} PROPERTIES LANGUAGE CXX)
 
-    # And we need HIP for the eventual compilation...
-    find_package(HIP REQUIRED)
-
-    set(OUT_DIR "${CMAKE_BINARY_DIR}/generated/hip/${TARGET}")
-    file(MAKE_DIRECTORY "${OUT_DIR}")
-    set(STAMP_FILE "${OUT_DIR}/${TARGET}.stamp")
-
-    # This is pretty infuriating.
-    # `hipify-clang` needs most of the flags that we would pass to clang if we were to compile this
-    # as CUDA. But not all of them. Hurrah!
-    set(INCLUDE_DIRS "$<TARGET_PROPERTY:${TARGET},INCLUDE_DIRECTORIES>")
-    set(SYS_INCLUDE_DIRS "$<TARGET_PROPERTY:${TARGET},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>")
-    set(DEFS "$<TARGET_PROPERTY:${TARGET},COMPILE_DEFINITIONS>")
-    set(OPS "")
-    set(CUDA_FLAGS
-        "$<$<BOOL:${INCLUDE_DIRS}>:-I$<JOIN:${INCLUDE_DIRS}, -I>>"
-        "$<$<BOOL:${SYS_INCLUDE_DIRS}>:-isystem $<JOIN:${SYS_INCLUDE_DIRS}, -isystem >>"
-        "$<$<BOOL:${DEFS}>:-D$<JOIN:${DEFS}, -D>>"
-        -isystem ${CUDA_INCLUDE_DIRS}
-        $<TARGET_PROPERTY:${TARGET},COMPILE_OPTIONS>
+    # Compiler flags for cuda compilation on clang.
+    target_compile_options(${TARGET} PRIVATE
         -x cuda
-        --cuda-path=${CUDA_TOOLKIT_ROOT_DIR}
+        --cuda-path=${AMDCUDA_TOOLKIT_ROOT_DIR}
 
-        # https://github.com/ROCm-Developer-Tools/HIP/issues/204
-        -Wno-pragma-once-outside-header
+        # The various PTX versions that were requested...
+        --cuda-gpu-arch=$<JOIN:${TARGET_AMD_GPUS}, --cuda-gpu-arch=>
     )
 
-    # Make a rule to process each source file with hipify.
-    foreach (_SRC IN LISTS ARGN)
-        # Fix it if the user was silly and used absolute source paths..
-        string(REPLACE ${CMAKE_CURRENT_SOURCE_DIR} "" ${_SRC} _SRC)
-        set(OUT_FILE ${OUT_DIR}/${_SRC})
-
-        get_filename_component(FULL_OUT_DIR ${OUT_FILE} DIRECTORY)
-        file(MAKE_DIRECTORY ${FULL_OUT_DIR})
-
-        add_custom_command(
-            OUTPUT "${OUT_FILE}"
-            DEPENDS "${_SRC}"
-            COMMENT "Hipifying ${_SRC}..."
-            COMMAND ${HIPIFY_EXECUTABLE} -o ${OUT_FILE} ${_SRC} -- ${CUDA_FLAGS}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            VERBATIM
-        )
-        target_sources(${TARGET} PRIVATE ${OUT_FILE})
-    endforeach()
+    # Add the cuda runtime library.
+    target_link_libraries(${TARGET} PRIVATE AmdCuda::amdcuda)
 endfunction()
 
 # Add an executable that uses CUDA.
@@ -123,7 +83,6 @@ function(add_cuda_library TARGET)
     remove_argument(FLAG SRC_LIST EXCLUDE_FROM_ALL)
 
     if ("${TARGET_GPU_TYPE}" STREQUAL "AMD")
-        list(REMOVE_ITEM ARGN ${SRC_LIST})
         add_library(${TARGET} ${ARGN} ${NOP_SOURCE_FILE})
         configure_for_amd(${TARGET} ${SRC_LIST})
     elseif ("${TARGET_GPU_TYPE}" STREQUAL "NVIDIA")
