@@ -60,8 +60,6 @@ function(add_cuda_executable TARGET)
         # Remove all the source files to get the flag list...
         list(REMOVE_ITEM ARGN ${SRC_LIST})
 
-        # We don't want to actually compile _any_ of the input source files - they must go
-        # through hipify first. We use the nop source file to silence a cmake warning.
         add_executable(${TARGET} ${ARGN} ${NOP_SOURCE_FILE})
         configure_for_amd(${TARGET} ${SRC_LIST})
     elseif("${TARGET_GPU_TYPE}" STREQUAL "NVIDIA")
