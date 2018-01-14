@@ -92,7 +92,6 @@ function(apply_default_standard_properties TARGET)
         -Wdocumentation
         -Werror
         -Wnewline-eof
-        -fdiagnostics-show-template-tree
         -ftemplate-backtrace-limit=0
     )
 endfunction()
