@@ -1,10 +1,5 @@
 include(ArgHandle)
 
-# The nop source file - a handy cmake workaround for cases where cmake insists you must have
-# a source file, but I don't want to have one.
-file(WRITE "${CMAKE_BINARY_DIR}/generated/nop.cpp" "// I like trains\n")
-set(NOP_SOURCE_FILE "${CMAKE_BINARY_DIR}/generated/nop.cpp")
-
 # Configure a library or executable target for CUDA, given the list of source files.
 function(configure_for_nvidia TARGET)
     find_package(CUDA 8.0 REQUIRED)
@@ -41,7 +36,7 @@ function(configure_for_amd TARGET)
         -x cuda
         --cuda-path=${AMDCUDA_TOOLKIT_ROOT_DIR}
 
-        # The various PTX versions that were requested...
+        # The GPU targets selected...
         --cuda-gpu-arch=$<JOIN:${TARGET_AMD_GPUS}, --cuda-gpu-arch=>
     )
 
@@ -60,7 +55,7 @@ function(add_cuda_executable TARGET)
         # Remove all the source files to get the flag list...
         list(REMOVE_ITEM ARGN ${SRC_LIST})
 
-        add_executable(${TARGET} ${ARGN} ${NOP_SOURCE_FILE})
+        add_executable(${TARGET} ${ARGN})
         configure_for_amd(${TARGET} ${SRC_LIST})
     elseif("${TARGET_GPU_TYPE}" STREQUAL "NVIDIA")
         add_executable(${TARGET} ${ARGN})
@@ -81,7 +76,7 @@ function(add_cuda_library TARGET)
     remove_argument(FLAG SRC_LIST EXCLUDE_FROM_ALL)
 
     if ("${TARGET_GPU_TYPE}" STREQUAL "AMD")
-        add_library(${TARGET} ${ARGN} ${NOP_SOURCE_FILE})
+        add_library(${TARGET} ${ARGN})
         configure_for_amd(${TARGET} ${SRC_LIST})
     elseif ("${TARGET_GPU_TYPE}" STREQUAL "NVIDIA")
         add_library(${TARGET} ${ARGN})
