@@ -1,6 +1,6 @@
 include(ArgHandle)
 
-# Configure a library or executable target for CUDA, given the list of source files.
+# Set up an NVIDIA CUDA target.
 function(configure_for_nvidia TARGET)
     find_package(CUDA 8.0 REQUIRED)
 
