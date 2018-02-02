@@ -39,4 +39,7 @@ function(export_project NAME)
         ${OUTPATH}/${NAME}Version.cmake
         DESTINATION lib/cmake/${NAME}
     )
+
+    export(EXPORT ${NAME} FILE "${CMAKE_CURRENT_BINARY_DIR}/generated/${NAME}Targets.cmake")
+    install(EXPORT ${NAME} FILE ${NAME}Targets.cmake DESTINATION lib/cmake/${NAME})
 endfunction()
