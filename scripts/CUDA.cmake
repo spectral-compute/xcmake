@@ -19,8 +19,8 @@ function(configure_for_nvidia TARGET)
     )
 
     # Add the cuda runtime library.
-    target_include_directories(${TARGET} PRIVATE ${CUDA_INCLUDE_DIRS})
-    target_link_libraries(${TARGET} PRIVATE ${CUDA_LIBRARIES})
+    target_include_directories(${TARGET} SYSTEM PUBLIC ${CUDA_INCLUDE_DIRS})
+    target_link_libraries(${TARGET} PUBLIC ${CUDA_LIBRARIES})
 endfunction()
 
 # Set up an AMD CUDA target.
