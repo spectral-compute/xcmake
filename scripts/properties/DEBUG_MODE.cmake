@@ -13,4 +13,5 @@ target_compile_options(DEBUG_MODE_EFFECTS INTERFACE
     -gcolumn-info
     -fdebug-macro
     -fno-limit-debug-info
+    -ftrapv
 )
