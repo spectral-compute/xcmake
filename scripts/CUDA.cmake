@@ -52,9 +52,6 @@ function(add_cuda_executable TARGET)
     remove_argument(FLAG SRC_LIST EXCLUDE_FROM_ALL)
 
     if ("${TARGET_GPU_TYPE}" STREQUAL "AMD")
-        # Remove all the source files to get the flag list...
-        list(REMOVE_ITEM ARGN ${SRC_LIST})
-
         add_executable(${TARGET} ${ARGN})
         configure_for_amd(${TARGET} ${SRC_LIST})
     elseif("${TARGET_GPU_TYPE}" STREQUAL "NVIDIA")
