@@ -41,7 +41,7 @@ function(configure_for_amd TARGET)
     )
 
     # Add the cuda runtime library.
-    target_link_libraries(${TARGET} PRIVATE Scale::AMD)
+    target_link_libraries(${TARGET} PUBLIC Scale::AMD)
 endfunction()
 
 # Add an executable that uses CUDA.
