@@ -1,4 +1,4 @@
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(DEFAULT_DEB "ON")
 else()
     set(DEFAULT_DEB "OFF")
