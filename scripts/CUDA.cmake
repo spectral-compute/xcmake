@@ -41,7 +41,7 @@ function(configure_for_amd TARGET)
     )
 
     # Add the cuda runtime library.
-    target_link_libraries(${TARGET} PRIVATE AmdCuda::amdcuda)
+    target_link_libraries(${TARGET} PUBLIC AmdCuda::amdcuda)
 endfunction()
 
 # Add an executable that uses CUDA.
