@@ -4,9 +4,11 @@ include(ArgHandle)
 function(configure_for_nvidia TARGET)
     find_package(CUDA 8.0 REQUIRED)
 
+    get_target_property(SOURCE_FILES ${TARGET} SOURCES)
+
     # This disables cmake's built-in CUDA support, which only does NVCC. This stops
     # cmake doing automatic things that derail our attempts to do this properly...
-    set_source_files_properties(${ARGN} PROPERTIES LANGUAGE CXX)
+    set_source_files_properties(${SOURCE_FILES} PROPERTIES LANGUAGE CXX)
 
     # Compiler flags for cuda compilation on clang.
     target_compile_options(${TARGET} PRIVATE
@@ -27,9 +29,11 @@ endfunction()
 function(configure_for_amd TARGET)
     find_package(AmdCuda REQUIRED)
 
+    get_target_property(SOURCE_FILES ${TARGET} SOURCES)
+
     # This disables cmake's built-in CUDA support, which only does NVCC. This stops
     # cmake doing automatic things that derail our attempts to do this properly...
-    set_source_files_properties(${ARGN} PROPERTIES LANGUAGE CXX)
+    set_source_files_properties(${SOURCE_FILES} PROPERTIES LANGUAGE CXX)
 
     # Compiler flags for cuda compilation on clang.
     target_compile_options(${TARGET} PRIVATE
@@ -44,6 +48,18 @@ function(configure_for_amd TARGET)
     target_link_libraries(${TARGET} PUBLIC AmdCuda::amdcuda)
 endfunction()
 
+function(add_cuda_to_target TARGET)
+    if ("${TARGET_GPU_TYPE}" STREQUAL "AMD")
+        configure_for_amd(${TARGET} ${SRC_LIST})
+    elseif ("${TARGET_GPU_TYPE}" STREQUAL "NVIDIA")
+        configure_for_nvidia(${TARGET} ${SRC_LIST})
+    elseif ("${TARGET_GPU_TYPE}" STREQUAL "")
+        message(FATAL_ERROR "You didn't specify any GPU targets with -DXCMAKE_GPUS!")
+    else ()
+        message(FATAL_ERROR "Unknown GPU type: ${TARGET_GPU_TYPE}")
+    endif ()
+endfunction()
+
 # Add an executable that uses CUDA.
 function(add_cuda_executable TARGET)
     set(SRC_LIST ${ARGN})
@@ -51,17 +67,8 @@ function(add_cuda_executable TARGET)
     remove_argument(FLAG SRC_LIST MACOSX_BUNDLE)
     remove_argument(FLAG SRC_LIST EXCLUDE_FROM_ALL)
 
-    if ("${TARGET_GPU_TYPE}" STREQUAL "AMD")
-        add_executable(${TARGET} ${ARGN})
-        configure_for_amd(${TARGET} ${SRC_LIST})
-    elseif("${TARGET_GPU_TYPE}" STREQUAL "NVIDIA")
-        add_executable(${TARGET} ${ARGN})
-        configure_for_nvidia(${TARGET} ${SRC_LIST})
-    elseif("${TARGET_GPU_TYPE}" STREQUAL "")
-        message(FATAL_ERROR "You didn't specify any GPU targets with -DXCMAKE_GPUS!")
-    else()
-        message(FATAL_ERROR "Unknown GPU type: ${TARGET_GPU_TYPE}")
-    endif()
+    add_executable(${TARGET} ${ARGN})
+    add_cuda_to_target(${TARGET})
 endfunction()
 
 # Add a library that uses CUDA.
@@ -72,15 +79,6 @@ function(add_cuda_library TARGET)
     remove_argument(FLAG SRC_LIST MODULE)
     remove_argument(FLAG SRC_LIST EXCLUDE_FROM_ALL)
 
-    if ("${TARGET_GPU_TYPE}" STREQUAL "AMD")
-        add_library(${TARGET} ${ARGN})
-        configure_for_amd(${TARGET} ${SRC_LIST})
-    elseif ("${TARGET_GPU_TYPE}" STREQUAL "NVIDIA")
-        add_library(${TARGET} ${ARGN})
-        configure_for_nvidia(${TARGET} ${SRC_LIST})
-    elseif ("${TARGET_GPU_TYPE}" STREQUAL "")
-        message(FATAL_ERROR "You didn't specify any GPU targets with -DXCMAKE_GPUS!")
-    else ()
-        message(FATAL_ERROR "Unknown GPU type: ${TARGET_GPU_TYPE}")
-    endif ()
+    add_library(${TARGET} ${ARGN})
+    add_cuda_to_target(${TARGET})
 endfunction()
