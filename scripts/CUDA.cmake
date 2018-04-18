@@ -58,6 +58,9 @@ function(add_cuda_to_target TARGET)
     else ()
         message(FATAL_ERROR "Unknown GPU type: ${TARGET_GPU_TYPE}")
     endif ()
+
+    # We're using Clang. It has fewer restrictions than NVCC.
+    target_compile_options(${TARGET} PRIVATE -Wno-cuda-compat)
 endfunction()
 
 # Add an executable that uses CUDA.
