@@ -25,7 +25,7 @@ else()
 endif()
 
 # Include the fragments.
-if ("${XCMAKE_TRIBBLE}" STREQUAL "native")
+if ("${XCMAKE_OS}" STREQUAL "native" AND "${XCMAKE_ARCH}" STREQUAL "native")
     # Include the native toolchain fragment.
     include(${CMAKE_CURRENT_LIST_DIR}/fragments/native.cmake)
 else()
