@@ -1,3 +1,14 @@
+# Add a test executable (installed under ./test)
+function(add_test_executable TARGET)
+    add_executable(${TARGET} ${ARGN} NOINSTALL)
+
+    install(
+        TARGETS ${TARGET}
+        RUNTIME DESTINATION test/bin
+        LIBRARY DESTINATION test/lib
+    )
+endfunction()
+
 # Make an executable target with gtest support. Gtest and associated crap is automatically
 # added, and the target installed to the test prefix.
 #
@@ -12,7 +23,7 @@ function(add_gtest_executable TARGET)
     cmake_parse_arguments("gt" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     remove_argument(FLAG EXTRA_ARGS CUSTOM_MAIN)
-    add_executable(${TARGET} ${EXTRA_ARGS} NOINSTALL)
+    add_test_executable(${TARGET} ${EXTRA_ARGS})
 
     # Find and add GoogleTest/GoogleMock.
     # GTest provides nifty imported targets (which handle the threads dependency for us), but
@@ -40,10 +51,4 @@ function(add_gtest_executable TARGET)
 
         target_link_libraries(${TARGET} PRIVATE ${GMock_MAIN})
     endif()
-
-    install(
-        TARGETS ${TARGET}
-        RUNTIME DESTINATION test/bin
-        LIBRARY DESTINATION test/lib
-    )
 endfunction(add_gtest_executable)
