@@ -178,7 +178,7 @@ function(add_library TARGET)
     apply_effect_groups(${TARGET})
 
     if (NOT args_NOINSTALL)
-        install(TARGETS ${TARGET} EXPORT ${CMAKE_PROJECT_NAME} ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+        install(TARGETS ${TARGET} EXPORT ${PROJECT_NAME} ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
     endif()
 endfunction()
 
