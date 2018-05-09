@@ -39,7 +39,7 @@ target_compile_options(Undefined_SANITISER_EFFECTS INTERFACE
     -fno-sanitize-recover=undefined
     -fsanitize=unsigned-integer-overflow
 )
-target_link_libraries(Undefined_SANITISER_EFFECTS INTERFACE -fsanitize=undefined)
+target_link_libraries(Undefined_SANITISER_EFFECTS INTERFACE -fsanitize=undefined -fno-sanitize-recover=undefined)
 
 target_link_libraries(Address_SANITISER_EFFECTS INTERFACE common_SANITISER_EFFECTS)
 target_link_libraries(Leak_SANITISER_EFFECTS INTERFACE common_SANITISER_EFFECTS)
