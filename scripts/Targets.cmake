@@ -159,7 +159,7 @@ function(add_export_header TARGET)
 endfunction()
 
 function(add_library TARGET)
-    cmake_parse_arguments(args "NOINSTALL" "" "" ${ARGN})
+    cmake_parse_arguments(args "NOINSTALL;NOEXPORT" "" "" ${ARGN})
 
     _add_library(${TARGET} ${args_UNPARSED_ARGUMENTS})
 
@@ -178,7 +178,10 @@ function(add_library TARGET)
     apply_effect_groups(${TARGET})
 
     if (NOT args_NOINSTALL)
-        install(TARGETS ${TARGET} EXPORT ${PROJECT_NAME} ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+        if (NOT args_NOEXPORT)
+            set(EXPORT_FLAGS EXPORT ${PROJECT_NAME})
+        endif()
+        install(TARGETS ${TARGET} ${EXPORT_FLAGS} ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
     endif()
 endfunction()
 
