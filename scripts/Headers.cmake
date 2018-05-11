@@ -5,5 +5,6 @@ function(add_headers TARGET)
     cmake_parse_arguments("h" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # TODO: Partial preprocessing and all that jazz...
-    install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${h_HEADER_PATH}/ DESTINATION ./include/${h_INSTALL_DESTINATION})
+    install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/${h_HEADER_PATH}/ DESTINATION ./include/${h_INSTALL_DESTINATION}
+            FILES_MATCHING REGEX "\\.h(pp)?$")
 endfunction()
