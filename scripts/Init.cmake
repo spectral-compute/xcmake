@@ -18,7 +18,7 @@ include(Utils)
 include(Log)
 
 # Default to building shared libraries
-default_value(BUILD_SHARED_LIBS ON)
+default_cache_value(BUILD_SHARED_LIBS ON)
 
 # This gets annoying, since we recursively invoke cmake...
 set(CMAKE_INSTALL_MESSAGE NEVER)
