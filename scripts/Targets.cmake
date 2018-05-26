@@ -204,3 +204,6 @@ endfunction()
 # build others' libraries with that toolchain.
 default_value(CMAKE_CXX_VISIBILITY_PRESET "hidden")
 default_value(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+
+# A "make all the documentation" target. The scripts that make documentation targets attach their targets to this.
+add_custom_target(docs ALL)
