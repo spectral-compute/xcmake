@@ -33,8 +33,14 @@ function(add_doxygen TARGET)
     endforeach ()
 
     # Make references to the STL link to cppreference.com.
-    file(DOWNLOAD http://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml ${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml)
-    set(TAGFILES "${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml=http://en.cppreference.com/w/")
+    set(STL_TAG_FILE ${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml)
+    if (NOT EXISTS ${STL_TAG_FILE})
+        file(DOWNLOAD
+            http://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml ${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml
+            SHOW_PROGRESS
+        )
+    endif()
+    set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
 
     # Generate the final Doxyfile, injecting the variables we calculated above (notably including the list of inputs...)
     configure_file(${d_DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
