@@ -32,7 +32,11 @@ function(add_doxygen TARGET)
         endforeach()
     endforeach ()
 
-    # Generate the final Doxyfile, injecting the INPUTS value.
+    # Make references to the STL link to cppreference.com.
+    file(DOWNLOAD http://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml ${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml)
+    set(TAGFILES "${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml=http://en.cppreference.com/w/")
+
+    # Generate the final Doxyfile, injecting the variables we calculated above (notably including the list of inputs...)
     configure_file(${d_DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
     # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
