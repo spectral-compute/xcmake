@@ -12,7 +12,7 @@ function(add_doxygen TARGET)
 
     # Oh, the argparse boilerplate
     set(flags)
-    set(oneValueArgs INSTALL_DESTINATION DOXYFILE)
+    set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE)
     set(multiValueArgs HEADER_TARGETS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -41,6 +41,7 @@ function(add_doxygen TARGET)
         )
     endif()
     set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
+    set(DOXYGEN_LAYOUT_FILE ${d_LAYOUT_FILE})
 
     # Generate the final Doxyfile, injecting the variables we calculated above (notably including the list of inputs...)
     configure_file(${d_DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
@@ -56,6 +57,8 @@ function(add_doxygen TARGET)
         COMMENT "Doxygenation of ${TARGET}..."
         DEPENDS ${d_DOXYFILE}
         DEPENDS ${HEADERS_USED}
+        DEPENDS ${DOXYGEN_LAYOUT_FILE}
+        DEPENDS ${STL_TAG_FILE}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         VERBATIM
     )
