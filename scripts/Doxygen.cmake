@@ -17,7 +17,7 @@ function(add_doxygen TARGET)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     default_value(d_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
-    default_value(d_INSTALL_DESTINATION "docs")
+    default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
 
     # Extract the list of input paths from the list of given header targets, and build a list of all the header files
     # Doxygen is about to process, so we can add them as dependencies.
