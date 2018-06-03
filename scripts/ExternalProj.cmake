@@ -7,22 +7,6 @@ set(EP_INSTALL_DIR "${CMAKE_BINARY_DIR}/external_projects" CACHE INTERNAL "")
 function(AddExternalProject TARGET)
     set(EXTRA_ARGS "${ARGN}")
 
-    # Wrapper around ExternalProject_Add that provides IMPORTED target generation. The following
-    # extra options are provided:
-    # - STATIC_LIBRARIES
-    # - DYNAMIC_LIBRARIES
-    # - EXECUTABLES
-    #
-    # These describe the outputs of this external project build. IMPORTED targets will be generated
-    # with those names, pointing to those artefacts. You can then just `target_link_library()`
-    # against those to trigger the actual build of the external project on demand.
-    #
-    # The BINARY_DIR, SOURCE_DIR, INSTALL_DIR, and EXCLUDE_FROM_ALL parameters of
-    # ExternalProject_Add are overridden.
-    #
-    # Some additional conveniences are provided: cross-compilation flags from this cmake build are
-    # propagated (toolchain_file, build_type, compiler). You must provide at least _some_ value for
-    # CMAKE_ARGS to exploit this.
     remove_argument(SINGLE EXTRA_ARGS BINARY_DIR)
     remove_argument(SINGLE EXTRA_ARGS SOURCE_DIR)
     remove_argument(SINGLE EXTRA_ARGS INSTALL_DIR)
