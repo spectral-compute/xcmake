@@ -2,7 +2,12 @@ include(ArgHandle)
 
 # Set up an NVIDIA CUDA target.
 function(configure_for_nvidia TARGET)
+    # We want dynamically-linked cuda-rt due to an obscure CUDA bug to do with static de-init. Unfortunately, in CUDA 9
+    # NVIDIA changed the FindCUDA module to no longer expose the shared one.
+    set(OLD_FLS ${CMAKE_FIND_LIBRARY_SUFFIXES})
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_LIBRARY_SUFFIX})
     find_package(CUDA 8.0 REQUIRED)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ${OLD_FLS})
 
     get_target_property(SOURCE_FILES ${TARGET} SOURCES)
 
