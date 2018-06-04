@@ -9,6 +9,8 @@ function(configure_for_nvidia TARGET)
     find_package(CUDA 8.0 REQUIRED)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ${OLD_FLS})
 
+    message_colour(STATUS Yellow "Using CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
+
     get_target_property(SOURCE_FILES ${TARGET} SOURCES)
 
     # This disables cmake's built-in CUDA support, which only does NVCC. This stops
