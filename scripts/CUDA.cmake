@@ -2,12 +2,13 @@ include(ArgHandle)
 
 # Set up an NVIDIA CUDA target.
 function(configure_for_nvidia TARGET)
-    # We want dynamically-linked cuda-rt due to an obscure CUDA bug to do with static de-init. Unfortunately, in CUDA 9
-    # NVIDIA changed the FindCUDA module to no longer expose the shared one.
-    set(OLD_FLS ${CMAKE_FIND_LIBRARY_SUFFIXES})
     set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_LIBRARY_SUFFIX})
     find_package(CUDA 8.0 REQUIRED)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ${OLD_FLS})
+
+    # Forbid CUDA 9, because it causes all kinda of nasty breakage.
+    if ("${CUDA_VERSION_MAJOR}" GREATER 8)
+        message(FATAL_ERROR "CUDA 9 harms performance and is therefore not supported. Please use CUDA 8")
+    endif()
 
     message_colour(STATUS Yellow "Using CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
 
