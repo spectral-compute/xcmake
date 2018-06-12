@@ -22,14 +22,23 @@ function(find_sources OUT)
         endif()
 
         # Construct the glob expression from the source extensions.
-        foreach (_E ${SOURCE_EXTENSIONS})
-            foreach (_SRCDIR ${ARGN})
-                list(APPEND GLOB_PATTERN ${_SRCDIR}/*.${_E})
-            endforeach()
+        foreach (_SRCARG ${ARGN})
+            # If the input was a single file, just add it (instead of gluing extensions on).
+            if (EXISTS "${_SRCARG}" AND NOT IS_DIRECTORY "${_SRCARG}")
+                list(APPEND GLOB_PATTERN "${_SRCARG}")
+            else()
+                foreach (_E ${SOURCE_EXTENSIONS})
+                    list(APPEND GLOB_PATTERN "${_SRCARG}/*.${_E}")
+                endforeach()
+            endif()
         endforeach()
     endforeach()
 
-    file(GLOB_RECURSE FOUND_SOURCES ${GLOB_PATTERN})
+    file(GLOB_RECURSE FOUND_SOURCES
+        LIST_DIRECTORIES OFF
+        ${GLOB_PATTERN}
+    )
+
     set(${OUT} ${FOUND_SOURCES} PARENT_SCOPE)
 endfunction()
 
