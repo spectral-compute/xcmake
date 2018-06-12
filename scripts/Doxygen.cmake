@@ -35,6 +35,7 @@ function(add_doxygen TARGET)
     # Make references to the STL link to cppreference.com.
     set(STL_TAG_FILE ${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml)
     if (NOT EXISTS ${STL_TAG_FILE})
+        message_colour(STATUS BoldYellow "Downloading cppreference tagfile (for Doxygen). Use `-DENABLE_DOCS=OFF` to skip.")
         file(DOWNLOAD
             http://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml ${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml
             SHOW_PROGRESS
