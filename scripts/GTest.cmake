@@ -38,7 +38,7 @@ function(add_gtest_executable TARGET)
         endif()
 
         find_library(gmock_main gmock_main)
-        if (NOT GMock_MAIN)
+        if (NOT gmock_main)
             message(FATAL_ERROR "Unable to find gmock_main library :(")
         endif ()
 
