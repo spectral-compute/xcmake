@@ -29,7 +29,6 @@ else()
     if (${TRIBBLE_NUM_PARTS} EQUAL 4)
         # GPU type was specified in the tribble.
         list(GET TRIBBLE_PARTS 3 XCMAKE_GPU_TYPE)
-        message(${XCMAKE_GPU_TYPE})
     endif()
 endif()
 
