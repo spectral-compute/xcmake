@@ -1,3 +1,6 @@
+# We're cross compiling!
+set(CMAKE_CROSSCOMPILING 1)
+
 # Calculate the generic tribble.
 defaultTcValue(XCMAKE_GENERIC_TRIBBLE "${XCMAKE_OS}-${XCMAKE_ARCH}-generic")
 
