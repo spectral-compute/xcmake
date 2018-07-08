@@ -75,6 +75,8 @@ if (${AMD_GPU_LENGTH} GREATER 0 AND ${NVIDIA_GPU_LENGTH} GREATER 0)
     message(FATAL_ERROR "You specified a mixture of AMD and NVIDIA GPU targets: ${XCMAKE_GPUS}")
 endif()
 
+defaultTcValue(XCMAKE_INTEGRATED_GPU "OFF")
+
 # Set the global macro definition for integrated GPU targets.
 if (XCMAKE_INTEGRATED_GPU)
     add_definitions(-DINTEGRATED_GPU)
