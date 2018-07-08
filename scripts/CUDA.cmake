@@ -57,14 +57,14 @@ function(configure_for_amd TARGET)
 endfunction()
 
 function(add_cuda_to_target TARGET)
-    if ("${TARGET_GPU_TYPE}" STREQUAL "AMD")
+    if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
         configure_for_amd(${TARGET} ${SRC_LIST})
-    elseif ("${TARGET_GPU_TYPE}" STREQUAL "NVIDIA")
+    elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
         configure_for_nvidia(${TARGET} ${SRC_LIST})
-    elseif ("${TARGET_GPU_TYPE}" STREQUAL "")
+    elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "")
         message(FATAL_ERROR "You didn't specify any GPU targets with -DXCMAKE_GPUS!")
     else ()
-        message(FATAL_ERROR "Unknown GPU type: ${TARGET_GPU_TYPE}")
+        message(FATAL_ERROR "Unknown GPU type: ${XCMAKE_GPU_TYPE}")
     endif ()
 
     # We're using Clang. It has fewer restrictions than NVCC.

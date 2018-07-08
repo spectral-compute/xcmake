@@ -13,7 +13,7 @@ if ("${XCMAKE_TRIBBLE}" STREQUAL "native")
     set(XCMAKE_MICROARCH "native")
 else()
     # Make sure we got a valid tribble.
-    string(REGEX MATCH "^[^-]+-[^-]+-[^-]+$" _tribble_match "${XCMAKE_TRIBBLE}")
+    string(REGEX MATCH "^[^-]+-[^-]+-[^-]+(-[^-]+)?$" _tribble_match "${XCMAKE_TRIBBLE}")
     if (NOT _tribble_match)
         message(FATAL_ERROR "Invalid target tribble: ${XCMAKE_TRIBBLE}")
     endif()
@@ -24,6 +24,13 @@ else()
     list(GET TRIBBLE_PARTS 0 XCMAKE_OS)
     list(GET TRIBBLE_PARTS 1 XCMAKE_ARCH)
     list(GET TRIBBLE_PARTS 2 XCMAKE_MICROARCH)
+
+    list(LENGTH TRIBBLE_PARTS TRIBBLE_NUM_PARTS)
+    if (${TRIBBLE_NUM_PARTS} EQUAL 4)
+        # GPU type was specified in the tribble.
+        list(GET TRIBBLE_PARTS 3 XCMAKE_GPU_TYPE)
+        message(${XCMAKE_GPU_TYPE})
+    endif()
 endif()
 
 # Include the fragments.
@@ -56,6 +63,11 @@ include(${CMAKE_CURRENT_LIST_DIR}/fragments/common.cmake)
 set(TARGET_AMD_GPUS "")
 set(TARGET_CUDA_COMPUTE_CAPABILITIES "")
 
+# Validate the GPU type, if already specified.
+if (NOT ${XCMAKE_GPU_TYPE} STREQUAL "amd" AND NOT ${XCMAKE_GPU_TYPE} STREQUAL "nvidia")
+    message(FATAL_ERROR "Invalid GPU type: ${XCMAKE_GPU_TYPE}")
+endif()
+
 # Desugar the GPU information into something sensible...
 foreach (_TGT IN LISTS XCMAKE_GPUS)
     # Very scientifically detect NVIDIA targets as being ones that start with sm_
@@ -63,10 +75,10 @@ foreach (_TGT IN LISTS XCMAKE_GPUS)
     if ("${PREFIX}" STREQUAL "sm_")
         string(SUBSTRING "${_TGT}" 3 -1 CC)
         list(APPEND TARGET_CUDA_COMPUTE_CAPABILITIES ${CC})
-        set(TARGET_GPU_TYPE "NVIDIA")
+        set(XCMAKE_GPU_TYPE "nvidia")
     else()
         list(APPEND TARGET_AMD_GPUS ${_TGT})
-        set(TARGET_GPU_TYPE "AMD")
+        set(XCMAKE_GPU_TYPE "amd")
     endif()
 endforeach()
 
@@ -106,6 +118,7 @@ if (XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
                            CMAKE_SYSTEM_NAME
 
                            XCMAKE_ARCH
+                           XCMAKE_GPU_TYPE
                            XCMAKE_CLANG_LINKER_FLAGS
                            XCMAKE_COMPILER_FLAGS
                            XCMAKE_CONVENTIONAL_TRIPLE
