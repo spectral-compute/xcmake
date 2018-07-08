@@ -18,10 +18,12 @@ else()
         message(FATAL_ERROR "Invalid target tribble: ${XCMAKE_TRIBBLE}")
     endif()
 
-    # Extract the components of the tribble.
-    string(REGEX REPLACE "^([^-]+)-[^-]+-[^-]+$" "\\1" XCMAKE_OS "${XCMAKE_TRIBBLE}")
-    string(REGEX REPLACE "^[^-]+-([^-]+)-[^-]+$" "\\1" XCMAKE_ARCH "${XCMAKE_TRIBBLE}")
-    string(REGEX REPLACE "^[^-]+-[^-]+-([^-]+)$" "\\1" XCMAKE_MICROARCH "${XCMAKE_TRIBBLE}")
+    # Extract the components of the tribble by turning it into a list.
+    string(REPLACE "-" ";" TRIBBLE_PARTS ${XCMAKE_TRIBBLE})
+
+    list(GET TRIBBLE_PARTS 0 XCMAKE_OS)
+    list(GET TRIBBLE_PARTS 1 XCMAKE_ARCH)
+    list(GET TRIBBLE_PARTS 2 XCMAKE_MICROARCH)
 endif()
 
 # Include the fragments.
