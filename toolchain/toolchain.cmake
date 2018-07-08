@@ -89,6 +89,17 @@ if (${AMD_GPU_LENGTH} GREATER 0 AND ${NVIDIA_GPU_LENGTH} GREATER 0)
 endif()
 
 defaultTcValue(XCMAKE_INTEGRATED_GPU "OFF")
+defaultTcValue(XCMAKE_GPU_TYPE "0")  # No GPU
+
+# GPU type flags for the benefit of the preprocessor :D
+
+if (XCMAKE_GPU_TYPE STREQUAL "amd")
+    set(XCMAKE_AMD_GPU 1)
+elseif(XCMAKE_GPU_TYPE STREQUAL "nvidia")
+    set(XCMAKE_NVIDIA_GPU 1)
+endif()
+defaultTcValue(XCMAKE_NVIDIA_GPU 0)
+defaultTcValue(XCMAKE_AMD_GPU 0)
 
 # Set the global macro definition for integrated GPU targets.
 if (XCMAKE_INTEGRATED_GPU)
@@ -118,6 +129,8 @@ if (XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
 
                            XCMAKE_ARCH
                            XCMAKE_GPU_TYPE
+                           XCMAKE_AMD_GPU
+                           XCMAKE_NVIDIA_GPU
                            XCMAKE_CLANG_LINKER_FLAGS
                            XCMAKE_COMPILER_FLAGS
                            XCMAKE_CONVENTIONAL_TRIPLE
