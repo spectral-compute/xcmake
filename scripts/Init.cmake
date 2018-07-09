@@ -8,6 +8,7 @@ set(XCMAKE_INCLUDED ON)
 cmake_policy(VERSION 3.8.2)
 
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/../toolchain/toolchain.cmake)
+include(${CMAKE_TOOLCHAIN_FILE})
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../dependencies)
 
