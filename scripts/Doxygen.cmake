@@ -38,7 +38,6 @@ function(add_doxygen TARGET)
         message_colour(STATUS BoldYellow "Downloading cppreference tagfile (for Doxygen). Use `-DENABLE_DOCS=OFF` to skip.")
         file(DOWNLOAD
             http://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml ${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml
-            SHOW_PROGRESS
         )
     endif()
     set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
