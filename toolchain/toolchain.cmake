@@ -62,11 +62,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/fragments/common.cmake)
 set(TARGET_AMD_GPUS "")
 set(TARGET_CUDA_COMPUTE_CAPABILITIES "")
 
-# Validate the GPU type, if already specified.
-if (NOT ${XCMAKE_GPU_TYPE} STREQUAL "amd" AND NOT ${XCMAKE_GPU_TYPE} STREQUAL "nvidia")
-    message(FATAL_ERROR "Invalid GPU type: ${XCMAKE_GPU_TYPE}")
-endif()
-
 # Desugar the GPU information into something sensible...
 foreach (_TGT IN LISTS XCMAKE_GPUS)
     # Very scientifically detect NVIDIA targets as being ones that start with sm_
@@ -80,6 +75,11 @@ foreach (_TGT IN LISTS XCMAKE_GPUS)
         set(XCMAKE_GPU_TYPE "amd")
     endif()
 endforeach()
+
+# Validate the GPU type, if already specified.
+if (NOT ${XCMAKE_GPU_TYPE} STREQUAL "amd" AND NOT ${XCMAKE_GPU_TYPE} STREQUAL "nvidia")
+    message(FATAL_ERROR "Invalid GPU type: ${XCMAKE_GPU_TYPE}")
+endif ()
 
 # Make sure we don't have a mixture of GPU targets...
 list(LENGTH TARGET_AMD_GPUS AMD_GPU_LENGTH)
