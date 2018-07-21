@@ -7,6 +7,9 @@ function(add_test_executable TARGET)
         RUNTIME DESTINATION test/bin
         LIBRARY DESTINATION test/lib
     )
+
+    # TODO: Could be an overridden install(), but holy crap that's complicated.
+    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../../lib")
 endfunction()
 
 # Make an executable target with gtest support. Gtest and associated crap is automatically
