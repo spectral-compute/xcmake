@@ -15,14 +15,17 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR
 set(XCMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(XCMAKE_TOOLS_DIR ${CMAKE_CURRENT_LIST_DIR}/../tools)
 
-include(Utils)
-include(Log)
+include(Utils) # Utility functions for list manipulation and so on.
+include(Log)   # Logging utils.
 
 # Default to building shared libraries
 default_cache_value(BUILD_SHARED_LIBS ON)
 
-# This gets annoying, since we recursively invoke cmake...
-set(CMAKE_INSTALL_MESSAGE NEVER)
+# Remind cmake to stop licking windows.
+default_cache_value(CMAKE_INSTALL_MESSAGE NEVER) # No logspam during install
+default_cache_value(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON) # Prepend include directories by default.
+default_cache_value(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON) # Absolute install paths are always wrong.
+default_cache_value(CMAKE_ERROR_DEPRECATED ON) # Explode on use of deprecated cmake features
 
 # We must always have a build type.
 if (NOT CMAKE_BUILD_TYPE)
