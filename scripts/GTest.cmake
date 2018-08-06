@@ -31,31 +31,38 @@ function(add_gtest_executable TARGET)
     # If gtest/gmock targets already exist, for any reason, just use them instead of searching for new ones.
     if (NOT TARGET gtest)
         # Find and add GoogleTest/GoogleMock.
-        # GTest provides nifty imported targets (which handle the threads dependency for us), but
-        # gmock does not appear to...
-        find_package(GTest REQUIRED)
-        find_library(GMock_LIB gmock)
+        # GTest provides flawed import targets and no means to find gmock. Fun. So let's just do what they should
+        # have done.
+        find_library(gtest gtest)
+        find_library(gmock gmock)
+        find_library(gmock_main gmock_main)
         find_path(GMock_INC gmock/gmock.h)
-        if (NOT GMock_LIB OR NOT GMock_INC)
+        find_path(GTest_INC gtest/gtest.h)
+
+        if (NOT gmock OR NOT GMock_INC)
             message(FATAL_ERROR "Unable to find gmock library or headers :(")
         endif()
-
-        find_library(gmock_main gmock_main)
+        if (NOT gtest OR NOT GTest_INC)
+            message(FATAL_ERROR "Unable to find gtest library or headers :(")
+        endif ()
         if (NOT gmock_main)
             message(FATAL_ERROR "Unable to find gmock_main library :(")
         endif ()
 
-        # Add gmock include
-        target_include_directories(${TARGET} SYSTEM PRIVATE ${GMock_INC})
+        message_colour(STATUS Yellow "Found system Google Test for ${TARGET}:")
+        message_colour(STATUS Yellow "  - gtest: ${gtest}")
+        message_colour(STATUS Yellow "  - gmock: ${gmock}")
+        message_colour(STATUS Yellow "  - gmock_main: ${gmock_main}")
 
-        set(gtest GTest::GTest)
+        target_include_directories(${TARGET} SYSTEM PRIVATE ${GMock_INC} ${GTest_INC})
     else()
         set(gtest gtest)
         set(gmock gmock)
         set(gmock_main gmock_main)
+        message_colour(STATUS Yellow "Using gtest fork for ${TARGET}.")
     endif()
 
-    target_link_libraries(${TARGET} PRIVATE ${gtest})
+    target_link_libraries(${TARGET} PRIVATE ${gtest} ${gmock})
 
     # Add the default main, if required. We must use the one from gmock, not gtest, since we want
     # features from gmock and the gtest main doesn't initialise gmock.
