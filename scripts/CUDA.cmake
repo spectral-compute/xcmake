@@ -10,7 +10,7 @@ function(configure_for_nvidia TARGET)
         message(FATAL_ERROR "CUDA 9 harms performance and is therefore not supported. Please use CUDA 8")
     endif()
 
-    message_colour(STATUS Yellow "Using CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
+    message_colour(STATUS BoldGreen "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
 
     get_target_property(SOURCE_FILES ${TARGET} SOURCES)
 
@@ -36,6 +36,7 @@ endfunction()
 # Set up an AMD CUDA target.
 function(configure_for_amd TARGET)
     find_package(Scale REQUIRED)
+    message_colour(STATUS BoldRed "Found support for CUDA on AMD in ${SCALE_AMD_TOOLKIT_ROOT_DIR}")
 
     get_target_property(SOURCE_FILES ${TARGET} SOURCES)
 
