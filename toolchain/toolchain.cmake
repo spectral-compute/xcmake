@@ -29,6 +29,11 @@ else()
     if (${TRIBBLE_NUM_PARTS} EQUAL 4)
         # GPU type was specified in the tribble.
         list(GET TRIBBLE_PARTS 3 XCMAKE_GPU_TYPE)
+
+        # If the GPU type was given in the target tribble, validate it.
+        if (NOT ${XCMAKE_GPU_TYPE} STREQUAL "amd" AND NOT ${XCMAKE_GPU_TYPE} STREQUAL "nvidia")
+            message(FATAL_ERROR "Invalid GPU type: ${XCMAKE_GPU_TYPE}")
+        endif ()
     endif()
 endif()
 
@@ -76,10 +81,8 @@ foreach (_TGT IN LISTS XCMAKE_GPUS)
     endif()
 endforeach()
 
-# Validate the GPU type, if already specified.
-if (NOT ${XCMAKE_GPU_TYPE} STREQUAL "amd" AND NOT ${XCMAKE_GPU_TYPE} STREQUAL "nvidia")
-    message(FATAL_ERROR "Invalid GPU type: ${XCMAKE_GPU_TYPE}")
-endif ()
+defaultTcValue(XCMAKE_INTEGRATED_GPU "OFF")
+defaultTcValue(XCMAKE_GPU_TYPE "0")  # No GPU
 
 # Make sure we don't have a mixture of GPU targets...
 list(LENGTH TARGET_AMD_GPUS AMD_GPU_LENGTH)
@@ -87,9 +90,6 @@ list(LENGTH TARGET_CUDA_COMPUTE_CAPABILITIES NVIDIA_GPU_LENGTH)
 if (${AMD_GPU_LENGTH} GREATER 0 AND ${NVIDIA_GPU_LENGTH} GREATER 0)
     message(FATAL_ERROR "You specified a mixture of AMD and NVIDIA GPU targets: ${XCMAKE_GPUS}")
 endif()
-
-defaultTcValue(XCMAKE_INTEGRATED_GPU "OFF")
-defaultTcValue(XCMAKE_GPU_TYPE "0")  # No GPU
 
 # GPU type flags for the benefit of the preprocessor :D
 
