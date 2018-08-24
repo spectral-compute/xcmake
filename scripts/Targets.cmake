@@ -126,6 +126,10 @@ endmacro()
 # Mandatory single variable arguments:
 #    TARGET The target to apply the symbol hiding to.
 #
+# Flags:
+#    NOINSTALL Don't install the header. This is useful for internal libraries that are only used by other targets in
+#              the same cmake project.
+#
 # Optional single variable arguments:
 #    BASE_NAME The base name to give to generate_export_header(). By default, ${TARGET} is used.
 #    EXPORT_FILE_NAME The file path to for the generated header to give to generate_export_header(). Note: this is
@@ -136,7 +140,7 @@ endmacro()
 #                        be placed on the include path with the given suffix.
 function(add_export_header TARGET)
     # Parse arguments.
-    cmake_parse_arguments(args "" "BASE_NAME;EXPORT_FILE_NAME;INCLUDE_PATH_SUFFIX" "" ${ARGN})
+    cmake_parse_arguments(args "NOINSTALL" "BASE_NAME;EXPORT_FILE_NAME;INCLUDE_PATH_SUFFIX" "" ${ARGN})
 
     set(BASE_NAME ${TARGET})
     if (args_BASE_NAME)
@@ -161,7 +165,9 @@ function(add_export_header TARGET)
     generate_export_header(${TARGET} BASE_NAME "${BASE_NAME}" EXPORT_FILE_NAME "${EXPORT_HDR_PATH}")
 
     # Install the header.
-    install(FILES "${EXPORT_HDR_PATH}" DESTINATION "./include/${EXPORT_DIRECTORY_NAME}")
+    if (NOT args_NOINSTALL)
+        install(FILES "${EXPORT_HDR_PATH}" DESTINATION "./include/${EXPORT_DIRECTORY_NAME}")
+    endif()
 
     # Fix IDE indexing of the header.
     target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR})
