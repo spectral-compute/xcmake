@@ -28,6 +28,16 @@ function(configure_for_nvidia TARGET)
         --cuda-gpu-arch=sm_$<JOIN:${TARGET_CUDA_COMPUTE_CAPABILITIES}, --cuda-gpu-arch=sm_>
     )
 
+    # Get PTXAS to be less unhelpful, provided we have a version of cmake supporting the
+    # "Please don't fucking deduplicate my fucking compiler flags" option, which for some
+    # reason is what they implemented instead of just *NOT DEDUPLICATING COMPILER OPTIONS?!?!*.
+    if (NOT ${CMAKE_VERSION} VERSION_LESS "3.12.0")
+        target_compile_options(${TARGET} PRIVATE
+            "SHELL:-Xcuda-ptxas --warn-on-spills"
+            "SHELL:-Xcuda-ptxas --warn-on-local-memory-usage"
+        )
+    endif()
+
     # Add the cuda runtime library.
     target_include_directories(${TARGET} SYSTEM PUBLIC ${CUDA_INCLUDE_DIRS})
     target_link_libraries(${TARGET} PUBLIC ${CUDA_LIBRARIES})
