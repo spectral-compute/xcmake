@@ -9,5 +9,19 @@ function(add_test_executable TARGET)
     )
 
     # TODO: Could be an overridden install(), but holy crap that's complicated.
-    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../../lib")
+    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib;$ORIGIN/../../lib")
+endfunction()
+
+# Add a test library (installed under ./test)
+function(add_test_library TARGET)
+    add_library(${TARGET} ${ARGN} NOINSTALL)
+
+    install(
+        TARGETS ${TARGET}
+        RUNTIME DESTINATION test/bin
+        LIBRARY DESTINATION test/lib
+    )
+
+    # TODO: Could be an overridden install(), but holy crap that's complicated.
+    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib;$ORIGIN/../../lib")
 endfunction()
