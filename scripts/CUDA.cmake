@@ -1,5 +1,7 @@
 include(ArgHandle)
 
+option(XCMAKE_CUDA_FLUSH_DENORMALS "Flush CUDA denormal values to zero" On)
+
 # Set up an NVIDIA CUDA target.
 function(configure_for_nvidia TARGET)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -22,11 +24,15 @@ function(configure_for_nvidia TARGET)
     target_compile_options(${TARGET} PRIVATE
         -x cuda
         --cuda-path=${CUDA_TOOLKIT_ROOT_DIR}
-        -fcuda-flush-denormals-to-zero
 
         # The various PTX versions that were requested...
         --cuda-gpu-arch=sm_$<JOIN:${TARGET_CUDA_COMPUTE_CAPABILITIES}, --cuda-gpu-arch=sm_>
     )
+
+    # Enable flushing of denormals to zero.
+    if (XCMAKE_CUDA_FLUSH_DENORMALS)
+        target_compile_options(${TARGET} PRIVATE -fcuda-flush-denormals-to-zero)
+    endif()
 
     # Get PTXAS to be less unhelpful, provided we have a version of cmake supporting the
     # "Please don't fucking deduplicate my fucking compiler flags" option, which for some
