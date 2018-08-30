@@ -115,9 +115,25 @@ function(apply_default_standard_properties TARGET)
         -Wno-switch-enum                     # This is stupid.
         -Wno-unused-template                 # ... We're writing a template library...
         -Wno-float-equal                     # This isn't always wrong...
-        -Wno-deprecated
+#        -Wno-deprecated                      # TODO: Enable this one.
         -Wno-undefined-func-template         # Sometimes we like to link templates together, because we're mad.
         -Wno-cast-align                      # TODO: Enable this one.
+        -Wno-sign-conversion                 # Just too irritating. Can't use int to access std::vectors...
+        -Wno-conversion                      # Can't do literal arrays of templated type due to implicit conversions.
+
+        # Re-enable parts of `-Wconversion` that we can cope with.
+        -Wdouble-promotion                   # Warn about implicit double promotion: a common performance problem.
+        -Wbitfield-enum-conversion           # Conversion from enum to a too-short bitfield.
+        -Wbool-conversion                    # Initialising a pointer from a bool. Wat.
+        -Wconstant-conversion
+        -Wenum-conversion                    # No implicit conversion between enums.
+        -Wfloat-conversion                   # No implicit float->int conversions.
+        -Wint-conversion                     # No implicit integer<->pointer conversions.
+        -Wliteral-conversion                 # No implicit value-changing literal conversions.
+        -Wnon-literal-null-conversion        # No implicit zero-literal-to-nullptr conversions.
+        -Wnull-conversion                    # No implicit nullptr-to-zero-literal conversions.
+        -Wshorten-64-to-32                   # No implicit conversion from longer ints to shorter ones.
+        -Wstring-conversion                  # No implicit string literal to bool conversion.
 
         -Werror # We *really* like warnings.
         -ftemplate-backtrace-limit=256
