@@ -99,8 +99,10 @@ function(apply_default_standard_properties TARGET)
         -Wextra
         -Wpedantic
         -Wdocumentation
-        -Werror
         -Wnewline-eof
+        -Wweak-vtables
+        -Wweak-template-vtables
+        -Werror
         -ftemplate-backtrace-limit=256
     )
 endfunction()
