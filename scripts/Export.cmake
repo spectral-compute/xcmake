@@ -3,11 +3,6 @@ include(CMakePackageConfigHelpers)
 function(export_project NAME)
     cmake_parse_arguments("exp" "" "VERSION" "" ${ARGN})
 
-    # When nesting projects, only export the topmost one.
-    if (NOT ${NAME} STREQUAL ${CMAKE_PROJECT_NAME})
-        return()
-    endif ()
-
     # The usual boilerplate to spit out and install the version and config file...
     set(OUTPATH ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
     write_basic_package_version_file(
