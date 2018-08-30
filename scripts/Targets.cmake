@@ -94,16 +94,32 @@ function(apply_default_standard_properties TARGET)
         CXX_STANDARD_REQUIRED ON
     )
 
-    target_compile_options(${TARGET} PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Wdocumentation
-        -Wnewline-eof
-        -Wweak-vtables
-        -Wweak-template-vtables
-        -Wnon-virtual-dtor
-        -Werror
+    target_compile_options(${TARGET} BEFORE PRIVATE
+        -Weverything # We like warnings.
+
+        # Obviously none of these make sense.
+        -Wno-c++98-c++11-c++14-c++17-compat-pedantic
+        -Wno-c++98-compat-pedantic
+        -Wno-c++11-compat-pedantic
+        -Wno-c++14-compat-pedantic
+
+        -Wno-old-style-cast
+        -Wno-undef
+        -Wno-reserved-id-macro               # This isn't really relevant any more.
+        -Wno-exit-time-destructors           # We *use* these!
+        -Wno-padded
+        -Wno-shadow-field-in-constructor     # Sorry Nick, I like doing this. :D
+        -Wno-global-constructors             # We also use these
+        -Wno-missing-prototypes
+        -Wno-documentation-unknown-command   # False positives, sadly.
+        -Wno-switch-enum                     # This is stupid.
+        -Wno-unused-template                 # ... We're writing a template library...
+        -Wno-float-equal                     # This isn't always wrong...
+        -Wno-deprecated
+        -Wno-undefined-func-template         # Sometimes we like to link templates together, because we're mad.
+        -Wno-cast-align                      # TODO: Enable this one.
+
+        -Werror # We *really* like warnings.
         -ftemplate-backtrace-limit=256
     )
 endfunction()
