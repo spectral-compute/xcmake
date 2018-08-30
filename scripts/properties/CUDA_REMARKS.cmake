@@ -4,5 +4,5 @@ define_xcmake_target_property(
     DEFAULT OFF
 )
 target_compile_options(CUDA_REMARKS_EFFECTS INTERFACE
-    -fcuda-remarks
+    -fcuda-remarks -Wno-unused-command-line-argument
 )
