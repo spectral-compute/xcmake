@@ -140,6 +140,11 @@ function(apply_default_standard_properties TARGET)
 
         # Prevent false positives from -Wdocumentation-unknown-command
         -fcomment-block-commands=file
+
+        # Make errors more readable in the presence of insane templates
+        -fdiagnostics-show-template-tree
+        -fdiagnostics-show-option
+        -fdiagnostics-show-category=name
     )
 endfunction()
 
