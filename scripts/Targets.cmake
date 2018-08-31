@@ -242,7 +242,6 @@ function(add_library TARGET)
     if (NOT args_NOINSTALL)
         if (NOT args_NOEXPORT)
             set(EXPORT_FLAGS EXPORT ${PROJECT_NAME})
-            message_colour(STATUS Red "Adding ${TARGET} to export set ${PROJECT_NAME}")
         endif()
         install(TARGETS ${TARGET} ${EXPORT_FLAGS} ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 
