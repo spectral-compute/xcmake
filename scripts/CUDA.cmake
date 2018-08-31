@@ -35,7 +35,9 @@ function(configure_for_nvidia TARGET)
     if (NOT ${CMAKE_VERSION} VERSION_LESS "3.12.0")
         target_compile_options(${TARGET} PRIVATE
             "SHELL:-Xcuda-ptxas --warn-on-spills"
-            "SHELL:-Xcuda-ptxas --warn-on-local-memory-usage"
+
+            # Assertions imply local memory usage, so don't enable this warning when assertions are turned on.
+            $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,SHELL:-Xcuda-ptxas --warn-on-local-memory-usage>
         )
     endif()
 
