@@ -1,7 +1,7 @@
 include(IncludeGuard)
 IncludeGuard(Properties)
 
-# Find and include all the property definition files.
+# Find all the property definition files.
 file(
     GLOB PROPS
     LIST_DIRECTORIES true
@@ -50,7 +50,7 @@ macro(define_xcmake_global_property NAME)
         set(tp_DEFAULT OFF)
     endif ()
 
-    default_value(XCMAKE_CLANG_TIDY ${tp_DEFAULT})
+    default_value(${NAME} ${tp_DEFAULT})
     list(APPEND XCMAKE_GLOBAL_PROPERTIES ${NAME})
 endmacro()
 
