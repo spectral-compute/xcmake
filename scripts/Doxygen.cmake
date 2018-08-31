@@ -1,3 +1,5 @@
+include(IncludeGuard)
+
 IncludeGuard(Doxygen)
 
 # Generate Doxygen documentation, attached to a new target with the given name.
