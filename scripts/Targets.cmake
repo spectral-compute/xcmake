@@ -52,22 +52,26 @@ function(apply_default_properties TARGET)
     endforeach()
 endfunction()
 
-# Each of the XCMAKE custom properties has a corresponding interface target describing its effect.
-# If the property value is falsey, nothing happens.
-# If the target <property_value>_<property_name>_EFFECTS exists, it is used.
-# Otherwise, <property_name>_EFFECTS is used.
-# (This makes it easy to have different effect groups for different values of a property - such as
-# a sanitiser selector - and also to have simple on/off properties).
+# Each of the XCMAKE custom properties is defined either by interface targets or a function.
+#
+# For property "FOO":
+# - If target FOO_EFFECTS exists, and target property value FOO is truthy, FOO_EFFECTS is linked to ${TARGET}.
+# - If function FOO_EFFECTS() exists, it is called with ${TARGET}
+# - Otherwise, ${TARGET} is linked to interface target ${FOO}_FOO_EFFECTS. That is, the value of the target property
+#   identifies the interface target to link.
 function(apply_effect_groups TARGET)
     foreach (_P ${XCMAKE_TGT_PROPERTIES})
-        # Flag-style?
         if (TARGET ${_P}_EFFECTS)
+            # Flag-style: link to FOO_EFFECTS if the property is truthy.
             target_link_libraries(
                 ${TARGET} PRIVATE
                 $<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},${_P}>>,${_P}_EFFECTS,>
             )
+        elseif(COMMAND ${_P}_EFFECTS)
+            # Function-style: call function FOO_EFFECTS(${TARGET})
+            dynamic_call(${_P}_EFFECTS ${TARGET})
         else()
-            # Assume value-style and hope for the best...
+            # Value-style: link to ${FOO}_FOO_EFFECTS, where ${FOO} is the value of the target property FOO.
             target_link_libraries(
                 ${TARGET} PRIVATE
                 $<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},${_P}>>,$<TARGET_PROPERTY:${TARGET},${_P}>_${_P}_EFFECTS,>
