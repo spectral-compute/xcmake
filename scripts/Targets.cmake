@@ -111,7 +111,6 @@ function(apply_default_standard_properties TARGET)
         -Wno-shadow-field-in-constructor     # Sorry Nick, I like doing this. :D
         -Wno-global-constructors             # We also use these
         -Wno-missing-prototypes
-        -Wno-documentation-unknown-command   # False positives, sadly.
         -Wno-switch-enum                     # This is stupid.
         -Wno-unused-template                 # ... We're writing a template library...
         -Wno-float-equal                     # This isn't always wrong...
@@ -135,8 +134,12 @@ function(apply_default_standard_properties TARGET)
         -Wstring-conversion                  # No implicit string literal to bool conversion.
 
         -Werror # We *really* like warnings.
-        -ftemplate-backtrace-limit=256
+
+        -ftemplate-backtrace-limit=256       # We have some insane templates.
         -fstrict-vtable-pointers             # An experimental but year-old and safe optimisation that helps BLASBAT :D
+
+        # Prevent false positives from -Wdocumentation-unknown-command
+        -fcomment-block-commands=file
     )
 endfunction()
 
