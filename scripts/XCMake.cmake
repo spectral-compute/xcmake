@@ -1,0 +1,15 @@
+## Include the rest of xcmake, for convenience.
+#include(ArgHandle)
+#include(ExternalProj)
+#include(Headers)
+#include(CUDA)
+#include(Test)
+#include(GTest)
+#include(Export)
+#include(ScopedSubdirs)
+#include(OnExit)
+#include(Summary)
+#include(IncludeGuard)
+#include(Doxygen)
+
+include(Properties)

@@ -52,8 +52,8 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # Include the rest of xcmake, for convenience.
 include(ArgHandle)
 include(ExternalProj)
-include(Properties)
 include(Targets)
+include(IncludeGuard)
 include(Headers)
 include(CUDA)
 include(Test)
@@ -62,3 +62,13 @@ include(Export)
 include(ScopedSubdirs)
 include(OnExit)
 include(Summary)
+include(Doxygen)
+
+# All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
+# build others' libraries with that toolchain.
+default_value(CMAKE_CXX_VISIBILITY_PRESET "hidden")
+default_value(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+
+# A "make all the documentation" target. The scripts that make documentation targets attach their targets to this.
+add_custom_target(docs ALL)
+

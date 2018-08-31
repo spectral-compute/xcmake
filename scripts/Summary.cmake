@@ -2,11 +2,11 @@
 
 function(PrintTargetConfig TARGET INDENT)
     ensure_not_object(${TARGET})
+    ensure_not_imported(${TARGET})
+    ensure_not_interface(${TARGET})
+
     get_target_property(T_TYPE ${TARGET} TYPE)
-    if (${T_TYPE} STREQUAL "UTILITY" OR
-        ${T_TYPE} STREQUAL "INTERFACE_LIBRARY" OR
-        ${T_TYPE} STREQUAL "OBJECT_LIBRARY"
-    )
+    if (${T_TYPE} STREQUAL "UTILITY")
         return()
     endif()
 
@@ -18,8 +18,6 @@ function(PrintTargetConfig TARGET INDENT)
         endif ()
     endforeach ()
 endfunction()
-
-
 
 function(PrintDirectorySummary DIR INDENT)
     set(NEWINDENT "${INDENT}    ")

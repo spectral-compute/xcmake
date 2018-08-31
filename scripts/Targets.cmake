@@ -69,6 +69,8 @@ function(apply_effect_groups TARGET)
             )
         elseif(COMMAND ${_P}_EFFECTS)
             # Function-style: call function FOO_EFFECTS(${TARGET})
+            # Note: the value of the property shouldn't be passed here. If desired, the implementation can access it
+            #       using generator expressions. Accessing it here would mean later changes are ignored...
             dynamic_call(${_P}_EFFECTS ${TARGET})
         else()
             # Value-style: link to ${FOO}_FOO_EFFECTS, where ${FOO} is the value of the target property FOO.
@@ -160,6 +162,14 @@ macro(ensure_not_imported TARGET)
     endif ()
 endmacro()
 
+macro(ensure_not_interface TARGET)
+    # If it's an object library target, stop
+    get_target_property(T_TYPE ${TARGET} TYPE)
+    if ("${T_TYPE}" STREQUAL "INTERFACE_LIBRARY")
+        return()
+    endif ()
+endmacro()
+
 macro(ensure_not_object TARGET)
     # If it's an object library target, stop
     get_target_property(T_TYPE ${TARGET} TYPE)
@@ -220,15 +230,34 @@ function(add_export_header TARGET)
     target_include_directories(${TARGET} PRIVATE ${EXPORT_HEADER_DIR})
 endfunction()
 
+function(fix_source_file_properties TARGET)
+    # Never, ever tell cmake that anything is CUDA. We do it our own way.
+    get_target_property(SOURCE_FILES ${TARGET} SOURCES)
+
+    # This probably isn't fast.
+    foreach(_F in ${SOURCE_FILES})
+        get_source_file_property(CUR_LANG "${_F}" LANGUAGE)
+        get_filename_component(FILE_EXT "${_F}" EXT)
+
+        if ((${CUR_LANG} STREQUAL "CUDA") OR ("${FILE_EXT}" STREQUAL ".cu") OR ("${FILE_EXT}" STREQUAL ".cuh"))
+            # This disables cmake's built-in CUDA support, which only does NVCC. This stops
+            # cmake doing automatic things that derail our attempts to do this properly...
+            set_source_files_properties(${_F} PROPERTIES LANGUAGE CXX)
+        endif()
+    endforeach()
+endfunction()
+
 function(add_library TARGET)
     cmake_parse_arguments(args "NOINSTALL;NOEXPORT" "" "" ${ARGN})
 
     _add_library(${TARGET} ${args_UNPARSED_ARGUMENTS})
 
-    # Imported targets definitely do not need to have their properties futzed with.
+    # Imported or interface targets definitely do not need to have their properties futzed with.
     ensure_not_imported(${TARGET})
+    ensure_not_interface(${TARGET})
 
     apply_global_effects(${TARGET})
+    fix_source_file_properties(${TARGET})
 
     # Object libraries inherit their target properties from what they get assimilated by,
     # so they stop here.
@@ -259,6 +288,7 @@ function(add_executable TARGET)
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
     apply_global_effects(${TARGET})
+    fix_source_file_properties(${TARGET})
 
     if (NOT args_NOINSTALL)
         install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
@@ -267,11 +297,3 @@ function(add_executable TARGET)
         set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
     endif()
 endfunction()
-
-# All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
-# build others' libraries with that toolchain.
-default_value(CMAKE_CXX_VISIBILITY_PRESET "hidden")
-default_value(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
-
-# A "make all the documentation" target. The scripts that make documentation targets attach their targets to this.
-add_custom_target(docs ALL)
