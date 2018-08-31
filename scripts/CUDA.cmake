@@ -29,11 +29,6 @@ function(configure_for_nvidia TARGET)
         --cuda-gpu-arch=sm_$<JOIN:${TARGET_CUDA_COMPUTE_CAPABILITIES}, --cuda-gpu-arch=sm_>
     )
 
-    # Enable flushing of denormals to zero.
-    if (XCMAKE_CUDA_FLUSH_DENORMALS)
-        target_compile_options(${TARGET} PRIVATE -fcuda-flush-denormals-to-zero)
-    endif()
-
     # Get PTXAS to be less unhelpful, provided we have a version of cmake supporting the
     # "Please don't fucking deduplicate my fucking compiler flags" option, which for some
     # reason is what they implemented instead of just *NOT DEDUPLICATING COMPILER OPTIONS?!?!*.
