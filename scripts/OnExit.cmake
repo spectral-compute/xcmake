@@ -8,7 +8,7 @@
 
 macro(AddExitFunction NAME)
     # Amusing abuse of cache
-    set(XCMAKE_EXIT_HOOK_HAS_RUN 0 CACHE INTERNAL "")
+    set(${NAME}_EOFHOOK_HAS_RUN 0 CACHE INTERNAL "")
     function(${NAME}_EOFHOOK Variable Access)
 
         if (${Variable} STREQUAL CMAKE_BACKWARDS_COMPATIBILITY AND
