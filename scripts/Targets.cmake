@@ -115,7 +115,6 @@ function(apply_default_standard_properties TARGET)
         -Wno-switch-enum                     # This is stupid.
         -Wno-unused-template                 # ... We're writing a template library...
         -Wno-float-equal                     # This isn't always wrong...
-#        -Wno-deprecated                      # TODO: Enable this one.
         -Wno-undefined-func-template         # Sometimes we like to link templates together, because we're mad.
         -Wno-cast-align                      # TODO: Enable this one.
         -Wno-sign-conversion                 # Just too irritating. Can't use int to access std::vectors...
@@ -137,6 +136,7 @@ function(apply_default_standard_properties TARGET)
 
         -Werror # We *really* like warnings.
         -ftemplate-backtrace-limit=256
+        -fstrict-vtable-pointers             # An experimental but year-old and safe optimisation that helps BLASBAT :D
     )
 endfunction()
 
