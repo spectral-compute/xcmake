@@ -52,6 +52,14 @@ function(apply_default_properties TARGET)
     endforeach()
 endfunction()
 
+# Link LIBRARY into TARGET at level LEVEL if the final value of PROPERTY is truthy.
+function(link_if_property_set TARGET PROPERTY LEVEL LIBRARY)
+    target_link_libraries(
+        ${TARGET} ${LEVEL}
+        $<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},${PROPERTY}>>,${LIBRARY},>
+    )
+endfunction()
+
 # Each of the XCMAKE custom properties is defined either by interface targets or a function.
 #
 # For property "FOO":
@@ -63,10 +71,7 @@ function(apply_effect_groups TARGET)
     foreach (_P ${XCMAKE_TGT_PROPERTIES})
         if (TARGET ${_P}_EFFECTS)
             # Flag-style: link to FOO_EFFECTS if the property is truthy.
-            target_link_libraries(
-                ${TARGET} PRIVATE
-                $<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},${_P}>>,${_P}_EFFECTS,>
-            )
+            link_if_property_set(${TARGET} ${_P} PRIVATE ${_P}_EFFECTS)
         elseif(COMMAND ${_P}_EFFECTS)
             # Function-style: call function FOO_EFFECTS(${TARGET})
             # Note: the value of the property shouldn't be passed here. If desired, the implementation can access it
@@ -74,10 +79,7 @@ function(apply_effect_groups TARGET)
             dynamic_call(${_P}_EFFECTS ${TARGET})
         else()
             # Value-style: link to ${FOO}_FOO_EFFECTS, where ${FOO} is the value of the target property FOO.
-            target_link_libraries(
-                ${TARGET} PRIVATE
-                $<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},${_P}>>,$<TARGET_PROPERTY:${TARGET},${_P}>_${_P}_EFFECTS,>
-            )
+            link_if_property_set(${TARGET} ${_P} PRIVATE $<TARGET_PROPERTY:${TARGET},${_P}>_${_P}_EFFECTS)
         endif()
     endforeach()
 endfunction()
