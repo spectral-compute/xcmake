@@ -21,7 +21,7 @@ include(Log)   # Logging utils.
 # Default to building shared libraries
 default_cache_value(BUILD_SHARED_LIBS ON)
 
-# Remind cmake to stop licking windows.
+# Remind cmake to stop drinking drain cleaner.
 default_cache_value(CMAKE_INSTALL_MESSAGE NEVER) # No logspam during install
 default_cache_value(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON) # Prepend include directories by default.
 default_cache_value(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON) # Absolute install paths are always wrong.
