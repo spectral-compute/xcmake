@@ -27,7 +27,8 @@ if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
     message_colour(STATUS BoldRed "${TARGET}: Found support for CUDA on AMD in ${SCALE_AMD_TOOLKIT_ROOT_DIR}")
 elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     find_package(CUDA 8.0 REQUIRED)
-    add_library(CUDA_LIBRARY INTERFACE)
+    add_library(cuda_library INTERFACE)
+    set(CUDA_LIBRARY cuda_library)
 
     # Forbid CUDA 9, because it causes all kinda of nasty breakage.
     if ("${CUDA_VERSION_MAJOR}" GREATER 8)
@@ -54,8 +55,8 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     endif()
 
     # Add the cuda runtime library.
-    target_include_directories(CUDA_LIBRARY SYSTEM INTERFACE ${CUDA_INCLUDE_DIRS})
-    target_link_libraries(CUDA_LIBRARY INTERFACE ${CUDA_LIBRARIES})
+    target_include_directories(cuda_library SYSTEM INTERFACE ${CUDA_INCLUDE_DIRS})
+    target_link_libraries(cuda_library INTERFACE ${CUDA_LIBRARIES})
 
     message_colour(STATUS BoldGreen "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
 else()
@@ -64,5 +65,5 @@ endif()
 
 function(CUDA_EFFECTS TARGET)
     link_if_property_set(${TARGET} CUDA PRIVATE CUDA_COMPILE_EFFECTS)
-    link_if_property_set(${TARGET} CUDA PUBLIC CUDA_LIBRARY)
+    link_if_property_set(${TARGET} CUDA PUBLIC ${CUDA_LIBRARY})
 endfunction()
