@@ -38,8 +38,8 @@ function(OPT_LEVEL_EFFECTS TARGET)
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         -Ofast
 
-        # Flush denormals in CUDA code, if this is a CUDA-using target.
-        $<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},CUDA>>,-fcuda-flush-denormals-to-zero,>
+        # Flush denormals in nvidia CUDA code, if this is a CUDA-using target.
+        $<IF:$<AND:$<BOOL:$<TARGET_PROPERTY:${TARGET},CUDA>>,$<STREQUAL:${XCMAKE_GPU_TYPE},nvidia>>,-fcuda-flush-denormals-to-zero,>
     )
 
     # I realise this is ridiculous.
