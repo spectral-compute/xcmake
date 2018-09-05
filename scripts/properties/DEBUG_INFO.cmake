@@ -15,7 +15,4 @@ target_compile_options(DEBUG_INFO_EFFECTS INTERFACE
     -gcolumn-info
     -fdebug-macro
     -fno-limit-debug-info
-    # NOTE: Not supported for nvptx64-nvidia-cuda
-    -Wno-unsupported-target-opt
-    -glldb
 )
