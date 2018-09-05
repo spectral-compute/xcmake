@@ -141,7 +141,11 @@ function(apply_default_standard_properties TARGET)
         -Wshorten-64-to-32                   # No implicit conversion from longer ints to shorter ones.
         -Wstring-conversion                  # No implicit string literal to bool conversion.
 
-        -Werror # We *really* like warnings.
+        # Warnings that appear to be broken.
+        -Wno-weak-template-vtables           # Incorrectly warns about explicit instantiations in .cpp.
+
+        # We *really* like warnings.
+        -Werror
 
         -ftemplate-backtrace-limit=256       # We have some insane templates.
         -fstrict-vtable-pointers             # An experimental but year-old and safe optimisation that helps BLASBAT :D
