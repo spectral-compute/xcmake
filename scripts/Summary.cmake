@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 # Print a summary of the config so people realise if they screwed up.
 
 function(PrintTargetConfig TARGET INDENT)
