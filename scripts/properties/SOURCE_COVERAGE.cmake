@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 define_xcmake_target_property(
     SOURCE_COVERAGE FLAG
     BRIEF_DOCS "Enable Clang's source-level overage report generation."

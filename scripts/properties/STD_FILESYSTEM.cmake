@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 define_xcmake_target_property(
     STD_FILESYSTEM FLAG
     BRIEF_DOCS "Target uses std::filesystem."

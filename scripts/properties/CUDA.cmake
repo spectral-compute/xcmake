@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 define_xcmake_target_property(
     CUDA
     BRIEF_DOCS "Enable CUDA support"

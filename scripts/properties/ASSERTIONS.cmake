@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(DEFAULT_ASS "ON")
 else()

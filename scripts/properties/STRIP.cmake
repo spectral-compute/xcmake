@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 if ("${CMAKE_BUILD_TYPE}" STREQUAL Release)
     set(DEFAULT_STRIP "ON")
 else()

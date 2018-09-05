@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 define_xcmake_target_property(
     BUILD_TYPE_AS_MACRO FLAG
     BRIEF_DOCS "Expose the CMAKE_BUILD_TYPE to the C preprocessor"

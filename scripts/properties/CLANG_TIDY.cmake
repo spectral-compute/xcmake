@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 define_xcmake_global_property(
     CLANG_TIDY FLAG
     DEFAULT OFF
