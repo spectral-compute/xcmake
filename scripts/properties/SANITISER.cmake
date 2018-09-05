@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 define_xcmake_target_property(
     SANITISER
     BRIEF_DOCS "The clang-sanitiser to use"

@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 define_xcmake_target_property(
     VECTORISER_REMARKS FLAG
     BRIEF_DOCS "Compile with vectoriser remarks"
