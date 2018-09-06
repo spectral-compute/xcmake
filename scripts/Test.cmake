@@ -27,3 +27,15 @@ function(add_test_library TARGET)
     add_library(${TARGET} ${ARGN} NOINSTALL)
     configure_test_target(${TARGET})
 endfunction()
+
+# Add a test shell-script target.
+function(add_test_shell_script TARGET FILE)
+    cmake_parse_arguments(args "NOINSTALL" "" "" ${ARGN})
+
+    add_shell_script(${TARGET} ${FILE} ${ARGN} NOINSTALL)
+
+    if (NOT args_NOINSTALL)
+        # Install the thing.
+        install(PROGRAMS ${FILE} DESTINATION test/bin)
+    endif ()
+endfunction()
