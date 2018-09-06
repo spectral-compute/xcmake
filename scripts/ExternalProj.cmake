@@ -170,6 +170,9 @@ function(AddExternalProject TARGET)
         ${EXTRA_ARGS}
     )
 
+    # Workaround for cmake being stupid and not allowing nonexistent include directories.
+    file(MAKE_DIRECTORY ${EP_INSTALL_DIR}/include)
+
     # Configure the exported targets...
     foreach (_LIB ${ep_STATIC_LIBRARIES})
         add_library(${_LIB} STATIC IMPORTED GLOBAL)
@@ -181,6 +184,9 @@ function(AddExternalProject TARGET)
         set_target_properties(${_LIB} PROPERTIES
             IMPORTED_LOCATION ${EP_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${_LIB}${CMAKE_STATIC_LIBRARY_SUFFIX}
         )
+
+        # Add the include directory. The script calling this one has to do it themselves if the includes are more complicated than this.
+        target_include_directories(${_LIB} INTERFACE ${EP_INSTALL_DIR}/include)
     endforeach ()
 
     foreach (_LIB ${ep_DYNAMIC_LIBRARIES})
@@ -193,6 +199,9 @@ function(AddExternalProject TARGET)
             IMPORTED_LOCATION ${LIB_PATH}
             IMPORTED_IMPLIB ${IMPLIB_PATH}
         )
+
+        # Add the include directory. The script calling this one has to do it themselves if the includes are more complicated than this.
+        target_include_directories(${_LIB} INTERFACE ${EP_INSTALL_DIR}/include)
 
         # Install it!
         install(FILES ${LIB_PATH} DESTINATION ./lib/)
