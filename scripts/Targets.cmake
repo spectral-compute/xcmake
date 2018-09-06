@@ -303,3 +303,33 @@ function(add_executable TARGET)
         set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
     endif()
 endfunction()
+
+function (add_shell_script TARGET FILE)
+    cmake_parse_arguments(args "NOINSTALL" "" "" ${ARGN})
+
+    # Make the path absolute.
+    if (NOT IS_ABSOLUTE ${FILE})
+        set(FILE ${CMAKE_CURRENT_LIST_DIR}/${FILE})
+    endif()
+
+    # The "build" step is simply running shellcheck.
+    set(STAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.stamp)
+
+    add_custom_command(
+        OUTPUT ${STAMP_FILE}
+        COMMAND shellcheck -e SC2086,SC1117 ${FILE}
+        COMMAND cmake -E touch ${STAMP_FILE}
+        COMMENT "Shellcheck for ${TARGET}..."
+        DEPENDS ${FILE}
+        VERBATIM
+    )
+
+    add_custom_target(${TARGET} ALL
+        DEPENDS ${STAMP_FILE}
+    )
+
+    if (NOT args_NOINSTALL)
+        # Install the thing.
+        install(PROGRAMS ${FILE} DESTINATION bin)
+    endif()
+endfunction()
