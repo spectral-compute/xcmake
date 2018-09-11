@@ -14,6 +14,12 @@ target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
     -x cuda
 )
 
+if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
+    target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
+        -fcuda-short-ptr
+    )
+endif()
+
 if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
     find_package(AmdCuda REQUIRED)
 
