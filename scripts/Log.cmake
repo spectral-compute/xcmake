@@ -45,7 +45,7 @@ set(BoldGrey "${ESC}[1m${ESC}[90m")
 set(BoldWhite "${ESC}[1;97m")
 
 # Default colours for each loglevel
-set(StatusColour BoldGrey)
+set(StatusColour BoldWhite)
 set(WarningColour BoldYellow)
 set(ErrorColour BoldRed)
 set(DeprecationColour BoldBlue)
