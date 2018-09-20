@@ -62,10 +62,25 @@ function(message_colour LEVEL COLOUR)
     _message(${LEVEL} ${MSG})
 endfunction()
 
+function(contextual_format OUT MSG)
+    # Pick a default message colour based on a guess about message type.
+    # This is handy for assigning meaningful colours to CMake's default messages.
+    if ("${MSG}" MATCHES "^Found")
+        set(${OUT} Yellow PARENT_SCOPE)
+    elseif (("${MSG}" MATCHES "^Looking for") OR
+             ("${MSG}" MATCHES "^Performing Test") OR
+             ("${MSG}" MATCHES "^Detecting"))
+        set(${OUT} Grey PARENT_SCOPE)
+    else()
+        set(${OUT} BoldWhite PARENT_SCOPE)
+    endif()
+endfunction()
+
 function(message MODE)
     # Select an appropriate default colour given the mode.
     if ("${MODE}" STREQUAL "STATUS")
-        message_colour(${MODE} ${StatusColour} ${ARGN})
+        contextual_format(MSG_COL "${ARGN}")
+        message_colour(${MODE} ${MSG_COL} ${ARGN})
     elseif ("${MODE}" STREQUAL "WARNING")
         message_colour(${MODE} ${WarningColour} ${ARGN})
     elseif ("${MODE}" STREQUAL "AUTHOR_WARNING")
@@ -78,7 +93,8 @@ function(message MODE)
         message_colour(${MODE} ${DeprecationColour} ${ARGN})
     else()
         # Same colour as the STATUS case, but argument consumption is subtly different...
-        message_colour(STATUS ${StatusColour} "${MODE}${ARGN}")
+        contextual_format(MSG_COL "${ARGN}")
+        message_colour(STATUS ${MSG_COL} "${MODE}${ARGN}")
     endif()
 endfunction()
 
