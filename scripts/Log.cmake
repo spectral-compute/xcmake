@@ -22,7 +22,8 @@ set(Magenta "${ESC}[35m")
 set(Cyan "${ESC}[36m")
 
 set(Grey "${ESC}[90m")
-set(DarkGrey "${ESC}[91m")
+set(DarkGrey "${ESC}[90m")
+set(LightGrey "${ESC}[37m")
 
 set(LightRed "${ESC}[91m")
 set(LightGreen "${ESC}[92m")
@@ -41,7 +42,7 @@ set(BoldBlue "${ESC}[1;34m")
 set(BoldMagenta "${ESC}[1;35m")
 set(BoldCyan "${ESC}[1;36m")
 set(BoldGrey "${ESC}[1m${ESC}[90m")
-set(BoldWhite "${ESC}[1;37m")
+set(BoldWhite "${ESC}[1;97m")
 
 # Default colours for each loglevel
 set(StatusColour BoldGrey)
