@@ -24,7 +24,7 @@ if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
     find_package(Scale REQUIRED)
 
     target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
-        --cuda-path=${SCALE_AMD_TOOLKIT_ROOT_DIR}
+        --cuda-path=$<SHELL_PATH:${SCALE_AMD_TOOLKIT_ROOT_DIR}>
         # The GPU targets selected...
         --cuda-gpu-arch=$<JOIN:${TARGET_AMD_GPUS}, --cuda-gpu-arch=>
     )
@@ -44,7 +44,7 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     endif ()
 
     target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
-        --cuda-path=${CUDA_TOOLKIT_ROOT_DIR}
+        --cuda-path=$<SHELL_PATH:${CUDA_TOOLKIT_ROOT_DIR}>
 
         # The various PTX versions that were requested...
         --cuda-gpu-arch=sm_$<JOIN:${TARGET_CUDA_COMPUTE_CAPABILITIES}, --cuda-gpu-arch=sm_>
@@ -63,7 +63,7 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     endif()
 
     # Add the cuda runtime library.
-    target_include_directories(cuda_library SYSTEM INTERFACE ${CUDA_INCLUDE_DIRS})
+    target_include_directories(cuda_library SYSTEM INTERFACE $<SHELL_PATH:${CUDA_INCLUDE_DIRS}>)
     target_link_libraries(cuda_library INTERFACE ${CUDA_LIBRARIES})
 
     message_colour(STATUS BoldGreen "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
