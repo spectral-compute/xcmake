@@ -39,8 +39,8 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     set(CUDA_LIBRARY cuda_library)
 
     # Forbid CUDA 9, because it causes all kinda of nasty breakage.
-    if ("${CUDA_VERSION_MAJOR}" GREATER 8)
-        message(FATAL_ERROR "CUDA 9 harms performance and is therefore not supported. Please use CUDA 8")
+    if ("${CUDA_VERSION_MAJOR}" EQUAL 9)
+        message(FATAL_ERROR "CUDA 9 harms performance and is therefore not supported. Please use CUDA 8 or 10")
     endif ()
 
     target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
