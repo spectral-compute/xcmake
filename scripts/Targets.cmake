@@ -147,6 +147,7 @@ function(apply_default_standard_properties TARGET)
         -Werror
 
         -ftemplate-backtrace-limit=256       # We have some insane templates.
+        -fconstexpr-depth=65535              # Parsing regexes in the template engine is hard
         -fstrict-vtable-pointers             # An experimental but year-old and safe optimisation that helps BLASBAT :D
 
         # Prevent false positives from -Wdocumentation-unknown-command
