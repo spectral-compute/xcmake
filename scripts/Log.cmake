@@ -1,48 +1,58 @@
 # The ANSI format code escape symbol.
 string(ASCII 27 ESC)
 
-# Reset all formatting
-set(Rst "${ESC}[0m")
+# Macro for defining a formatting code. Sets it to empty-string if colour isn't supported
+macro(defineFormatCode NAME VALUE)
+    # Clion doesn't do coloured cmake output, alas.
+    if ($ENV{CLION_IDE})
+        set(${NAME} "")
+    else()
+        set(${NAME} ${VALUE})
+    endif()
+endmacro()
 
-set(Bold "${ESC}[1m")
-set(BoldOff "${ESC}[21m")
+# Reset all formatting
+defineFormatCode(Rst "${ESC}[0m")
+
+defineFormatCode(Bold "${ESC}[1m")
+defineFormatCode(BoldOff "${ESC}[21m")
 
 # Dim/underlined/blink don't seem useful...
 
-set(Invert "${ESC}[7m")
-set(InvertOff "${ESC}[27m")
+defineFormatCode(Invert "${ESC}[7m")
+defineFormatCode(InvertOff "${ESC}[27m")
 
 # See: https://misc.flogisoft.com/bash/tip_colors_and_formatting
-set(Black "${ESC}[30m")
-set(Red "${ESC}[31m")
-set(Green "${ESC}[32m")
-set(Yellow "${ESC}[33m")
-set(Blue "${ESC}[34m")
-set(Magenta "${ESC}[35m")
-set(Cyan "${ESC}[36m")
+defineFormatCode(Black "${ESC}[30m")
+defineFormatCode(Red "${ESC}[31m")
+defineFormatCode(Green "${ESC}[32m")
+defineFormatCode(Yellow "${ESC}[33m")
+defineFormatCode(Blue "${ESC}[34m")
+defineFormatCode(Magenta "${ESC}[35m")
+defineFormatCode(Cyan "${ESC}[36m")
 
-set(Grey "${ESC}[90m")
-set(DarkGrey "${ESC}[90m")
-set(LightGrey "${ESC}[37m")
+defineFormatCode(Grey "${ESC}[90m")
+defineFormatCode(DarkGrey "${ESC}[90m")
+defineFormatCode(LightGrey "${ESC}[37m")
 
-set(LightRed "${ESC}[91m")
-set(LightGreen "${ESC}[92m")
-set(LightYellow "${ESC}[93m")
-set(LightBlue "${ESC}[94m")
-set(LightMagenta "${ESC}[95m")
-set(LightCyan "${ESC}[96m")
+defineFormatCode(LightRed "${ESC}[91m")
+defineFormatCode(LightGreen "${ESC}[92m")
+defineFormatCode(LightYellow "${ESC}[93m")
+defineFormatCode(LightBlue "${ESC}[94m")
+defineFormatCode(LightMagenta "${ESC}[95m")
+defineFormatCode(LightCyan "${ESC}[96m")
 
-set(White "${ESC}[97m")
+defineFormatCode(White "${ESC}[97m")
 
 # Handy composite ones...
-set(BoldRed "${ESC}[1;31m")
-set(BoldGreen "${ESC}[1;32m")
-set(BoldYellow "${ESC}[1;33m")
-set(BoldBlue "${ESC}[1;34m")
-set(BoldMagenta "${ESC}[1;35m")
-set(BoldCyan "${ESC}[1;36m")
-set(BoldGrey "${ESC}[1m${ESC}[90m")
-set(BoldWhite "${ESC}[1;97m")
+defineFormatCode(BoldRed "${ESC}[1;31m")
+defineFormatCode(BoldGreen "${ESC}[1;32m")
+defineFormatCode(BoldYellow "${ESC}[1;33m")
+defineFormatCode(BoldBlue "${ESC}[1;34m")
+defineFormatCode(BoldMagenta "${ESC}[1;35m")
+defineFormatCode(BoldCyan "${ESC}[1;36m")
+defineFormatCode(BoldGrey "${ESC}[1m${ESC}[90m")
+defineFormatCode(BoldWhite "${ESC}[1;97m")
 
 # Default colours for each loglevel
 set(StatusColour BoldWhite)
