@@ -1,0 +1,15 @@
+[
+  { "symbol": ["__global__", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["__device__", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["__host__", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["__constant__", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["__shared__", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["__host__", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["blockIdx", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["blockDim", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["gridIdx", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["gridDim", "private", "<cuda_runtime_api.h>", "public"] },
+  { "symbol": ["threadIdx", "private", "<cuda_runtime_api.h>", "public"] },
+
+  { "include": ["@<__clang_cuda.*>", "private", "<cuda_runtime_api.h>", "public"] }
+]

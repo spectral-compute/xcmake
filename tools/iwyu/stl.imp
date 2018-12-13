@@ -1,0 +1,3 @@
+[
+  { "include": ["<bits/stdint-uintn.h>", "private", "<cstdint>", "public"] }
+]
