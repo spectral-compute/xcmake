@@ -4,6 +4,9 @@ XCMake is a set of scripts to make working with cmake more convenient.
 
 ## CUDA Support
 
+Although CMake now has native support for CUDA, it's hardcoded to use nvcc. XCMake provides convenient CUDA support
+that supports `clang` as well as `nvcc`, and allows targeting AMD GPUs if spectral-clang and amdcuda are present.
+
 Select GPU target(s) with `-DXCMAKE_GPUS=x,y,z`. Arguments can be NVIDIA targets (eg `sm_61`) or AMD ones.
 Mixing the two will work iff we've added that feature to the compiler yet.
 
@@ -31,11 +34,13 @@ add_doxygen(spec_doxygen
 ```
 
 Doxygen will be fed all headers specified by the given `HEADER_TARGETS`. You may also specify `DOXYFILE`,
-however stealing the template from `speclib` is highly recommended as a starting point.
+however stealing the template from `speclib` is highly recommended as a starting point. See speclib for a more
+comprehensive example of this feature in use.
 
 ## [Uniform Export](./scripts/Export.cmake)
 
-CMake's export mechanism is pretty confusing. With xcmake, simply do:
+CMake's export mechanism is pretty confusing. With XCmake, simply do:
+
 ```cmake
 export_project(NameOfMyLibrary VERSION 1.2.3)
 ```
@@ -79,6 +84,7 @@ Both file-scope and target-scope include guard mechanisms are provided.
 ## [Coloured Logging](./scripts/Log.cmake)
 
 Constants are provided for ANSI colour codes, and a `message_colour` function provided:
+
 ```cmake
 message_colour(STATUS BoldRed "THE WORLD IS ON FIRE")
 
@@ -99,7 +105,7 @@ endfunction()
 
 
 set(MY_VAR foo)
-dynamic_call(${MY_VAR}) # Calls foo(). Args are forwarded to foo(), if given.
+dynamic_call(${MY_VAR} some_arg) # Calls foo(some_arg).
 ```
 
 This is almost suicidally insane, but is occasionally helpful.
@@ -112,24 +118,89 @@ Many of CMake's target properties have a corresponding global variable `CMAKE_FO
 `FOO` target property for all targets created in the future. The following all have a similar mechanism, except the
 prefix is `XCMAKE_FOO`.
 
-For example, to set the `SANITISER` property to `"Address"` for all targets by default, you could pass
-`-DXCMAKE_SANITISER=Address` on the command line. Or you could use a `set()` call somewhere in your cmake script to
-apply it only to some subset of your targets. Or you could use `set_target_property()` to set it precisely.
+For example, to set the default value of the `SANITISER` property to `"Address"`, you could pass
+`-DXCMAKE_SANITISER=Address` on the command line.
+
+#### `ASSERTIONS`: Bool
+
+Default: *OFF*
+
+Flag to enable speclib-powered assertions.
+
+Also sets `-ftrapv`.
 
 #### `CLANG_TIDY`: Bool
+
+Default: *OFF*
 
 If true, the target is built with [clang-tidy](https://clang.llvm.org/extra/clang-tidy/). All warnings are treated as
 errors.
 
-#### `STRIP`: Bool
+#### `CUDA`: Bool
 
-Strip the output binary. On by default if `CMAKE_BUILD_TYPE` is set to `Release`.
+Default: *OFF*
 
-#### `VECTORISER_REMARKS`: Bool
+Enable CUDA support. Typically you'll want to use `add_cuda_executable` or `add_cuda_library` instead. This property
+is occasionally useful to query if you're writing a CMake function and want to check if a given target is CUDA-enabled.
 
-Enable remarks from the LLVM loop vectoriser.
+#### `CUDA_REMARKS`: Bool
+
+Default: *OFF*
+
+Enable `spectral-clang`'s enhanced CUDA backend diagnostics. These should not usually be used if
+`CMAKE_BUILD_TYPE` = `Debug` because doing so will usually produce many false positives caused by the optimiser being
+turned off.
+
+#### `CUDA_TOOL_EXT`: Bool
+
+Default: *OFF*
+
+Enable CUDA tooling extensions.
+
+For NVIDIA targets, this adds NVTX. For AMD, it adds our compatible library (which may contain some no-op
+implementations, depending on how far AMD have gotten with their profiler APIs just yet...)
+
+#### `DEBUG_INFO`: Bool
+
+Default: `CMAKE_BUILD_TYPE` == `Debug`
+
+Include debug information in the binary for this target?
+
+This is mainly useful if you want to selectively enable debug info for some targets without changing `CMAKE_BUILD_TYPE`.
+
+#### `INCLUDE_WHAT_YOU_USE`: Bool
+
+Default: *OFF*
+
+Run the `include-what-you-use` tool on this target.
+
+This differs from CMake's native support for IWYU by adding support for CUDA. Using CMake's native support on
+CUDA-enabled targets results in it never finding any problems. XCMake's version will work, but errors in CUDA files
+may be printed twice (since the tool is run separately for host and device compilation).
+
+#### `OPT_LEVEL`: Bool
+
+Optimisation level to use for the target.
+
+The default is selected based on `CMAKE_BUILD_TYPE`. In addition to setting `-O`, this adjusts some CUDA-specific flags
+such as `-fcuda-flush-denormals-to-zero` (which is enabled whenever unsafe optimisations are enabled).
+
+Possible values:
+- `none`: No optimisation.
+- `size`: Optimise for size.
+- `debug`: Optimise for debugging
+- `safe`: Perform safe optimisations (conceptually similar to `-O3`)
+- `unsafe`: Perform unsafe optimisations (conceptually similar to `-Ofast`, but more exhaustive).
+
+#### `SAFE_STACK`: Bool
+
+Default: *OFF*
+
+Enable [SafeStack](https://clang.llvm.org/docs/SafeStack.html)
 
 #### `SANITISER`: String
+
+Default: *None*
 
 Enable a Clang sanitiser. Possible values are:
 
@@ -140,6 +211,26 @@ Enable a Clang sanitiser. Possible values are:
 - Memory (For [`MemorySanitiser`](https://clang.llvm.org/docs/MemorySanitizer.html))
 - Thread (For [`ThreadSanitiser`](https://clang.llvm.org/docs/ThreadSanitizer.html))
 
-#### `SAFE_STACK`: Bool
+#### `SOURCE_COVERAGE`: Bool
 
-Enable [SafeStack](https://clang.llvm.org/docs/SafeStack.html)
+Default: *OFF*
+
+Run LLVM's source coverage report generator on the target.
+
+#### `STD_FILESYSTEM`: Bool
+
+Default: *OFF*
+
+Enable `std::filesystem` for this target.
+
+#### `STRIP`: Bool
+
+Default: *ON* iff `CMAKE_BUILD_TYPE` = `Release`
+
+Strip the output binary.
+
+#### `VECTORISER_REMARKS`: Bool
+
+Default: *OFF*
+
+Enable remarks from the LLVM loop vectoriser.
