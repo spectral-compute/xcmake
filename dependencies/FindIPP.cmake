@@ -1,30 +1,49 @@
-find_path(IPP_INCLUDE_DIRS ipp.h
-          PATHS /opt
-          PATH_SUFFIXES intel/compilers_and_libraries_2018.3.222/linux/ipp/include)
-find_library(IPP_LIBRARY_CORE ippcore
-             PATHS /opt
-             PATH_SUFFIXES intel/compilers_and_libraries_2018.3.222/linux/ipp/lib/intel64_lin)
-
-find_library(IPP_LIBRARY_CH ippch
-             PATHS /opt
-             PATH_SUFFIXES intel/compilers_and_libraries_2018.3.222/linux/ipp/lib/intel64_lin)
-find_library(IPP_LIBRARY_S ipps
-             PATHS /opt
-             PATH_SUFFIXES intel/compilers_and_libraries_2018.3.222/linux/ipp/lib/intel64_lin)
-find_library(IPP_LIBRARY_VM ippvm
-             PATHS /opt
-             PATH_SUFFIXES intel/compilers_and_libraries_2018.3.222/linux/ipp/lib/intel64_lin)
-
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(IPP DEFAULT_MSG
-                                  IPP_INCLUDE_DIRS
-                                  IPP_LIBRARY_CORE
-                                  IPP_LIBRARY_CH
-                                  IPP_LIBRARY_S
-                                  IPP_LIBRARY_VM)
 
-set(IPP_LIBRARIES ${IPP_LIBRARY_CORE} ${IPP_LIBRARY_VM} ${IPP_LIBRARY_S} ${IPP_LIBRARY_CH})
+file(GLOB INTEL_PATH RELATIVE /opt/ CONFIGURE_DEPENDS "/opt/intel/compilers_and_libraries*")
 
-if (IPP_FOUND)
-    message("Found IPP:\n     Includes: ${IPP_INCLUDE_DIRS}\n     Libraries: ${IPP_LIBRARIES}")
-endif()
+find_path(
+    IPP_INCLUDE_DIR ipp.h
+    PATHS /opt
+    PATH_SUFFIXES ${INTEL_PATH}/linux/ipp/include
+)
+
+macro(find_ipp_lib SILLY_NAME PRETTY_NAME)
+    find_library(
+        IPP_${PRETTY_NAME} ipp${SILLY_NAME}
+        PATHS /opt
+        PATH_SUFFIXES ${INTEL_PATH}/linux/ipp/lib/intel64_lin
+    )
+
+    if (IPP_${PRETTY_NAME} AND NOT TARGET IPP::${PRETTY_NAME})
+        add_library(IPP::${PRETTY_NAME} SHARED IMPORTED GLOBAL)
+
+        set_target_properties(IPP::${PRETTY_NAME} PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${IPP_INCLUDE_DIR}"
+            IMPORTED_LOCATION "${IPP_${PRETTY_NAME}}"
+        )
+
+        set(IPP_${PRETTY_NAME}_FOUND ON)
+    endif()
+endmacro()
+
+find_ipp_lib(core Core)
+find_ipp_lib(ch String)
+find_ipp_lib(cc ColCon)
+find_ipp_lib(cp Crypto)
+find_ipp_lib(cv Vision)
+find_ipp_lib(dc Compression)
+find_ipp_lib(i Image)
+find_ipp_lib(s Signal)
+find_ipp_lib(vm Vector)
+
+find_package_handle_standard_args(IPP
+    HANDLE_COMPONENTS
+    REQUIRED_VARS IPP_INCLUDE_DIR
+)
+
+# Build the list of output libraries from the components list.
+set(IPP_LIBRARIES "")
+foreach(_C ${IPP_FIND_COMPONENTS})
+    list(APPEND IPP_LIBRARIES IPP::${_C})
+endforeach()
