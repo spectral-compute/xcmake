@@ -9,13 +9,14 @@ define_xcmake_target_property(
 
 add_library(CUDA_COMPILE_EFFECTS INTERFACE)
 
-target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
+set(XCMAKE_CUDA_COMPILE_FLAGS "")
+list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
     -Wno-cuda-compat  # Clang is less restrictive when compiling CUDA than NVCC
     -x cuda
 )
 
 if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
-    target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
+    list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
         -fcuda-short-ptr
     )
 endif()
@@ -23,7 +24,7 @@ endif()
 if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
     find_package(AmdCuda REQUIRED)
 
-    target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
+    list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
         --cuda-path=$<SHELL_PATH:${AMDCUDA_TOOLKIT_ROOT_DIR}>
         # The GPU targets selected...
         --cuda-gpu-arch=$<JOIN:${TARGET_AMD_GPUS}, --cuda-gpu-arch=>
@@ -42,7 +43,7 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
         message(FATAL_ERROR "CUDA 9 harms performance and is therefore not supported. Please use CUDA 8 or 10")
     endif ()
 
-    target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
+    list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
         --cuda-path=$<SHELL_PATH:${CUDA_TOOLKIT_ROOT_DIR}>
 
         # The various PTX versions that were requested...
@@ -53,11 +54,11 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     # "Please don't fucking deduplicate my fucking compiler flags" option, which for some
     # reason is what they implemented instead of just *NOT DEDUPLICATING COMPILER OPTIONS?!?!*.
     if (NOT ${CMAKE_VERSION} VERSION_LESS "3.12.0")
-        target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
-            "SHELL:-Xcuda-ptxas --warn-on-spills"
+        list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
+            -Xcuda-ptxas --warn-on-spills
 
             # Assertions imply local memory usage, so don't enable this warning when assertions are turned on.
-            $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,SHELL:-Xcuda-ptxas --warn-on-local-memory-usage>
+            $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,-Xcuda-ptxas --warn-on-local-memory-usage>
         )
     endif()
 
@@ -67,7 +68,7 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
 
     message_colour(STATUS BoldGreen "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
 else()
-    target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE --cuda-works-better-if-you-enable-gpu-support-in-xcmake) # :D
+    list(APPEND XCMAKE_CUDA_COMPILE_FLAGS --cuda-works-better-if-you-enable-gpu-support-in-xcmake) # :D
 endif()
 
 function(CUDA_EFFECTS TARGET)
