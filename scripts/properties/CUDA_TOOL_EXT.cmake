@@ -5,11 +5,6 @@ define_xcmake_target_property(
     DEFAULT OFF
 )
 
-target_compile_options(CUDA_COMPILE_EFFECTS INTERFACE
-    -Wno-cuda-compat  # Clang is less restrictive when compiling CUDA than NVCC
-    -x cuda
-)
-
 if ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     find_package(CUDA 8.0 REQUIRED)
     find_library(CUDA_NVTX_LIBRARY
