@@ -30,6 +30,13 @@ default_cache_value(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON) # Prepend include direc
 default_cache_value(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON) # Absolute install paths are always wrong.
 default_cache_value(CMAKE_ERROR_DEPRECATED ON) # Explode on use of deprecated cmake features
 
+# Make sure externally fetched objects can be installed. Without this, ExternalData creates a relative symlink to a file
+# in the build directory. When this is installed, the relative symlink is broken. If ExternalData_OBJECT_STORES is used
+# to specify a directory outside the build directory, then this is not a problem and the symlink can be installed.
+if (NOT ExternalData_OBJECT_STORES)
+    set(ExternalData_NO_SYMLINKS On CACHE INTERNAL "")
+endif()
+
 # We must always have a build type.
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
