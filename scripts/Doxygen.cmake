@@ -2,6 +2,14 @@ include(IncludeGuard)
 
 IncludeGuard(Doxygen)
 
+# Download cppreference.com tags file. This is to make references to the STL link to cppreference.com.
+include(ExternalData)
+set(ExternalData_URL_TEMPLATES
+        "https://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml")
+ExternalData_Expand_Arguments(cppreference_data STL_TAG_FILE
+        "DATA{${CMAKE_CURRENT_LIST_DIR}/../cppreference-doxygen-web.tag.xml}")
+ExternalData_Add_Target(cppreference_data)
+
 # Generate Doxygen documentation, attached to a new target with the given name.
 # The generated target will create documentation covering the provided HEADER_TARGETS, previously created with
 # `add_headers()`.
@@ -34,14 +42,6 @@ function(add_doxygen TARGET)
         endforeach()
     endforeach ()
 
-    # Make references to the STL link to cppreference.com.
-    set(STL_TAG_FILE ${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml)
-    if (NOT EXISTS ${STL_TAG_FILE})
-        message_colour(STATUS BoldYellow "Downloading cppreference tagfile (for Doxygen). Use `-DENABLE_DOCS=OFF` to skip.")
-        file(DOWNLOAD
-            http://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml ${CMAKE_CURRENT_BINARY_DIR}/cppreference.tag.xml
-        )
-    endif()
     set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
     set(DOXYGEN_LAYOUT_FILE ${d_LAYOUT_FILE})
 
@@ -68,6 +68,7 @@ function(add_doxygen TARGET)
     add_custom_target(${TARGET}
         DEPENDS ${STAMP_FILE}
     )
+    add_dependencies(${TARGET} cppreference_data)
 
     # Make the new thing get built by `make docs`
     add_dependencies(docs ${TARGET})
