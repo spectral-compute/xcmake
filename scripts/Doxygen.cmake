@@ -13,12 +13,17 @@ ExternalData_Add_Target(cppreference_data)
 # Generate Doxygen documentation, attached to a new target with the given name.
 # The generated target will create documentation covering the provided HEADER_TARGETS, previously created with
 # `add_headers()`.
-function(add_doxygen TARGET)
+function(add_doxygen LIB_NAME)
     find_package(Doxygen)
     if (NOT DOXYGEN_FOUND)
         message_colour(STATUS BoldYellow "`make docs` will not be available because Doxygen is not installed.")
         return()
     endif()
+
+    string(TOLOWER ${LIB_NAME} LOWER_LIB_NAME)
+
+    # Name of the custom target to use
+    set(TARGET ${LOWER_LIB_NAME}_doxygen)
 
     # Oh, the argparse boilerplate
     set(flags)
@@ -26,7 +31,6 @@ function(add_doxygen TARGET)
     set(multiValueArgs HEADER_TARGETS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    default_value(d_DOXYFILE "${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in")
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
 
     # Extract the list of input paths from the list of given header targets, and build a list of all the header files
@@ -43,10 +47,11 @@ function(add_doxygen TARGET)
     endforeach ()
 
     set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
-    set(DOXYGEN_LAYOUT_FILE ${d_LAYOUT_FILE})
+    set(DOXYGEN_LAYOUT_FILE "${XCMAKE_TOOLS_DIR}/doxygen/DoxygenLayout.xml")
+    set(DOXYFILE "${XCMAKE_TOOLS_DIR}/doxygen/Doxyfile.in")
 
     # Generate the final Doxyfile, injecting the variables we calculated above (notably including the list of inputs...)
-    configure_file(${d_DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+    configure_file(${DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
     # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
     set(STAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.stamp)
@@ -57,7 +62,7 @@ function(add_doxygen TARGET)
         COMMAND doxygen
         COMMAND cmake -E touch ${STAMP_FILE}
         COMMENT "Doxygenation of ${TARGET}..."
-        DEPENDS ${d_DOXYFILE}
+        DEPENDS ${DOXYFILE}
         DEPENDS ${HEADERS_USED}
         DEPENDS ${DOXYGEN_LAYOUT_FILE}
         DEPENDS ${STL_TAG_FILE}

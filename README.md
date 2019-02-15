@@ -27,7 +27,7 @@ add_headers(spec_includes
 Add a Doxygen target like this:
 
 ```cmake
-add_doxygen(spec_doxygen
+add_doxygen(spec
     LAYOUT_FILE ${CMAKE_CURRENT_LIST_DIR}/DoxygenLayout.xml
     HEADER_TARGETS spec_includes
 )
