@@ -73,6 +73,7 @@ include(ScopedSubdirs)
 include(OnExit)
 include(Summary)
 include(Doxygen)
+include(Pandoc)
 
 # All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
 # build others' libraries with that toolchain.
