@@ -4,7 +4,7 @@ function (add_manual LIB_NAME)
     # Ensure pandoc is installed
     find_program(PANDOC_BINARY pandoc)
     if (NOT PANDOC_BINARY)
-        message_colour(STATUS BoldYellow "`make docs` will not be available because `pandoc`` is not installed.")
+        message_colour(STATUS BoldYellow "Compilation of ${LIB_NAME} manual will be skipped because `pandoc` is not installed.")
         return()
     endif ()
 
