@@ -48,7 +48,7 @@ function (add_manual LIB_NAME)
                       --from markdown
                       --to html
 #                      --toc
-                      --css ${XCMAKE_TOOLS_DIR}/pandoc/style.css
+                      --css style.css
                       --standalone ${MARKDOWN_FILE} > ${OUT_FILE}
             COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
             DEPENDS "${MARKDOWN_FILE}"
@@ -71,6 +71,12 @@ function (add_manual LIB_NAME)
     # Install all processed markdown files.
     install(
         DIRECTORY ${OUT_DIR}/
+        DESTINATION ${d_INSTALL_DESTINATION}
+    )
+
+    # Install the stylesheet
+    install(
+        FILES ${XCMAKE_TOOLS_DIR}/pandoc/style.css
         DESTINATION ${d_INSTALL_DESTINATION}
     )
 
