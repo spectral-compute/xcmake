@@ -63,6 +63,7 @@ function(add_doxygen LIB_NAME)
         COMMAND cmake -E touch ${STAMP_FILE}
         COMMENT "Doxygenation of ${TARGET}..."
         DEPENDS ${DOXYFILE}
+        DEPENDS ${CMAKE_CURRENT_LIST_DIR}/Doxyfile.suffix
         DEPENDS ${HEADERS_USED}
         DEPENDS ${DOXYGEN_LAYOUT_FILE}
         DEPENDS ${STL_TAG_FILE}
