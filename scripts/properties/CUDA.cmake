@@ -48,6 +48,9 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
 
         # The various PTX versions that were requested...
         --cuda-gpu-arch=sm_$<JOIN:${TARGET_CUDA_COMPUTE_CAPABILITIES}, --cuda-gpu-arch=sm_>
+
+        # Flush denormals in nvidia CUDA code, if this is target is compiled with the unsafe optimization level.
+        $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,unsafe>,-fcuda-flush-denormals-to-zero,>
     )
 
     # Get PTXAS to be less unhelpful, provided we have a version of cmake supporting the
