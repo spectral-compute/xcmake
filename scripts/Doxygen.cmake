@@ -10,6 +10,16 @@ ExternalData_Expand_Arguments(cppreference_data STL_TAG_FILE
         "DATA{${CMAKE_CURRENT_LIST_DIR}/../cppreference-doxygen-web.tag.xml}")
 ExternalData_Add_Target(cppreference_data)
 
+function(add_nvcuda_tagfile TARGET)
+    if (TARGET nvcuda_doxygen)
+        return()
+    endif ()
+
+    add_subdirectory("${XCMAKE_TOOLS_DIR}/doxygen/externaltags/nvcuda" "${CMAKE_BINARY_DIR}/nvcuda")
+    add_dependencies(${TARGET} libnvcuda_tag_file)
+endfunction()
+
+
 # Generate Doxygen documentation, attached to a new target with the given name.
 # The generated target will create documentation covering the provided HEADER_TARGETS, previously created with
 # `add_headers()`.
@@ -26,25 +36,36 @@ function(add_doxygen LIB_NAME)
     set(TARGET ${LOWER_LIB_NAME}_doxygen)
 
     # Oh, the argparse boilerplate
-    set(flags)
-    set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE)
-    set(multiValueArgs HEADER_TARGETS DEPENDS)
+    set(flags NOINSTALL)
+    set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX)
+    set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
+    default_value(d_DOXYFILE_SUFFIX "Doxyfile.suffix")
 
     # Extract the list of input paths from the list of given header targets, and build a list of all the header files
     # Doxygen is about to process, so we can add them as dependencies.
     set(DOXYGEN_INPUTS "")
+    set(DOXYGEN_INPUT_DIRS "")
     set(HEADERS_USED "")
     foreach (T ${d_HEADER_TARGETS})
         get_target_property(NEW_PATHS ${T} INCLUDE_DIRECTORIES)
         foreach (NEW_PATH ${NEW_PATHS})
             list(APPEND DOXYGEN_INPUTS "${NEW_PATH}")
+            list(APPEND DOXYGEN_INPUT_DIRS "${NEW_PATH}")
+
             file(GLOB_RECURSE NEW_HEADERS "${NEW_PATH}/*.h" "${NEW_PATH}/*.hpp" "${NEW_PATH}/*.cuh")
             list(APPEND HEADERS_USED ${NEW_HEADERS})
         endforeach()
     endforeach ()
+
+    # Add things that were specified as single-file inputs
+    foreach (NEW_HEADER ${d_INPUT_HEADERS})
+        get_filename_component(NEW_DIR ${NEW_HEADER} DIRECTORY)
+        list(APPEND DOXYGEN_INPUTS "${NEW_HEADER}")
+        list(APPEND DOXYGEN_INPUT_DIRS "${NEW_DIR}")
+    endforeach()
 
     # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
     set(STAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.stamp)
@@ -55,6 +76,13 @@ function(add_doxygen LIB_NAME)
 
     # The cppreference tagfile.
     set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
+
+    # If we're doxygenating a CUDA target, make sure the NVCUDA crossreference target is registered.
+    get_target_property(IS_CUDA ${LIB_NAME} CUDA)
+    if (IS_CUDA)
+        add_nvcuda_tagfile(${TARGET})
+        set(TAGFILES "${TAGFILES} ${CMAKE_BINARY_DIR}/docs/tagfiles/libnvcuda.tag=https://docs.nvidia.com/cuda/cuda-runtime-api/")
+    endif ()
 
     # The tagfile we're going to generate.
     set(OUT_TAGFILE ${CMAKE_BINARY_DIR}/docs/tagfiles/${LIB_NAME}.tag)
@@ -74,15 +102,14 @@ function(add_doxygen LIB_NAME)
 
     # Command to actually run doxygen, depending on every header file and the doxyfile template.
     add_custom_command(
-        OUTPUT ${STAMP_FILE}
+        OUTPUT ${STAMP_FILE} ${OUT_TAGFILE}
         COMMAND doxygen
         COMMAND cmake -E touch ${STAMP_FILE}
         COMMENT "Doxygenation of ${TARGET}..."
         DEPENDS ${DOXYFILE}
-        DEPENDS ${CMAKE_CURRENT_LIST_DIR}/Doxyfile.suffix
+        DEPENDS ${d_DOXYFILE_SUFFIX}
         DEPENDS ${HEADERS_USED}
         DEPENDS ${DOXYGEN_LAYOUT_FILE}
-        DEPENDS ${STL_TAG_FILE}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         VERBATIM
     )
@@ -92,5 +119,7 @@ function(add_doxygen LIB_NAME)
     # Make the new thing get built by `make docs`
     add_dependencies(docs ${TARGET})
 
-    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen/ DESTINATION ${d_INSTALL_DESTINATION})
+    if (NOT "${d_NOINSTALL}")
+        install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen/ DESTINATION ${d_INSTALL_DESTINATION})
+    endif()
 endfunction(add_doxygen)
