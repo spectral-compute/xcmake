@@ -28,7 +28,7 @@ function(add_doxygen LIB_NAME)
     # Oh, the argparse boilerplate
     set(flags)
     set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE)
-    set(multiValueArgs HEADER_TARGETS)
+    set(multiValueArgs HEADER_TARGETS DEPENDS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
@@ -46,15 +46,31 @@ function(add_doxygen LIB_NAME)
         endforeach()
     endforeach ()
 
+    # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
+    set(STAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.stamp)
+
+    add_custom_target(${TARGET}
+        DEPENDS ${STAMP_FILE}
+    )
+
+    # The cppreference tagfile.
     set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
+
+    # The tagfile we're going to generate.
+    set(OUT_TAGFILE ${CMAKE_BINARY_DIR}/docs/tagfiles/${LIB_NAME}.tag)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/docs/tagfiles)
+
+    # Collect up the tagfiles for the other doxygen targets we depend on.
+    foreach (DT ${d_DEPENDS})
+        add_dependencies(${TARGET} ${DT}_doxygen)
+        set(TAGFILES "${TAGFILES} ${CMAKE_BINARY_DIR}/docs/tagfiles/${DT}.tag=../../../${DT}/reference/html")
+    endforeach()
+
     set(DOXYGEN_LAYOUT_FILE "${XCMAKE_TOOLS_DIR}/doxygen/DoxygenLayout.xml")
     set(DOXYFILE "${XCMAKE_TOOLS_DIR}/doxygen/Doxyfile.in")
 
     # Generate the final Doxyfile, injecting the variables we calculated above (notably including the list of inputs...)
     configure_file(${DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-
-    # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
-    set(STAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.stamp)
 
     # Command to actually run doxygen, depending on every header file and the doxyfile template.
     add_custom_command(
@@ -71,10 +87,7 @@ function(add_doxygen LIB_NAME)
         VERBATIM
     )
 
-    add_custom_target(${TARGET}
-        DEPENDS ${STAMP_FILE}
-    )
-    add_dependencies(${TARGET} cppreference_data)
+    add_dependencies(${TARGET} cppreference_data ${DEPENDENT_DOXYTARGETS})
 
     # Make the new thing get built by `make docs`
     add_dependencies(docs ${TARGET})
