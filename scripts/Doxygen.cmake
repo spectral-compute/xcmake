@@ -2,20 +2,21 @@ include(IncludeGuard)
 
 IncludeGuard(Doxygen)
 
-# Download cppreference.com tags file. This is to make references to the STL link to cppreference.com.
-include(ExternalData)
-set(ExternalData_URL_TEMPLATES
-        "https://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml")
-ExternalData_Expand_Arguments(cppreference_data STL_TAG_FILE
-        "DATA{${CMAKE_CURRENT_LIST_DIR}/../cppreference-doxygen-web.tag.xml}")
-ExternalData_Add_Target(cppreference_data)
+function(add_cppreference_tagfile TARGET)
+    if (TARGET cppreference_data)
+        return()
+    endif ()
+
+    add_subdirectory("${XCMAKE_TOOLS_DIR}/doxygen/externaltags/cppreference" "${CMAKE_BINARY_DIR}/tagfiles/cppreference")
+    add_dependencies(${TARGET} cppreference_data)
+endfunction()
 
 function(add_nvcuda_tagfile TARGET)
     if (TARGET nvcuda_doxygen)
         return()
     endif ()
 
-    add_subdirectory("${XCMAKE_TOOLS_DIR}/doxygen/externaltags/nvcuda" "${CMAKE_BINARY_DIR}/nvcuda")
+    add_subdirectory("${XCMAKE_TOOLS_DIR}/doxygen/externaltags/nvcuda" "${CMAKE_BINARY_DIR}/tagfiles/nvcuda")
     add_dependencies(${TARGET} libnvcuda_tag_file)
 endfunction()
 
@@ -52,8 +53,8 @@ function(add_doxygen LIB_NAME)
     foreach (T ${d_HEADER_TARGETS})
         get_target_property(NEW_PATHS ${T} INCLUDE_DIRECTORIES)
         foreach (NEW_PATH ${NEW_PATHS})
-            list(APPEND DOXYGEN_INPUTS "${NEW_PATH}")
-            list(APPEND DOXYGEN_INPUT_DIRS "${NEW_PATH}")
+            set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} ${NEW_PATH}")
+            set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} ${NEW_PATH}")
 
             file(GLOB_RECURSE NEW_HEADERS "${NEW_PATH}/*.h" "${NEW_PATH}/*.hpp" "${NEW_PATH}/*.cuh")
             list(APPEND HEADERS_USED ${NEW_HEADERS})
@@ -63,8 +64,8 @@ function(add_doxygen LIB_NAME)
     # Add things that were specified as single-file inputs
     foreach (NEW_HEADER ${d_INPUT_HEADERS})
         get_filename_component(NEW_DIR ${NEW_HEADER} DIRECTORY)
-        list(APPEND DOXYGEN_INPUTS "${NEW_HEADER}")
-        list(APPEND DOXYGEN_INPUT_DIRS "${NEW_DIR}")
+        set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} ${NEW_HEADER}")
+        set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} ${NEW_DIR}")
     endforeach()
 
     # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
@@ -76,6 +77,8 @@ function(add_doxygen LIB_NAME)
 
     # The cppreference tagfile.
     set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
+
+    add_cppreference_tagfile(${TARGET})
 
     # If we're doxygenating a CUDA target, make sure the NVCUDA crossreference target is registered.
     get_target_property(IS_CUDA ${LIB_NAME} CUDA)
@@ -101,6 +104,7 @@ function(add_doxygen LIB_NAME)
     configure_file(${DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
     # Command to actually run doxygen, depending on every header file and the doxyfile template.
+        message("BOINK:  ${STL_TAG_FILE}")
     add_custom_command(
         OUTPUT ${STAMP_FILE} ${OUT_TAGFILE}
         COMMAND doxygen
@@ -110,6 +114,7 @@ function(add_doxygen LIB_NAME)
         DEPENDS ${d_DOXYFILE_SUFFIX}
         DEPENDS ${HEADERS_USED}
         DEPENDS ${DOXYGEN_LAYOUT_FILE}
+#        DEPENDS ${STL_TAG_FILE}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         VERBATIM
     )

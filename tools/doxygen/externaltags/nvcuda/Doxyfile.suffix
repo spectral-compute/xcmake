@@ -5,4 +5,6 @@ PREDEFINED             = CUDARTAPI \
                          __cudart_builtin__ \
 
 WARN_AS_ERROR = NO
-GENERATE_HTML = NO
+WARNINGS = NO
+WARN_IF_DOC_ERROR = NO
+#GENERATE_HTML = NO
