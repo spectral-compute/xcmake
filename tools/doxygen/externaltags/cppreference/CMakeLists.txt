@@ -5,5 +5,4 @@ set(ExternalData_URL_TEMPLATES
 ExternalData_Expand_Arguments(cppreference_data STL_TAG_FILE
         "DATA{${XCMAKE_TOOLS_DIR}/doxygen/externaltags/cppreference/cppreference-doxygen-web.tag.xml}")
 set(STL_TAG_FILE "${STL_TAG_FILE}" CACHE INTERNAL "")
-message(${STL_TAG_FILE})
 ExternalData_Add_Target(cppreference_data)
