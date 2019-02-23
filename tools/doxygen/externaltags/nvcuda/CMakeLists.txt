@@ -6,7 +6,9 @@ add_custom_target(nvcuda)
 # obfuscated their tag URLs, so we have to get a bit creative to make it work.
 # Firstly, we run doxygen on the NVIDIA CUDA headers to generate a Doxygen tagfile (full of broken URLs)...
 add_doxygen(nvcuda
-    INPUT_HEADERS ${CUDA_INCLUDE_DIR}/cuda_runtime_api.h
+    INPUT_HEADERS
+        ${CUDA_INCLUDE_DIR}/cuda_runtime_api.h
+        ${CUDA_INCLUDE_DIR}/cuda_device_runtime_api.h
     NOINSTALL
 )
 
