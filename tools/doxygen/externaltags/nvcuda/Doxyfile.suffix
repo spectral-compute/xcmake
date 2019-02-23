@@ -1,0 +1,8 @@
+PROJECT_NAME           = "NVIDIA CUDA"
+PROJECT_BRIEF          = "Doxygen manual for NVIDIA's libcuda, generated to extract a tagfile"
+
+PREDEFINED             = CUDARTAPI \
+                         __cudart_builtin__ \
+
+WARN_AS_ERROR = NO
+GENERATE_HTML = NO
