@@ -66,6 +66,7 @@ function(add_doxygen LIB_NAME)
         get_filename_component(NEW_DIR ${NEW_HEADER} DIRECTORY)
         set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} ${NEW_HEADER}")
         set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} ${NEW_DIR}")
+        list(APPEND HEADERS_USED ${NEW_HEADER})
     endforeach()
 
     # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
@@ -104,7 +105,6 @@ function(add_doxygen LIB_NAME)
     configure_file(${DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 
     # Command to actually run doxygen, depending on every header file and the doxyfile template.
-        message("BOINK:  ${STL_TAG_FILE}")
     add_custom_command(
         OUTPUT ${STAMP_FILE} ${OUT_TAGFILE}
         COMMAND doxygen
