@@ -226,7 +226,8 @@ TAB_SIZE               = 4
 # newlines (in the resulting output). You can put ^^ in the value part of an
 # alias to insert a newline as if a physical newline was in the original file.
 
-ALIASES                =
+ALIASES               += satisfy{2}="`\1` must satisfy <I>@ref \2 </I>"
+ALIASES               += concepts="@par \"Named Requirements\""
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
