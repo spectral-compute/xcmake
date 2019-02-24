@@ -224,9 +224,9 @@ TAB_SIZE               = 4
 # documentation, which will result in a user-defined paragraph with heading
 # "Side Effects:". You can put \n's in the value part of an alias to insert
 # newlines (in the resulting output). You can put ^^ in the value part of an
-# alias to insert a newline as if a physical newline was in the original file.
+# alias to insert a newline as if a physical newl ine was in the original file.3
 
-ALIASES               += satisfy{2}="`\1` must satisfy <I>@ref \2 </I>"
+ALIASES               += satisfy{3}="`\1` must satisfy <I>@ref \2 \"\2 \3\"</I>"
 ALIASES               += concepts="@par \"Named Requirements\""
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
