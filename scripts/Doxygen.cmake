@@ -69,6 +69,10 @@ function(add_doxygen LIB_NAME)
         list(APPEND HEADERS_USED ${NEW_HEADER})
     endforeach()
 
+    # Add the things we always include.
+    set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} ${XCMAKE_TOOLS_DIR}/doxygen/include")
+    set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} ${XCMAKE_TOOLS_DIR}/doxygen/include")
+
     # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
     set(STAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.stamp)
 
