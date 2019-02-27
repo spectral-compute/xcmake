@@ -49,6 +49,10 @@ function (add_manual LIB_NAME)
     foreach (MARKDOWN_FILE ${SOURCE_MARKDOWN})
         make_src_target(${MARKDOWN_FILE} ".html")
 
+        # Build an appropriate sequence of "../" to refer to the stylesheet.
+        string(REGEX REPLACE "/[a-zA-Z0-9_-]+" "../" DOTSLASHES "${IMM_DIR}")
+        string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
+
         # TODO: `--toc` (and other options) could be exposed per-file as a source file property :D
         add_custom_command(
             OUTPUT ${OUT_FILE}
@@ -57,7 +61,7 @@ function (add_manual LIB_NAME)
                       --from markdown
                       --to html
 #                      --toc
-                      --css style.css
+                      --css ${DOTSLASHES}style.css
                       --standalone ${MARKDOWN_FILE} > ${OUT_FILE}
             COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
             DEPENDS "${MARKDOWN_FILE}"
