@@ -120,3 +120,74 @@ function (add_manual LIB_NAME)
     # Hook up to the global `docs` target.
     add_dependencies(docs ${TARGET})
 endfunction()
+
+# Add a script to generate part of a manual.
+#
+# Markdown and dot files can be generated. They are then preprocessed as they would be if they were checked in directly.
+#
+# LIB_NAME The same as the LIB_NAME given to add_manual().
+# SCRIPT A path to the script call relative to the MANUAL_SRC directory given to add_manual(). It will be called twice:
+#        once at congigure time with the argument "LIST", and once with "WRITE" and the directory where the script
+#        should write its output at build time. When called with "LIST", the script should list all the files it
+#        produces as a semicolon separated list with no newline at the end. This script will be run from the directory
+#        that contains it.
+# DEPENDENCIES A list of dependencies for the given script. This is relative to the MANUAL_SRC directory given to
+#              add_manual().
+function (add_manual_generator LIB_NAME)
+    set(flags)
+    set(oneValueArgs SCRIPT)
+    set(multiValueArgs DEPENDENCIES)
+    cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    set(d_MANUAL_SRC ${_${LIB_NAME}_d_MANUAL_SRC})
+
+    string(TOLOWER ${LIB_NAME} LOWER_LIB_NAME)
+    set(TARGET ${LOWER_LIB_NAME}_manual)
+
+    set(OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/docs/${LOWER_LIB_NAME}")
+
+    # Create a directory for the script to write its output to.
+    get_filename_component(SCRIPT_DIR "${d_SCRIPT}" DIRECTORY)
+    get_filename_component(SCRIPT_FILE "${d_SCRIPT}" NAME)
+    set(INTERMEDIATE_BASE_DIR "${CMAKE_BINARY_DIR}/generated/${TARGET}")
+    set(INTERMEDIATE_DIR "${INTERMEDIATE_BASE_DIR}/${SCRIPT_DIR}")
+    file(MAKE_DIRECTORY "${INTERMEDIATE_DIR}")
+
+    # Get a list of files the generator generates.
+    execute_process(COMMAND "./${SCRIPT_FILE}" "LIST"
+                    WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
+                    OUTPUT_VARIABLE GENERATED_FILES)
+
+    foreach (outFile IN LISTS GENERATED_FILES)
+        set(GENERATED_PATH "${INTERMEDIATE_DIR}/${outFile}")
+        set(GENERATED_PATHS ${GENERATED_PATHS} "${GENERATED_PATH}")
+        get_filename_component(GENERATED_DIR "${GENERATED_PATH}" DIRECTORY)
+        file(MAKE_DIRECTORY "${INTERMEDIATE_DIR}/${GENERATED_DIR}")
+    endforeach()
+
+    # Create a target for runnig the generator script.
+    foreach (dep IN LISTS d_DEPENDENCIES)
+        set(DEPENDENCIES "${DEPENDENCIES}" "${d_MANUAL_SRC}/${dep}")
+    endforeach()
+
+    add_custom_command(OUTPUT ${GENERATED_PATHS}
+                       COMMAND "./${SCRIPT_FILE}" "WRITE" "${INTERMEDIATE_DIR}"
+                       WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
+                       COMMENT "Running documentation generation script ${d_SCRIPT}"
+                       DEPENDS "${d_MANUAL_SRC}/${d_SCRIPT}" "${DEPENDENCIES}"
+                       WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
+                       VERBATIM)
+
+    # Add all the generated files to the manual.
+    foreach (outFile IN LISTS GENERATED_FILES)
+        set(GENERATED_PATH "${INTERMEDIATE_DIR}/${outFile}")
+        get_filename_component(ext "${outFile}" EXT)
+        if (ext STREQUAL ".dot")
+            add_dot_graph("${TARGET}" "${INTERMEDIATE_BASE_DIR}" "${GENERATED_PATH}")
+        elseif (ext STREQUAL ".md")
+            add_pandoc_markdown("${TARGET}" "${INTERMEDIATE_BASE_DIR}" "${GENERATED_PATH}")
+        else()
+            message_colour(STATUS BoldRed "Generated manual file of type ${ext} is not supported")
+        endif()
+    endforeach()
+endfunction()
