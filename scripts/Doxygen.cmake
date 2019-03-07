@@ -105,10 +105,16 @@ function(add_doxygen LIB_NAME)
     endforeach()
 
     set(DOXYGEN_LAYOUT_FILE "${XCMAKE_TOOLS_DIR}/doxygen/DoxygenLayout.xml")
+    set(DOXYGEN_HTML_HEADER_FILE "${XCMAKE_TOOLS_DIR}/doxygen/spectral_doc_header.html")
+    set(DOXYGEN_HTML_FOOTER_FILE "${XCMAKE_TOOLS_DIR}/doxygen/spectral_doc_footer.html")
+    set(DOXYGEN_HTML_STYLE_FILE "${XCMAKE_TOOLS_DIR}/doxygen/spectral_doc_style.css")
     set(DOXYFILE "${XCMAKE_TOOLS_DIR}/doxygen/Doxyfile.in")
 
     # Generate the final Doxyfile, injecting the variables we calculated above (notably including the list of inputs...)
     configure_file(${DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+    configure_file(${DOXYGEN_HTML_HEADER_FILE} ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_header.html @ONLY)
+    configure_file(${DOXYGEN_HTML_FOOTER_FILE} ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_footer.html @ONLY)
+    configure_file(${DOXYGEN_HTML_STYLE_FILE} ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_style.css @ONLY)
 
     # Command to actually run doxygen, depending on every header file and the doxyfile template.
     add_custom_command(
