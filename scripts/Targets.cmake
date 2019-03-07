@@ -152,7 +152,7 @@ function(apply_default_standard_properties TARGET)
         -fstrict-vtable-pointers             # An experimental but year-old and safe optimisation that helps BLASBAT :D
 
         # Prevent false positives from -Wdocumentation-unknown-command
-        -fcomment-block-commands=file,copydoc,concepts,satisfy
+        -fcomment-block-commands=file,copydoc,concepts,satisfy,copydetails
 
         # Make errors more readable in the presence of insane templates
         -fdiagnostics-show-template-tree
