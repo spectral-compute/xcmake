@@ -2486,5 +2486,4 @@ DOT_CLEANUP            = YES
 
 # Add the project-specific Doxygen overrides.
 # Don't forget that it's legal to use `+=` to append to lists in those...
-@INCLUDE_PATH = @CMAKE_CURRENT_LIST_DIR@
-@INCLUDE = @d_DOXYFILE_SUFFIX@
+@DOXYFILE_SUFFIX_PAYLOAD@

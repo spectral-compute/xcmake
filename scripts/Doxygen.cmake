@@ -44,6 +44,8 @@ function(add_doxygen LIB_NAME)
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
     default_value(d_DOXYFILE_SUFFIX "Doxyfile.suffix")
+    configure_file(${d_DOXYFILE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX} @ONLY)
+    file(READ ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX} DOXYFILE_SUFFIX_PAYLOAD)
 
     # Extract the list of input paths from the list of given header targets, and build a list of all the header files
     # Doxygen is about to process, so we can add them as dependencies.
