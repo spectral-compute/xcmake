@@ -1,8 +1,6 @@
 /**
  * @defgroup namedreq Named Requirements
  * @{
- * Type parameter constraints
- * @details
  * Similarly to the standard library, we define Named Requirements to specify constraints that must be satisfied by type
  * parameters. Until these can be formalised with C++20 concepts, this, plus use of `static_assert` to provide nice
  * errors, is the best we can do.
