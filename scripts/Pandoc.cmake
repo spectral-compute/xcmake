@@ -5,8 +5,6 @@ macro (make_src_target TARGET BASEDIR SRCFILE OUT_EXT)
     string(LENGTH "${BASEDIR}" SRCDIR_LEN)
     string(SUBSTRING "${SRCFILE}" ${SRCDIR_LEN} -1 REL_SRC)
 
-        message("    '${REL_SRC}'")
-
     string(MAKE_C_IDENTIFIER "${REL_SRC}" SRC_TGT)
     set(SRC_TGT "${TARGET}${SRC_TGT}")
 
