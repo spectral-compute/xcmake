@@ -124,6 +124,7 @@ function(apply_default_standard_properties TARGET)
         -Wno-float-equal                     # This isn't always wrong...
         -Wno-undefined-func-template         # Sometimes we like to link templates together, because we're mad.
         -Wno-sign-conversion                 # Just too irritating. Can't use int to access std::vectors...
+        -Wno-comma                           # Half of our code is "misuse of the comma operator"
         -Wno-conversion                      # Can't do literal arrays of templated type due to implicit conversions.
 
         # Re-enable parts of `-Wconversion` that we can cope with.
