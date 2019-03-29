@@ -56,4 +56,18 @@ function(PrintConfig)
     PrintDirectorySummary(${CMAKE_SOURCE_DIR}/ "")
 endfunction()
 
+function(PrintCompiler)
+    execute_process(COMMAND "${CMAKE_C_COMPILER}" "--version" OUTPUT_VARIABLE C_VERSION)
+    execute_process(COMMAND "${CMAKE_CXX_COMPILER}" "--version" OUTPUT_VARIABLE CXX_VERSION)
+    string(REGEX REPLACE "\n.*" "" C_VERSION "${C_VERSION}")
+    string(REGEX REPLACE "\n.*" "" CXX_VERSION "${CXX_VERSION}")
+
+    message_colour(STATUS BoldYellow "\n\n======== COMPILER SUMMARY =======\n")
+    message_colour(STATUS Blue "C compiler: ${Bold}${CMAKE_C_COMPILER}${BoldOff}")
+    message_colour(STATUS Blue "C++ compiler: ${Bold}${CMAKE_CXX_COMPILER}${BoldOff}")
+    message_colour(STATUS Blue "C compiler version: ${Bold}${C_VERSION}${BoldOff}")
+    message_colour(STATUS Blue "C++ compiler version: ${Bold}${CXX_VERSION}${BoldOff}")
+endfunction()
+
 AddExitFunction(PrintConfig)
+AddExitFunction(PrintCompiler)
