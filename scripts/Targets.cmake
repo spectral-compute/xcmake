@@ -126,6 +126,7 @@ function(apply_default_standard_properties TARGET)
         -Wno-sign-conversion                 # Just too irritating. Can't use int to access std::vectors...
         -Wno-comma                           # Half of our code is "misuse of the comma operator"
         -Wno-conversion                      # Can't do literal arrays of templated type due to implicit conversions.
+        -Wno-trigraphs                       # Regexes often contain trigraphs, and we do indeed want to ignore them :D
 
         # Re-enable parts of `-Wconversion` that we can cope with.
         -Wdouble-promotion                   # Warn about implicit double promotion: a common performance problem.
