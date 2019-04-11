@@ -102,6 +102,12 @@ function(apply_default_standard_properties TARGET)
         CXX_STANDARD_REQUIRED ON
     )
 
+    # Compiler flags that should be unconditionally applied to *everything*.
+    # Since these flags go ahead of any others, individual targets can add their own flags to override things (such as
+    # disabling warnings). In general though, we aim to avoid doing that, and if we are disabling a warning, it's
+    # preferable to do so with an inline pragma around the silly bit of code.
+    #
+    # Optimisation flags don't belong here. Those probably want to go in either CUDA.cmake or OPT_LEVEL.cmake.
     target_compile_options(${TARGET} BEFORE PRIVATE
         -Weverything # We like warnings.
 
