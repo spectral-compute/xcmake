@@ -40,6 +40,9 @@ function(OPT_LEVEL_EFFECTS TARGET)
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         -Ofast
 
+        # An experimental but years-old optimisation.
+        -fstrict-vtable-pointers
+
         # There are also CUDA translation unit specific flags that are in XCMAKE_CUDA_COMPILE_FLAGS, predicated on the
         # OPT_LEVEL target property.
     )

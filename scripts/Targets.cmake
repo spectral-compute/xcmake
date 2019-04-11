@@ -154,8 +154,6 @@ function(apply_default_standard_properties TARGET)
         -fconstexpr-depth=65535              # Maximum constexpr call depth. We have a regex compiler, soo...
         -fconstexpr-steps=16777216           # Lots, but infinite loops still get diagnosed within a few seconds.
 
-        -fstrict-vtable-pointers             # An experimental but year-old and safe optimisation that helps BLASBAT :D
-
         # Prevent false positives from -Wdocumentation-unknown-command
         -fcomment-block-commands=file,copydoc,concepts,satisfy,copydetails
 
