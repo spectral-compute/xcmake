@@ -24,5 +24,6 @@ macro(dynamic_call FN_NAME)
 
     file(WRITE ${SCRIPT_PATH} "${FN_NAME}(${ARGN})")
     include(${SCRIPT_PATH})
-    file(REMOVE ${SCRIPT_PATH})
+    # Including a file makes cmake consider it a buildsystem dependency. So we mustn't delete it, or the cmake build
+    # system is always considered dirty, and cmake is always rerun.
 endmacro()
