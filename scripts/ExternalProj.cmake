@@ -30,7 +30,7 @@ function(AddExternalProject TARGET)
 
     # Construct the list of arguments to just forward directly to ExternalProject_Add. We start with
     # all the arguments not consumed by `cmake_parse_arguments`
-    set(EXTRA_ARGS "${es_UNPARSED_ARGUMENTS}")
+    set(EXTRA_ARGS "${ep_UNPARSED_ARGUMENTS}")
 
     # Arg-parse again: this time looking for specific built-in arguments so we can set default behaviours.
 

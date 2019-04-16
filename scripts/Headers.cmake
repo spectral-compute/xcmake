@@ -2,6 +2,7 @@
 function(add_headers TARGET)
     set(flags)
     set(oneValueArgs HEADER_PATH INSTALL_DESTINATION)
+    set(multiValueArgs)
     cmake_parse_arguments("h" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Make the target object.

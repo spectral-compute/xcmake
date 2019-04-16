@@ -156,6 +156,7 @@ function (add_manual_generator LIB_NAME)
                     WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
                     OUTPUT_VARIABLE GENERATED_FILES)
 
+    set(GENERATED_PATHS "")
     foreach (outFile IN LISTS GENERATED_FILES)
         set(GENERATED_PATH "${INTERMEDIATE_DIR}/${outFile}")
         set(GENERATED_PATHS ${GENERATED_PATHS} "${GENERATED_PATH}")
@@ -164,6 +165,7 @@ function (add_manual_generator LIB_NAME)
     endforeach()
 
     # Create a target for runnig the generator script.
+    set(DEPENDENCIES "")
     foreach (dep IN LISTS d_DEPENDENCIES)
         set(DEPENDENCIES "${DEPENDENCIES}" "${d_MANUAL_SRC}/${dep}")
     endforeach()

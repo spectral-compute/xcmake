@@ -16,7 +16,7 @@ function(find_sources OUT)
 
             # For improved IDE support, include header files as source in IDEs, causing complete
             # indexing :D
-            if ($ENV{CLION_IDE})
+            if (DEFINED ENV{CLION_IDE})
                 list(APPEND SOURCE_EXTENSIONS "h" "hpp" "cuh")
             endif ()
         endif()
