@@ -83,9 +83,8 @@ function(add_doxygen LIB_NAME)
     )
 
     # The cppreference tagfile.
-    set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
-
     add_cppreference_tagfile(${TARGET})
+    set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
 
     # If we're doxygenating a CUDA target, make sure the NVCUDA crossreference target is registered.
     get_target_property(IS_CUDA ${LIB_NAME} CUDA)
