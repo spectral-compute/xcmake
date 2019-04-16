@@ -12,6 +12,10 @@ macro(default_cache_value NAME VALUE)
     endif()
 endmacro()
 
+# Directory for temporary scripts.
+set(XCMAKE_TMP_SCRIPT_DIR "${CMAKE_BINARY_DIR}/tmp/cmake")
+file(MAKE_DIRECTORY "${XCMAKE_TMP_SCRIPT_DIR}")
+
 # Invoke a function, macro, or command by name.
 # This is, clearly, completely insane. All args given are forwarded to the target routine.
 macro(dynamic_call FN_NAME)
@@ -20,7 +24,7 @@ macro(dynamic_call FN_NAME)
     endif()
 
     string(RANDOM SNAME)
-    set(SCRIPT_PATH "${CMAKE_BINARY_DIR}/${SNAME}.cmake")
+    set(SCRIPT_PATH "${XCMAKE_TMP_SCRIPT_DIR}/${SNAME}.cmake")
 
     file(WRITE ${SCRIPT_PATH} "${FN_NAME}(${ARGN})")
     include(${SCRIPT_PATH})
