@@ -158,7 +158,7 @@ function(apply_default_standard_properties TARGET)
         -ftemplate-backtrace-limit=256       # We have some insane templates.
         -fconstexpr-backtrace-limit=256      # We have some insane constexpr functions, too.
         -fconstexpr-depth=65535              # Maximum constexpr call depth. We have a regex compiler, soo...
-        -fconstexpr-steps=16777216           # Lots, but infinite loops still get diagnosed within a few seconds.
+        -fconstexpr-steps=33554432           # Lots, but infinite loops still get diagnosed within a few seconds.
 
         # Prevent false positives from -Wdocumentation-unknown-command
         -fcomment-block-commands=file,copydoc,concepts,satisfy,copydetails
