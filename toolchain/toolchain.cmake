@@ -106,6 +106,12 @@ if (XCMAKE_INTEGRATED_GPU)
     add_definitions(-DINTEGRATED_GPU)
 endif()
 
+# Provide default values for a bunch of cmake builtins that don't have it. This mostly exists to silence warnings
+defaultTcValue(CMAKE_STATIC_LIBRARY_PREFIX "")
+defaultTcValue(CMAKE_STATIC_LIBRARY_SUFFIX "")
+defaultTcValue(CMAKE_SHARED_LIBRARY_PREFIX "")
+defaultTcValue(CMAKE_SHARED_LIBRARY_SUFFIX "")
+
 # Handle the XCMAKE_SHOW_TRIBBLE case.
 if (XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
     foreach (_var IN ITEMS CMAKE_C_COMPILER

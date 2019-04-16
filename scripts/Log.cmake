@@ -4,7 +4,7 @@ string(ASCII 27 ESC)
 # Macro for defining a formatting code. Sets it to empty-string if colour isn't supported
 macro(defineFormatCode NAME VALUE)
     # Clion doesn't do coloured cmake output, alas.
-    if ($ENV{CLION_IDE})
+    if (DEFINED ENV{CLION_IDE})
         set(${NAME} "")
     else()
         set(${NAME} ${VALUE})

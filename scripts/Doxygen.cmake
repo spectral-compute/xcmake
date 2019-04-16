@@ -131,7 +131,7 @@ function(add_doxygen LIB_NAME)
         VERBATIM
     )
 
-    add_dependencies(${TARGET} cppreference_data ${DEPENDENT_DOXYTARGETS})
+    add_dependencies(${TARGET} cppreference_data)
 
     # Make the new thing get built by `make docs`
     add_dependencies(docs ${TARGET})
