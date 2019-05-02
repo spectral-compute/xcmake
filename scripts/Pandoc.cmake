@@ -74,6 +74,15 @@ function (add_manual LIB_NAME)
     set(multiValueArgs)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+    # We need to check if this project has its docs enabled
+    set(FLAGCHECK TRUE) # Variable to act as a boolean return for these checks
+    check_doc_flags(${PROJECT_NAME} ${LIB_NAME} ${FLAGCHECK})
+
+    # If we found a disabled flag, abort
+    if(NOT FLAGCHECK)
+        return()
+    endif()
+
     set(_${LIB_NAME}_d_MANUAL_SRC ${d_MANUAL_SRC} CACHE INTERNAL "")
 
     # Set up pandoc-ification of the *.md files in the given directory.
@@ -136,6 +145,15 @@ function (add_manual_generator LIB_NAME)
     set(oneValueArgs SCRIPT)
     set(multiValueArgs DEPENDENCIES)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    # We need to check if this project has its docs enabled
+    set(FLAGCHECK TRUE) # Variable to act as a boolean return for these checks
+    check_doc_flags(${PROJECT_NAME} ${LIB_NAME} ${FLAGCHECK})
+
+    # If we found a disabled flag, abort
+    if(NOT FLAGCHECK)
+        return()
+    endif()
 
     set(d_MANUAL_SRC ${_${LIB_NAME}_d_MANUAL_SRC})
 
