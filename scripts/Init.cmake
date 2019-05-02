@@ -5,10 +5,7 @@ set(XCMAKE_INCLUDED ON)
 
 
 # This script is included before project(), and can do initial envrionment configuration.
-cmake_policy(VERSION 3.12)
-if (POLICY CMP0077)
-    cmake_policy(SET CMP0077 NEW)
-endif ()
+cmake_policy(VERSION 3.13)
 
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/../toolchain/toolchain.cmake)
 include(${CMAKE_TOOLCHAIN_FILE})
