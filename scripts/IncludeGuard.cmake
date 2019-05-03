@@ -13,6 +13,6 @@ macro(SubdirectoryGuard X)
         return()
     endif ()
 
-    set(${PROJECT_NAME}_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "")
+    set(${X}_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "")
     add_custom_target(${X}-GUARD)
 endmacro()
