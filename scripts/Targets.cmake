@@ -263,6 +263,19 @@ function(fix_source_file_properties TARGET)
                 LANGUAGE CXX
                 COMPILE_OPTIONS "$<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},CUDA>>,${XCMAKE_CUDA_COMPILE_FLAGS},>"
             )
+        else()
+            if (DEFINED ENV{CLION_IDE})
+                # Clion needs to be told what language header files are.
+                if ("${FILE_EXT}" STREQUAL ".hpp")
+                    set_source_files_properties(${_F} PROPERTIES
+                        LANGUAGE CXX
+                    )
+                elseif("${FILE_EXT}" STREQUAL ".h")
+                    set_source_files_properties(${_F} PROPERTIES
+                        LANGUAGE C
+                    )
+                endif()
+            endif()
         endif()
     endforeach()
 endfunction()
