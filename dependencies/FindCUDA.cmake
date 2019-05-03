@@ -708,29 +708,7 @@ endif ()
 
 if(CMAKE_CROSSCOMPILING)
   SET (CUDA_TOOLKIT_ROOT $ENV{CUDA_TOOLKIT_ROOT})
-  if(CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7-a")
-    # Support for NVPACK
-    set (CUDA_TOOLKIT_TARGET_NAME "armv7-linux-androideabi")
-  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
-    # Support for arm cross compilation
-    set(CUDA_TOOLKIT_TARGET_NAME "armv7-linux-gnueabihf")
-  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
-    # Support for aarch64 cross compilation
-    if (ANDROID_ARCH_NAME STREQUAL "arm64")
-      set(CUDA_TOOLKIT_TARGET_NAME "aarch64-linux-androideabi")
-    else()
-      set(CUDA_TOOLKIT_TARGET_NAME "aarch64-linux")
-    endif (ANDROID_ARCH_NAME STREQUAL "arm64")
-  endif()
 
-  if (EXISTS "${CUDA_TOOLKIT_ROOT}/targets/${CUDA_TOOLKIT_TARGET_NAME}")
-    set(CUDA_TOOLKIT_TARGET_DIR "${CUDA_TOOLKIT_ROOT}/targets/${CUDA_TOOLKIT_TARGET_NAME}" CACHE PATH "CUDA Toolkit target location.")
-    SET (CUDA_TOOLKIT_ROOT_DIR ${CUDA_TOOLKIT_ROOT})
-    mark_as_advanced(CUDA_TOOLKIT_TARGET_DIR)
-  endif()
-
-  # add known CUDA targetr root path to the set of directories we search for programs, libraries and headers
-  set( CMAKE_FIND_ROOT_PATH "${CUDA_TOOLKIT_TARGET_DIR};${CMAKE_FIND_ROOT_PATH}")
   macro( cuda_find_host_program )
     if (COMMAND find_host_program)
       find_host_program( ${ARGN} )
@@ -739,13 +717,45 @@ if(CMAKE_CROSSCOMPILING)
     endif()
   endmacro()
 else()
-  # for non-cross-compile, find_host_program == find_program and CUDA_TOOLKIT_TARGET_DIR == CUDA_TOOLKIT_ROOT_DIR
+  SET(CUDA_TOOLKIT_ROOT "${CUDA_TOOLKIT_ROOT_DIR}")
+
+  # for non-cross-compile, find_host_program == find_program
   macro( cuda_find_host_program )
     find_program( ${ARGN} )
   endmacro()
-  SET (CUDA_TOOLKIT_TARGET_DIR ${CUDA_TOOLKIT_ROOT_DIR})
 endif()
 
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7-a")
+  # Support for NVPACK
+  set (CUDA_TOOLKIT_TARGET_NAME "armv7-linux-androideabi")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
+  # Support for arm cross compilation
+  set(CUDA_TOOLKIT_TARGET_NAME "armv7-linux-gnueabihf")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+  # Support for aarch64 cross compilation
+  if (ANDROID_ARCH_NAME STREQUAL "arm64")
+    set(CUDA_TOOLKIT_TARGET_NAME "aarch64-linux-androideabi")
+  else()
+    set(CUDA_TOOLKIT_TARGET_NAME "aarch64-linux")
+  endif (ANDROID_ARCH_NAME STREQUAL "arm64")
+else()
+  # This usually works... :D
+  set(CUDA_TOOLKIT_TARGET_NAME ${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME})
+  string(TOLOWER "${CUDA_TOOLKIT_TARGET_NAME}" CUDA_TOOLKIT_TARGET_NAME)
+endif()
+
+message("${CUDA_TOOLKIT_ROOT}/targets/${CUDA_TOOLKIT_TARGET_NAME}")
+
+if (EXISTS "${CUDA_TOOLKIT_ROOT}/targets/${CUDA_TOOLKIT_TARGET_NAME}")
+  set(CUDA_TOOLKIT_TARGET_DIR "${CUDA_TOOLKIT_ROOT}/targets/${CUDA_TOOLKIT_TARGET_NAME}" CACHE PATH "CUDA Toolkit target location.")
+  SET (CUDA_TOOLKIT_ROOT_DIR ${CUDA_TOOLKIT_ROOT})
+  mark_as_advanced(CUDA_TOOLKIT_TARGET_DIR)
+else ()
+  SET(CUDA_TOOLKIT_TARGET_DIR ${CUDA_TOOLKIT_ROOT_DIR})
+endif()
+
+# add known CUDA targetr root path to the set of directories we search for programs, libraries and headers
+set(CMAKE_FIND_ROOT_PATH "${CUDA_TOOLKIT_TARGET_DIR};${CMAKE_FIND_ROOT_PATH}")
 
 # CUDA_NVCC_EXECUTABLE
 if(DEFINED ENV{CUDA_NVCC_EXECUTABLE})
@@ -1117,12 +1127,6 @@ macro(CUDA_INCLUDE_DIRECTORIES)
   endforeach()
 endmacro()
 
-
-##############################################################################
-cuda_find_helper_file(parse_cubin cmake)
-cuda_find_helper_file(make2cmake cmake)
-cuda_find_helper_file(run_nvcc cmake)
-include("${CMAKE_CURRENT_LIST_DIR}/FindCUDA/select_compute_arch.cmake")
 
 ##############################################################################
 # Separate the OPTIONS out from the sources
