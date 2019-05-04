@@ -1,3 +1,5 @@
+SubdirectoryGuard(GTest)
+
 option(GTEST_TAG "Allow user to set the GTEST external project's checkout tag" "master")
 
 AddExternalProject(googletest
