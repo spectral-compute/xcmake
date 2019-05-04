@@ -180,7 +180,7 @@ macro(ensure_not_imported TARGET)
 endmacro()
 
 macro(ensure_not_interface TARGET)
-    # If it's an object library target, stop
+    # If it's an interface library target, stop
     get_target_property(T_TYPE ${TARGET} TYPE)
     if ("${T_TYPE}" STREQUAL "INTERFACE_LIBRARY")
         return()
