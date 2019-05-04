@@ -63,9 +63,8 @@ function(AddExternalProject TARGET)
     # If it's a git-source set UPDATE_COMMAND to "", and re-add the GIT_REPOSITORY command we consumed
     if (ep_GIT_REPOSITORY)
         list(APPEND EXTRA_ARGS
-            UPDATE_COMMAND
-            GIT_REPOSITORY
-            ${ep_GIT_REPOSITORY}
+            UPDATE_COMMAND ""
+            GIT_REPOSITORY ${ep_GIT_REPOSITORY}
         )
     endif ()
 
