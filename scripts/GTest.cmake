@@ -6,10 +6,6 @@
 include(Ext_GoogleTest)
 
 function(add_gtest_executable TARGET)
-    if (TARGET ${TARGET})
-        return()
-    endif ()
-
     set(flags CUSTOM_MAIN)
     cmake_parse_arguments(gt "${flags}" "" "" ${ARGN})
 
