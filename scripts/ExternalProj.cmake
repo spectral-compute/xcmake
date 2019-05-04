@@ -93,8 +93,6 @@ function(AddExternalProject TARGET)
         )
 
         target_include_directories(${_LIB} INTERFACE ${EP_INSTALL_DIR}/include)
-
-        get_target_property(v1 ${_LIB} IMPORTED_LOCATION)
     endforeach ()
 
     foreach (_LIB ${ep_DYNAMIC_LIBRARIES})
