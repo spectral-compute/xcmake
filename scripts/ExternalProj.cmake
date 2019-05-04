@@ -2,7 +2,8 @@
 include(ExternalProject)
 
 # Path to which external projects get installed in the build tree.
-set(EP_INSTALL_DIR "${CMAKE_BINARY_DIR}/external_projects" CACHE INTERNAL "")
+set(EP_ROOT_DIR "${CMAKE_BINARY_DIR}/external_projects" CACHE INTERNAL "")
+set(EP_INSTALL_DIR "${EP_ROOT_DIR}/inst" CACHE INTERNAL "")
 
 function(AddExternalProject TARGET)
     # Parse the function arguments. These are split into three categories:
@@ -55,19 +56,22 @@ function(AddExternalProject TARGET)
         )
     endif ()
 
-    # If it's a git-source set UPDATE_COMMAND to "", and re-add the GIT_REPOSITORY command we consumed
-    if (ep_GIT_REPOSITORY)
-        list(APPEND EXTRA_ARGS
-            UPDATE_COMMAND ""
-            GIT_REPOSITORY ${ep_GIT_REPOSITORY}
-        )
-    endif ()
-
     # Add our amended CMAKE_ARGS to EXTRA_ARGS to be passed along
     list(APPEND EXTRA_ARGS
         CMAKE_ARGS
         ${ep_CMAKE_ARGS}
     )
+
+    # If it's a git-source set UPDATE_COMMAND to "", and re-add the GIT_REPOSITORY command we consumed
+    if (ep_GIT_REPOSITORY)
+        # Re-add the GIT_REPOSITORY arg we consumed above.
+        list(APPEND EXTRA_ARGS
+            GIT_REPOSITORY ${ep_GIT_REPOSITORY}
+        )
+
+        # Default to not having an update command at all.
+        set(EXTRA_ARGS "${EXTRA_ARGS};UPDATE_COMMAND;;")
+    endif ()
 
     # Workaround for cmake being stupid and not allowing nonexistent include directories.
     file(MAKE_DIRECTORY ${EP_INSTALL_DIR}/include)
@@ -120,13 +124,12 @@ function(AddExternalProject TARGET)
     ExternalProject_Add(
         ${TARGET}
         EXCLUDE_FROM_ALL 1
-        BINARY_DIR ${TARGET}-obj
-        SOURCE_DIR ${TARGET}
+        PREFIX ${EP_ROOT_DIR}/${TARGET}
         INSTALL_DIR ${EP_INSTALL_DIR}
         BUILD_BYPRODUCTS ${ep_BUILD_BYPRODUCTS}
 
         # Forward all the other arguments, suitably fiddled-with.
-        ${EXTRA_ARGS}
+        "${EXTRA_ARGS}"
     )
 
     # Configure the exported targets...
