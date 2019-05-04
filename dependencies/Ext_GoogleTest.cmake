@@ -1,6 +1,6 @@
 SubdirectoryGuard(GTest)
 
-option(GTEST_TAG "Allow user to set the GTEST external project's checkout tag" "master")
+set(GTEST_TAG master CACHE STRING "Allow user to set the GTEST external project's checkout tag" "master")
 
 AddExternalProject(googletest
   GIT_REPOSITORY    git@gitlab.com:spectral-ai/engineering/thirdparty/googletest
