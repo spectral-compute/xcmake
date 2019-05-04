@@ -16,6 +16,4 @@ function(add_gtest_executable TARGET)
     if (NOT "${gt_CUSTOM_MAIN}")
         target_link_libraries(${TARGET} PRIVATE gmock_main)
     endif ()
-
-    add_dependencies(${TARGET} gmock)
 endfunction(add_gtest_executable)
