@@ -5,11 +5,6 @@ include(ExternalProject)
 set(EP_INSTALL_DIR "${CMAKE_BINARY_DIR}/external_projects" CACHE INTERNAL "")
 
 function(AddExternalProject TARGET)
-    # Escape early if we already defined this TARGET
-    if(TARGET ${TARGET})
-        return()
-    endif()
-
     # Parse the function arguments. These are split into three categories:
     # - Arguments added in XCMake which dictate libraries or executables to be created and marked dependent on TARGET
     # - Arguments we just want to delete, because this function sets them automatically
