@@ -3,7 +3,7 @@
 #
 # @param CUSTOM_MAIN Pass flag if you have defined your own main. Otherwise the default gtest
 #                    main is used.
-include(Ext_GoogleTest)
+include(externals/GoogleTest)
 
 function(add_gtest_executable TARGET)
     set(flags CUSTOM_MAIN)
