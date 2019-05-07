@@ -13,11 +13,14 @@ option(${NAME}_ENABLE_TESTS "Build the units tests for this project" ${XCMAKE_EN
 # Aborts the calling function if the desired docs aren't turned on
 # PROJECT - The project flag to check
 # SOURCE - Doc type (eg. "doxygen") or a docs library (eg.
-macro(ensure_docs_enabled PROJECT SOURCE)
-    string(TOUPPER ${PROJECT} PROJECT_U)
+macro(ensure_docs_enabled)
+    set(oneValueArgs PROJECT TYPE)
+    cmake_parse_arguments("f" "" "${oneValueArgs}" "" ${ARGN})
+
+    string(TOUPPER ${f_PROJECT} PROJECT_U)
     if (NOT ${PROJECT_U}_ENABLE_DOCS)
         message_colour(STATUS BoldYellow
-                "Not building ${SOURCE} for ${NAME} because ${PROJECT_U}_ENABLE_DOCS == OFF")
+                "Not building ${f_TYPE} for ${NAME} because ${PROJECT_U}_ENABLE_DOCS == OFF")
         set(FLAGCHECK FALSE PARENT_SCOPE)
         return ()
     endif ()

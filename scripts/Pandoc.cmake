@@ -64,7 +64,7 @@ function (add_manual LIB_NAME)
     endif ()
 
     # Abort if library has docs disabled
-    ensure_docs_enabled(${PROJECT_NAME} ${LIB_NAME})
+    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE ${LIB_NAME})
 
     string(TOLOWER ${LIB_NAME} LOWER_LIB_NAME)
     set(TARGET ${LOWER_LIB_NAME}_manual)
@@ -146,7 +146,7 @@ function (add_manual_generator LIB_NAME)
     set(TARGET ${LOWER_LIB_NAME}_manual)
 
     # Abort if library has docs disabled
-    ensure_docs_enabled(${PROJECT_NAME} ${LIB_NAME}_manual_generator)
+    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE ${LIB_NAME}_manual_generator)
 
     if (NOT TARGET ${TARGET})
         message_colour(STATUS Yellow "Can't add manual generator to nonexistant manual: " ${TARGET})
