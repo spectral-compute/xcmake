@@ -27,7 +27,7 @@ function(AddExternalProject TARGET)
     set(multiValueArgs
         # Custom
         STATIC_LIBRARIES
-        DYNAMIC_LIBRARIES
+        SHARED_LIBRARIES
         EXECUTABLES
 
         # Built-in
@@ -94,7 +94,7 @@ function(AddExternalProject TARGET)
         target_include_directories(${_LIB} INTERFACE ${EP_INSTALL_DIR}/include)
     endforeach ()
 
-    foreach (_LIB ${ep_DYNAMIC_LIBRARIES})
+    foreach (_LIB ${ep_SHARED_LIBRARIES})
         add_library(${_LIB} SHARED IMPORTED GLOBAL)
 
         set(DLIB_PATH ${EP_INSTALL_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${_LIB}${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -137,7 +137,7 @@ function(AddExternalProject TARGET)
         add_dependencies(${_LIB} ${TARGET})
     endforeach ()
 
-    foreach (_LIB ${ep_DYNAMIC_LIBRARIES})
+    foreach (_LIB ${ep_SHARED_LIBRARIES})
         add_dependencies(${_LIB} ${TARGET})
     endforeach ()
 
