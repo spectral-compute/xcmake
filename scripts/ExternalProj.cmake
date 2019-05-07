@@ -10,11 +10,11 @@ function(AddExternalProject TARGET)
     # - Arguments added in XCMake which dictate libraries or executables to be created and marked dependent on TARGET
     # - Arguments we just want to delete, because this function sets them automatically
     # - Built-in arguments we want as variables within this function
-    set(flags)
-    set(oneValueArgs
+    set(flags
         # Custom
         CMAKE
-
+    )
+    set(oneValueArgs
         # Built-in
         GIT_REPOSITORY
 
