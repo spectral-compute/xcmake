@@ -42,20 +42,14 @@ function(add_doxygen LIB_NAME)
     set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    # We need to check if this project has its docs enabled
-    set(FLAGCHECK TRUE) # Variable to act as a boolean return for these checks
-    check_doc_flags(${PROJECT_NAME} doxygen ${FLAGCHECK})
+    # Abort if docs are disabled
+    ensure_docs_enabled(${PROJECT_NAME} doxygen)
 
     # Check the dependencies are also all enabled
     foreach(D ${d_DEPENDS})
         string(TOUPPER ${D} UPPER_D)
-        check_doc_flags(${UPPER_D} doxygen ${FLAGCHECK})
+        ensure_docs_enabled(${UPPER_D} doxygen)
     endforeach()
-
-    # If we found a disabled flag, abort
-    if(NOT FLAGCHECK)
-        return()
-    endif()
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
     default_value(d_DOXYFILE_SUFFIX "Doxyfile.suffix")

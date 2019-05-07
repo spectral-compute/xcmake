@@ -63,6 +63,9 @@ function (add_manual LIB_NAME)
         return()
     endif ()
 
+    # Abort if library has docs disabled
+    ensure_docs_enabled(${PROJECT_NAME} ${LIB_NAME})
+
     string(TOLOWER ${LIB_NAME} LOWER_LIB_NAME)
     set(TARGET ${LOWER_LIB_NAME}_manual)
     add_custom_target(${TARGET})
@@ -73,15 +76,6 @@ function (add_manual LIB_NAME)
     set(oneValueArgs INSTALL_DESTINATION MANUAL_SRC PAGE_TITLE)
     set(multiValueArgs)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    # We need to check if this project has its docs enabled
-    set(FLAGCHECK TRUE) # Variable to act as a boolean return for these checks
-    check_doc_flags(${PROJECT_NAME} ${LIB_NAME} ${FLAGCHECK})
-
-    # If we found a disabled flag, abort
-    if(NOT FLAGCHECK)
-        return()
-    endif()
 
     set(_${LIB_NAME}_d_MANUAL_SRC ${d_MANUAL_SRC} CACHE INTERNAL "")
 
@@ -146,19 +140,18 @@ function (add_manual_generator LIB_NAME)
     set(multiValueArgs DEPENDENCIES)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    # We need to check if this project has its docs enabled
-    set(FLAGCHECK TRUE) # Variable to act as a boolean return for these checks
-    check_doc_flags(${PROJECT_NAME} ${LIB_NAME} ${FLAGCHECK})
-
-    # If we found a disabled flag, abort
-    if(NOT FLAGCHECK)
-        return()
-    endif()
-
     set(d_MANUAL_SRC ${_${LIB_NAME}_d_MANUAL_SRC})
 
     string(TOLOWER ${LIB_NAME} LOWER_LIB_NAME)
     set(TARGET ${LOWER_LIB_NAME}_manual)
+
+    # Abort if library has docs disabled
+    ensure_docs_enabled(${PROJECT_NAME} ${LIB_NAME}_manual_generator)
+
+    if (NOT TARGET ${TARGET})
+        message_colour(STATUS Yellow "Can't add manual generator to nonexistant manual: " ${TARGET})
+        return ()
+    endif ()
 
     set(OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/docs/${LOWER_LIB_NAME}")
 
