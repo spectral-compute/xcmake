@@ -10,16 +10,15 @@ string(TOUPPER ${PROJECT_NAME} NAME) # Get it uppercase to remain consistent
 option(${NAME}_ENABLE_DOCS "Build the documentation for this project" ${XCMAKE_ENABLE_DOCS})
 option(${NAME}_ENABLE_TESTS "Build the units tests for this project" ${XCMAKE_ENABLE_TESTS})
 
-# Function to check a given project for flag state
-# INPROJECT - The project flag to check
-# DOCTYPE - Set at callsite for feedback purposes. Examples would be "DOXYGEN" or "specregex_internal"
-# FLAGCHECK - A variable acting as a boolean return to get the parent scope to abort if needed
-function(check_doc_flags INPROJECT DOCTYPE FLAGCHECK)
-    string(TOUPPER ${INPROJECT} INPROJECT_U)
-    if(NOT ${INPROJECT_U}_ENABLE_DOCS)
+# Aborts the calling function if the desired docs aren't turned on
+# PROJECT - The project flag to check
+# SOURCE - Doc type (eg. "doxygen") or a docs library (eg.
+macro(ensure_docs_enabled PROJECT SOURCE)
+    string(TOUPPER ${PROJECT} PROJECT_U)
+    if (NOT ${PROJECT_U}_ENABLE_DOCS)
         message_colour(STATUS BoldYellow
-                       "Not building ${DOCTYPE} for ${NAME} because ${INPROJECT_U}_ENABLE_DOCS == OFF")
+                "Not building ${SOURCE} for ${NAME} because ${PROJECT_U}_ENABLE_DOCS == OFF")
         set(FLAGCHECK FALSE PARENT_SCOPE)
-        return()
-    endif()
-endfunction(check_doc_flags)
+        return ()
+    endif ()
+endmacro()
