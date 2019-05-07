@@ -43,12 +43,12 @@ function(add_doxygen LIB_NAME)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Abort if docs are disabled
-    ensure_docs_enabled(${PROJECT_NAME} doxygen)
+    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE doxygen)
 
     # Check the dependencies are also all enabled
     foreach(D ${d_DEPENDS})
         string(TOUPPER ${D} UPPER_D)
-        ensure_docs_enabled(${UPPER_D} doxygen)
+        ensure_docs_enabled(PROJECT ${UPPER_D} TYPE doxygen)
     endforeach()
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
