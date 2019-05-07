@@ -62,7 +62,7 @@ function(AddExternalProject TARGET)
         ${ep_CMAKE_ARGS}
     )
 
-    # If it's a git-source set UPDATE_COMMAND to "", and re-add the GIT_REPOSITORY command we consumed
+    # If it's a git-source set UPDATE_COMMAND to "", and re-add the GIT_REPOSITORY argument we consumed
     if (ep_GIT_REPOSITORY)
         # Re-add the GIT_REPOSITORY arg we consumed above.
         list(APPEND EXTRA_ARGS
