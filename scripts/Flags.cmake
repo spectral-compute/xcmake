@@ -17,6 +17,10 @@ macro(ensure_docs_enabled)
     set(oneValueArgs PROJECT TYPE)
     cmake_parse_arguments("f" "" "${oneValueArgs}" "" ${ARGN})
 
+    if (NOT f_PROJECT)
+        set(f_PROJECT ${PROJECT_NAME})
+    endif ()
+
     string(TOUPPER ${f_PROJECT} PROJECT_U)
     if (NOT ${PROJECT_U}_ENABLE_DOCS)
         message_colour(STATUS BoldYellow
