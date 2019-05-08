@@ -17,9 +17,7 @@ macro(ensure_docs_enabled)
     set(oneValueArgs PROJECT TYPE)
     cmake_parse_arguments("f" "" "${oneValueArgs}" "" ${ARGN})
 
-    if (NOT f_PROJECT)
-        set(f_PROJECT ${PROJECT_NAME})
-    endif ()
+    default_value(f_PROJECT ${PROJECT_NAME})
 
     string(TOUPPER ${f_PROJECT} PROJECT_U)
     if (NOT ${PROJECT_U}_ENABLE_DOCS)
