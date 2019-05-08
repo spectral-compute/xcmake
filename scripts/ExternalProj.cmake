@@ -1,3 +1,5 @@
+IncludeGuard(EXTERNAL_PROJECT)
+
 ### A more elaborate ExternalProject module that provides imported targets.
 include(ExternalProject)
 
