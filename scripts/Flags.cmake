@@ -6,9 +6,8 @@ option(XCMAKE_ENABLE_DOCS "Generate documentation for all projects" ON)
 option(XCMAKE_ENABLE_TESTS "Build unit tests for all projects" ON)
 
 # Add project-specific toggles
-string(TOUPPER ${PROJECT_NAME} PNAME_UPPER) # Get it uppercase to remain consistent
-option(${PNAME_UPPER}_ENABLE_DOCS "Build the documentation for this project" ${XCMAKE_ENABLE_DOCS})
-option(${PNAME_UPPER}_ENABLE_TESTS "Build the units tests for this project" ${XCMAKE_ENABLE_TESTS})
+option(${XCMAKE_PROJECT_NAME_UPPER}_ENABLE_DOCS "Build the documentation for this project" ${XCMAKE_ENABLE_DOCS})
+option(${XCMAKE_PROJECT_NAME_UPPER}_ENABLE_TESTS "Build the units tests for this project" ${XCMAKE_ENABLE_TESTS})
 
 # Aborts the calling function if the desired docs aren't turned on
 # PROJECT - The project flag to check
@@ -22,7 +21,7 @@ macro(ensure_docs_enabled)
     string(TOUPPER ${f_PROJECT} PROJECT_U)
     if (NOT ${PROJECT_U}_ENABLE_DOCS)
         message_colour(STATUS BoldYellow
-                "Not building ${f_TYPE} for ${PNAME_UPPER} because ${PROJECT_U}_ENABLE_DOCS == OFF")
+                "Not building ${f_TYPE} for ${XCMAKE_PROJECT_NAME_UPPER} because ${PROJECT_U}_ENABLE_DOCS == OFF")
         return ()
     endif ()
 endmacro()
