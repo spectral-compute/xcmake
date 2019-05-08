@@ -25,7 +25,6 @@ macro(ensure_docs_enabled)
     if (NOT ${PROJECT_U}_ENABLE_DOCS)
         message_colour(STATUS BoldYellow
                 "Not building ${f_TYPE} for ${PNAME_UPPER} because ${PROJECT_U}_ENABLE_DOCS == OFF")
-        set(FLAGCHECK FALSE PARENT_SCOPE)
         return ()
     endif ()
 endmacro()
