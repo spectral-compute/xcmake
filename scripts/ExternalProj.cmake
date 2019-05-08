@@ -133,15 +133,7 @@ function(AddExternalProject TARGET)
     )
 
     # Configure the exported targets...
-    foreach (_LIB ${ep_STATIC_LIBRARIES})
-        add_dependencies(${_LIB} ${TARGET})
-    endforeach ()
-
-    foreach (_LIB ${ep_SHARED_LIBRARIES})
-        add_dependencies(${_LIB} ${TARGET})
-    endforeach ()
-
-    foreach (_EXE ${ep_EXECUTABLES})
-        add_dependencies(${_EXE} ${TARGET})
+    foreach (_ARTEFACT IN LISTS ep_STATIC_LIBRARIES ep_SHARED_LIBRARIES ep_EXECUTABLES)
+        add_dependencies(${_ARTEFACT} ${TARGET})
     endforeach ()
 endfunction()
