@@ -5,4 +5,3 @@ string(TOLOWER ${PROJECT_NAME} XCMAKE_PROJECT_NAME_LOWER)
 ## Include the rest of xcmake, for convenience.
 include(Properties)
 include(Flags)
-include(GTest)
