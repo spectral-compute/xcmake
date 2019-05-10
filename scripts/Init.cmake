@@ -35,9 +35,10 @@ if (NOT ExternalData_OBJECT_STORES)
 endif()
 
 # We must always have a build type.
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
+default_cache_value(CMAKE_BUILD_TYPE Debug)
+
+# Sensible default for this on single-config generators.
+default_cache_value(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
 
 # Ensure build type is valid, and set it to the canonical value.
 string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
