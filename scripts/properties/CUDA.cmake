@@ -35,9 +35,6 @@ if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
     message_colour(STATUS BoldRed "${TARGET}: Found support for CUDA on AMD in ${SCALE_AMD_TOOLKIT_ROOT_DIR}")
 elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     find_package(CUDA 8.0 REQUIRED)
-        if (TARGET cudart)
-            message(AAAAAAAAAAAAAAAAA)
-endif()
     target_link_libraries(CUDA_EFFECTS INTERFACE cudart)
 
     # Warn about CUDA 9
