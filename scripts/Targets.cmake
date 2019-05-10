@@ -102,6 +102,8 @@ function(apply_default_standard_properties TARGET)
         CXX_STANDARD_REQUIRED ON
     )
 
+    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
+
     # Compiler flags that should be unconditionally applied to *everything*.
     # Since these flags go ahead of any others, individual targets can add their own flags to override things (such as
     # disabling warnings). In general though, we aim to avoid doing that, and if we are disabling a warning, it's
@@ -306,9 +308,6 @@ function(add_library TARGET)
             set(EXPORT_FLAGS EXPORT ${PROJECT_NAME})
         endif()
         install(TARGETS ${TARGET} ${EXPORT_FLAGS} ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
-
-        # TODO: Could be an overridden install(), but holy crap that's complicated.
-        set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
     endif()
 endfunction()
 
@@ -325,9 +324,6 @@ function(add_executable TARGET)
 
     if (NOT args_NOINSTALL)
         install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
-
-        # TODO: Could be an overridden install(), but holy crap that's complicated.
-        set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
     endif()
 endfunction()
 
