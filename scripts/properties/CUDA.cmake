@@ -6,8 +6,7 @@ define_xcmake_target_property(
     FULL_DOCS "Note that this does have a few downsides (like no LTO), so use only when necessary."
     DEFAULT OFF
 )
-
-add_library(CUDA_COMPILE_EFFECTS INTERFACE)
+add_library(CUDA_EFFECTS INTERFACE)
 
 set(XCMAKE_CUDA_COMPILE_FLAGS "")
 list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
@@ -29,14 +28,15 @@ if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
         # The GPU targets selected...
         --cuda-gpu-arch=$<JOIN:${TARGET_AMD_GPUS}, --cuda-gpu-arch=>
     )
-    target_link_libraries(CUDA_COMPILE_EFFECTS INTERFACE AmdCuda::amdcuda)
-    set(CUDA_LIBRARY AmdCuda::amdcuda)
+    target_link_libraries(CUDA_EFFECTS INTERFACE AmdCuda::amdcuda)
 
     message_colour(STATUS BoldRed "Using AMD CUDA from ${AMDCUDA_TOOLKIT_ROOT_DIR}")
 elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     find_package(CUDA 8.0 REQUIRED)
-    add_library(cuda_library INTERFACE)
-    set(CUDA_LIBRARY cuda_library)
+        if (TARGET cudart)
+            message(AAAAAAAAAAAAAAAAA)
+endif()
+    target_link_libraries(CUDA_EFFECTS INTERFACE cudart)
 
     # Warn about CUDA 9
     if ("${CUDA_VERSION_MAJOR}" EQUAL 9)
@@ -65,16 +65,7 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
         )
     endif()
 
-    # Add the cuda runtime library.
-    target_include_directories(cuda_library SYSTEM INTERFACE $<SHELL_PATH:${CUDA_INCLUDE_DIRS}>)
-    target_link_libraries(cuda_library INTERFACE ${CUDA_LIBRARIES})
-
     message_colour(STATUS BoldGreen "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
 else()
     list(APPEND XCMAKE_CUDA_COMPILE_FLAGS --cuda-works-better-if-you-enable-gpu-support-in-xcmake) # :D
 endif()
-
-function(CUDA_EFFECTS TARGET)
-    link_if_property_set(${TARGET} CUDA PRIVATE CUDA_COMPILE_EFFECTS)
-    link_if_property_set(${TARGET} CUDA PUBLIC ${CUDA_LIBRARY})
-endfunction()
