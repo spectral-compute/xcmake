@@ -1,25 +1,5 @@
-
-
 #[=======================================================================[.rst:
 FindCUDA
---------
-
-.. deprecated:: 3.10
-
-  Superseded by first-class support for the CUDA language in CMake.
-
-Replacement
-^^^^^^^^^^^
-
-It is no longer necessary to use this module or call ``find_package(CUDA)``.
-Instead, list ``CUDA`` among the languages named in the top-level
-call to the :command:`project` command, or call the
-:command:`enable_language` command with ``CUDA``.
-Then one can add CUDA (``.cu``) sources to programs directly
-in calls to :command:`add_library` and :command:`add_executable`.
-
-Documentation of Deprecated Usage
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Tools for building CUDA C files: libraries and build dependencies.
 
@@ -82,10 +62,6 @@ or ``CUDA_WRAP_SRCS``::
   -- Set to ON to enable and extra compilation pass with the -cubin option in
      Device mode. The output is parsed and register, shared memory usage is
      printed during build.
-
-  CUDA_BUILD_EMULATION (Default OFF for device mode)
-  -- Set to ON for Emulation mode. -D_DEVICEEMU is defined for CUDA C files
-     when CUDA_BUILD_EMULATION is TRUE.
 
   CUDA_LINK_LIBRARIES_KEYWORD (Default "")
    -- The <PRIVATE|PUBLIC|INTERFACE> keyword to use for internal
@@ -157,12 +133,10 @@ or ``CUDA_WRAP_SRCS``::
 The script creates the following macros (in alphabetical order)::
 
   CUDA_ADD_CUFFT_TO_TARGET( cuda_target )
-  -- Adds the cufft library to the target (can be any target).  Handles whether
-     you are in emulation mode or not.
+  -- Adds the cufft library to the target (can be any target).
 
   CUDA_ADD_CUBLAS_TO_TARGET( cuda_target )
-  -- Adds the cublas library to the target (can be any target).  Handles
-     whether you are in emulation mode or not.
+  -- Adds the cublas library to the target (can be any target).
 
   CUDA_ADD_EXECUTABLE( cuda_target file0 file1 ...
                        [WIN32] [MACOSX_BUNDLE] [EXCLUDE_FROM_ALL] [OPTIONS ...] )
@@ -325,11 +299,9 @@ The script defines the following variables::
   CUDA_INCLUDE_DIRS     -- Include directory for cuda headers.  Added automatically
                            for CUDA_ADD_EXECUTABLE and CUDA_ADD_LIBRARY.
   CUDA_LIBRARIES        -- Cuda RT library.
-  CUDA_CUFFT_LIBRARIES  -- Device or emulation library for the Cuda FFT
-                           implementation (alternative to:
+  CUDA_CUFFT_LIBRARIES  -- Device library for the Cuda FFT implementation (alternative to:
                            CUDA_ADD_CUFFT_TO_TARGET macro)
-  CUDA_CUBLAS_LIBRARIES -- Device or emulation library for the Cuda BLAS
-                           implementation (alternative to:
+  CUDA_CUBLAS_LIBRARIES -- Device library for the Cuda BLAS implementation (alternative to:
                            CUDA_ADD_CUBLAS_TO_TARGET macro).
   CUDA_cudart_static_LIBRARY -- Statically linkable cuda runtime library.
                                 Only available for CUDA version 5.5+
@@ -523,9 +495,6 @@ option(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE "Attach the build rule to the CUDA
 # Prints out extra information about the cuda file during compilation
 option(CUDA_BUILD_CUBIN "Generate and parse .cubin files in Device mode." OFF)
 
-# Set whether we are using emulation or device mode.
-option(CUDA_BUILD_EMULATION "Build in Emulation mode" OFF)
-
 # Where to put the generated output.
 set(CUDA_GENERATED_OUTPUT_DIR "" CACHE PATH "Directory to put all the output files.  If blank it will default to the CMAKE_CURRENT_BINARY_DIR")
 
@@ -595,10 +564,9 @@ mark_as_advanced(
   CUDA_NVCC_FLAGS
   CUDA_PROPAGATE_HOST_FLAGS
   CUDA_BUILD_CUBIN
-  CUDA_BUILD_EMULATION
   CUDA_VERBOSE_BUILD
   CUDA_SEPARABLE_COMPILATION
-  )
+)
 
 # Single config generators like Makefiles or Ninja don't usually have
 # CMAKE_CONFIGURATION_TYPES defined (but note that it can be defined if set by
@@ -804,13 +772,6 @@ endmacro()
 
 # CUDA_LIBRARIES
 cuda_find_library_local_first(CUDA_CUDART_LIBRARY cudart "\"cudart\" library")
-if(CUDA_VERSION VERSION_EQUAL "3.0")
-  # The cudartemu library only existed for the 3.0 version of CUDA.
-  cuda_find_library_local_first(CUDA_CUDARTEMU_LIBRARY cudartemu "\"cudartemu\" library")
-  mark_as_advanced(
-    CUDA_CUDARTEMU_LIBRARY
-    )
-endif()
 
 if(NOT CUDA_VERSION VERSION_LESS "5.5")
   cuda_find_library_local_first(CUDA_cudart_static_LIBRARY cudart_static "static CUDA runtime library")
@@ -873,11 +834,7 @@ endif()
 # Initialize to empty
 set(CUDA_LIBRARIES)
 
-# If we are using emulation mode and we found the cudartemu library then use
-# that one instead of cudart.
-if(CUDA_BUILD_EMULATION AND CUDA_CUDARTEMU_LIBRARY)
-  list(APPEND CUDA_LIBRARIES ${CUDA_CUDARTEMU_LIBRARY})
-elseif(CUDA_USE_STATIC_CUDA_RUNTIME AND CUDA_cudart_static_LIBRARY)
+if(CUDA_USE_STATIC_CUDA_RUNTIME AND CUDA_cudart_static_LIBRARY)
   list(APPEND CUDA_LIBRARIES ${CUDA_cudart_static_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
   if (CUDA_rt_LIBRARY)
     list(APPEND CUDA_LIBRARIES ${CUDA_rt_LIBRARY})
@@ -907,20 +864,7 @@ macro(FIND_CUDA_HELPER_LIBS _name)
   mark_as_advanced(CUDA_${_name}_LIBRARY)
 endmacro()
 
-#######################
-# Disable emulation for v3.1 onward
-if(CUDA_VERSION VERSION_GREATER "3.0")
-  if(CUDA_BUILD_EMULATION)
-    message(FATAL_ERROR "CUDA_BUILD_EMULATION is not supported in version 3.1 and onwards.  You must disable it to proceed.  You have version ${CUDA_VERSION}.")
-  endif()
-endif()
-
 # Search for additional CUDA toolkit libraries.
-if(CUDA_VERSION VERSION_LESS "3.1")
-  # Emulation libraries aren't available in version 3.1 onward.
-  find_cuda_helper_libs(cufftemu)
-  find_cuda_helper_libs(cublasemu)
-endif()
 find_cuda_helper_libs(cufft)
 find_cuda_helper_libs(cublas)
 if(NOT CUDA_VERSION VERSION_LESS "3.2")
@@ -966,13 +910,8 @@ if(NOT CUDA_VERSION VERSION_LESS "7.0")
   find_cuda_helper_libs(cusolver)
 endif()
 
-if (CUDA_BUILD_EMULATION)
-  set(CUDA_CUFFT_LIBRARIES ${CUDA_cufftemu_LIBRARY})
-  set(CUDA_CUBLAS_LIBRARIES ${CUDA_cublasemu_LIBRARY})
-else()
-  set(CUDA_CUFFT_LIBRARIES ${CUDA_cufft_LIBRARY})
-  set(CUDA_CUBLAS_LIBRARIES ${CUDA_cublas_LIBRARY} ${CUDA_cublas_device_LIBRARY})
-endif()
+set(CUDA_CUFFT_LIBRARIES ${CUDA_cufft_LIBRARY})
+set(CUDA_CUBLAS_LIBRARIES ${CUDA_cublas_LIBRARY} ${CUDA_cublas_device_LIBRARY})
 
 ########################
 # Look for the SDK stuff.  As of CUDA 3.0 NVSDKCUDA_ROOT has been replaced with
@@ -1253,14 +1192,6 @@ macro(CUDA_WRAP_SRCS cuda_target format generated_files)
 
   set(nvcc_flags "")
 
-  # Emulation if the card isn't present.
-  if (CUDA_BUILD_EMULATION)
-    # Emulation.
-    set(nvcc_flags ${nvcc_flags} --device-emulation -D_DEVICEEMU -g)
-  else()
-    # Device mode.  No flags necessary.
-  endif()
-
   if(CUDA_HOST_COMPILATION_CPP)
     set(CUDA_C_OR_CXX CXX)
   else()
@@ -1529,16 +1460,11 @@ macro(CUDA_WRAP_SRCS cuda_target format generated_files)
       # Bring in the dependencies.  Creates a variable CUDA_NVCC_DEPEND #######
       cuda_include_nvcc_dependencies(${cmake_dependency_file})
 
-      # Convenience string for output #########################################
-      if(CUDA_BUILD_EMULATION)
-        set(cuda_build_type "Emulation")
-      else()
-        set(cuda_build_type "Device")
-      endif()
+      set(cuda_build_type "Device")
 
       # Build the NVCC made dependency file ###################################
       set(build_cubin OFF)
-      if ( NOT CUDA_BUILD_EMULATION AND CUDA_BUILD_CUBIN )
+      if ( CUDA_BUILD_CUBIN )
          if ( NOT cuda_compile_to_external_module )
            set ( build_cubin ON )
          endif()
@@ -1914,11 +1840,7 @@ endmacro()
 ###############################################################################
 ###############################################################################
 macro(CUDA_ADD_CUFFT_TO_TARGET target)
-  if (CUDA_BUILD_EMULATION)
-    target_link_libraries(${target} ${CUDA_LINK_LIBRARIES_KEYWORD} ${CUDA_cufftemu_LIBRARY})
-  else()
-    target_link_libraries(${target} ${CUDA_LINK_LIBRARIES_KEYWORD} ${CUDA_cufft_LIBRARY})
-  endif()
+  target_link_libraries(${target} ${CUDA_LINK_LIBRARIES_KEYWORD} ${CUDA_cufft_LIBRARY})
 endmacro()
 
 ###############################################################################
@@ -1927,11 +1849,7 @@ endmacro()
 ###############################################################################
 ###############################################################################
 macro(CUDA_ADD_CUBLAS_TO_TARGET target)
-  if (CUDA_BUILD_EMULATION)
-    target_link_libraries(${target} ${CUDA_LINK_LIBRARIES_KEYWORD} ${CUDA_cublasemu_LIBRARY})
-  else()
-    target_link_libraries(${target} ${CUDA_LINK_LIBRARIES_KEYWORD} ${CUDA_cublas_LIBRARY} ${CUDA_cublas_device_LIBRARY})
-  endif()
+  target_link_libraries(${target} ${CUDA_LINK_LIBRARIES_KEYWORD} ${CUDA_cublas_LIBRARY} ${CUDA_cublas_device_LIBRARY})
 endmacro()
 
 ###############################################################################
