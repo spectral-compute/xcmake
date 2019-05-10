@@ -618,52 +618,6 @@ list(REMOVE_DUPLICATES CUDA_configuration_types)
 ###############################################################################
 ###############################################################################
 
-macro(cuda_unset_include_and_libraries)
-  unset(CUDA_TOOLKIT_INCLUDE CACHE)
-  unset(CUDA_CUDART_LIBRARY CACHE)
-  unset(CUDA_CUDA_LIBRARY CACHE)
-  # Make sure you run this before you unset CUDA_VERSION.
-  if(CUDA_VERSION VERSION_EQUAL "3.0")
-    # This only existed in the 3.0 version of the CUDA toolkit
-    unset(CUDA_CUDARTEMU_LIBRARY CACHE)
-  endif()
-  unset(CUDA_cudart_static_LIBRARY CACHE)
-  unset(CUDA_cudadevrt_LIBRARY CACHE)
-  unset(CUDA_cublas_LIBRARY CACHE)
-  unset(CUDA_cublas_device_LIBRARY CACHE)
-  unset(CUDA_cublasemu_LIBRARY CACHE)
-  unset(CUDA_cufft_LIBRARY CACHE)
-  unset(CUDA_cufftemu_LIBRARY CACHE)
-  unset(CUDA_cupti_LIBRARY CACHE)
-  unset(CUDA_curand_LIBRARY CACHE)
-  unset(CUDA_cusolver_LIBRARY CACHE)
-  unset(CUDA_cusparse_LIBRARY CACHE)
-  unset(CUDA_npp_LIBRARY CACHE)
-  unset(CUDA_nppc_LIBRARY CACHE)
-  unset(CUDA_nppi_LIBRARY CACHE)
-  unset(CUDA_npps_LIBRARY CACHE)
-  unset(CUDA_nvcuvenc_LIBRARY CACHE)
-  unset(CUDA_nvcuvid_LIBRARY CACHE)
-  unset(CUDA_GPU_DETECT_OUTPUT CACHE)
-endmacro()
-
-# Check to see if the CUDA_TOOLKIT_ROOT_DIR and CUDA_SDK_ROOT_DIR have changed,
-# if they have then clear the cache variables, so that will be detected again.
-if(NOT "${CUDA_TOOLKIT_ROOT_DIR}" STREQUAL "${CUDA_TOOLKIT_ROOT_DIR_INTERNAL}")
-  unset(CUDA_TOOLKIT_TARGET_DIR CACHE)
-  unset(CUDA_NVCC_EXECUTABLE CACHE)
-  cuda_unset_include_and_libraries()
-  unset(CUDA_VERSION CACHE)
-endif()
-
-if(NOT "${CUDA_TOOLKIT_TARGET_DIR}" STREQUAL "${CUDA_TOOLKIT_TARGET_DIR_INTERNAL}")
-  cuda_unset_include_and_libraries()
-endif()
-
-#
-#  End of unset()
-#
-
 #
 #  Start looking for things
 #
