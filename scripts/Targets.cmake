@@ -199,7 +199,7 @@ macro(ensure_not_object TARGET)
     endif ()
 endmacro()
 
-# Sets the library's default symbol visivility to hidden, and generate an export header.
+# Sets the library's default symbol visibility to hidden, and generate an export header.
 #
 # Mandatory single variable arguments:
 #    TARGET The target to apply the symbol hiding to.
