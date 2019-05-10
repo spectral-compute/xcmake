@@ -12,8 +12,7 @@ macro(configure_test_target TARGET)
         -Wno-missing-variable-declarations
     )
 
-    # TODO: Could be an overridden install(), but holy crap that's complicated.
-    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib;$ORIGIN/../../lib")
+    set_property(TARGET ${TARGET} APPEND PROPERTY INSTALL_RPATH "$ORIGIN/../../lib")
 endmacro()
 
 # Add a test executable (installed under ./test)
