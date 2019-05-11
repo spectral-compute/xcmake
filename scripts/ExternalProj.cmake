@@ -107,8 +107,6 @@ function(AddExternalProject TARGET)
         )
 
         target_include_directories(${_LIB} INTERFACE ${EP_INSTALL_DIR}/include)
-
-        install(FILES ${DLIB_PATH} DESTINATION ./lib/)
     endforeach ()
 
     foreach (_EXE ${ep_EXECUTABLES})
@@ -119,14 +117,13 @@ function(AddExternalProject TARGET)
         set_target_properties(${_EXE} PROPERTIES
             IMPORTED_LOCATION ${EXE_PATH}
         )
-
-        install(PROGRAMS ${EXE_PATH} DESTINATION ./bin/)
     endforeach ()
 
     ExternalProject_Add(
         ${TARGET}
         EXCLUDE_FROM_ALL 1
         PREFIX ${EP_ROOT_DIR}/${TARGET}
+        STAMP_DIR ${EP_ROOT_DIR}/stamps
         INSTALL_DIR ${EP_INSTALL_DIR}
         BUILD_BYPRODUCTS ${ep_BUILD_BYPRODUCTS}
 
@@ -137,5 +134,26 @@ function(AddExternalProject TARGET)
     # Configure the exported targets...
     foreach (_ARTEFACT IN LISTS ep_STATIC_LIBRARIES ep_SHARED_LIBRARIES ep_EXECUTABLES)
         add_dependencies(${_ARTEFACT} ${TARGET})
+
+        install(TARGETS ${_ARTEFACT} EP_TARGET
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+        )
     endforeach ()
+endfunction()
+
+# Get the path to the stamp file representing the completion of the build for the given IMPORTED target.
+function(getFinalStampPath OUTVAR TARGET)
+    get_target_property(MAN_DEPS ${TARGET} MANUALLY_ADDED_DEPENDENCIES)
+
+    foreach (DEP ${MAN_DEPS})
+        # Is this an external project?
+        if (IS_DIRECTORY "${EP_ROOT_DIR}/${DEP}")
+            # It is, so now we can determine the name of the install stampfile.
+            set(${OUTVAR} "${EP_ROOT_DIR}/stamps/${DEP}-install" PARENT_SCOPE)
+            return()
+        endif()
+    endforeach()
+
+    message_colour(FATAL_ERROR BoldRed "Failed to compute stampfile path for ${TARGET}")
 endfunction()

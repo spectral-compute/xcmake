@@ -19,11 +19,10 @@ function(install)
         EXPORT
         INCLUDES
     )
-    cmake_parse_arguments("i" "" "" "${multiValueArgs};${installTypes}" "${ARGN}")
+    cmake_parse_arguments("i" "EP_TARGET" "" "${multiValueArgs};${installTypes}" "${ARGN}")
 
     # If it isn't a TARGETS-mode install, delegate entirely.
     if ("${i_TARGETS}" STREQUAL "")
-        message_colour(STATUS Green "Full Delegate!")
         _install(${ARGN})
         return()
     endif ()
@@ -40,6 +39,47 @@ function(install)
         endif()
     endforeach()
 
+    set(flags
+        EXCLUDE_FROM_ALL
+        OPTIONAL
+    )
+    set(oneValueArgs
+        DESTINATION
+        COMPONENT
+    )
+    set(multiValueArgs
+        PERMISSIONS
+        CONFIGURATIONS
+    )
+    set(PASSTHRU_FLAGS ${flags})
+    set(PASSTHRU_ARGS ${oneValueArgs} ${multiValueArgs})
+
+    # Parse each of the sub argment lists (to the extent that we care)
+    foreach (ITYPE ${installTypes})
+        default_value(I_${ITYPE} "")
+        cmake_parse_arguments("${ITYPE}" "${flags}" "${oneValueArgs}" "${multiValueArgs}" "${I_${ITYPE}}")
+
+        # Assemble a new argument list for each group with the arguments that can be directly passed through to
+        # `install(FILES...)`
+        set(${ITYPE}_FORWARD "")
+        foreach (SUBARG ${PASSTHRU_ARGS})
+            if (NOT "${${ITYPE}_${SUBARG}}" STREQUAL "")
+                list(APPEND ${ITYPE}_FORWARD ${SUBARG} ${${ITYPE}_${SUBARG}})
+            endif()
+        endforeach()
+        foreach (SUBARG ${PASSTHRU_FLAGS})
+            if (${${ITYPE}_${SUBARG}})
+                list(APPEND ${ITYPE}_FORWARD ${SUBARG})
+            endif()
+        endforeach ()
+    endforeach()
+
+    # Set up default destinations to match cmake's normal semantics.
+    default_value(RUNTIME_DESTINATION "${CMAKE_INSTALL_BINDIR}")
+    default_value(LIBRARY_DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    default_value(ARCHIVE_DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    default_value(PUBLIC_HEADER_DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
     # Consider each target for special treatment, possibly delegating it to `install()`.
     foreach (TGT ${i_TARGETS})
         if (NOT TARGET ${TGT})
@@ -53,5 +93,46 @@ function(install)
             _install(TARGETS ${TGT} ${DELEGATE_ARGS})
             continue()
         endif()
+        get_target_property(FILE_PATH ${TGT} IMPORTED_LOCATION)
+
+        set(DEFAULT_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
+
+        # Install the imported target as a proper file.
+        if ("${TGT_TYPE}" STREQUAL SHARED_LIBRARY)
+            set(KEY LIBRARY)
+        elseif("${TGT_TYPE}" STREQUAL STATIC_LIBRARY)
+            set(KEY ARCHIVE)
+        elseif("${TGT_TYPE}" STREQUAL EXECUTABLE)
+            set(KEY RUNTIME)
+            list(APPEND DEFAULT_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+        endif()
+
+        set(PERMS "${${KEY}_PERMISSIONS}")
+        default_value(PERMS "${DEFAULT_PERMISSIONS}")
+
+        # If it's an EP target, set the OPTIONAL flag here and set up an existence assert if the stampfile exists
+        # (meaning the installed file must exist if the EP target ran). If it isn't an EP target, the artefact is
+        # expected to exist unconditionally.
+        set(OPT_FLAG "")
+        if (i_EP_TARGET)
+            set(OPT_FLAG "OPTIONAL")
+            getFinalStampPath(STAMPFILE ${TGT})
+
+            # Crash if, at install time, the artefact does not exist but the stamp file does.
+            # This can be conditionally disabled for generators that don't like `install(CODE...)`. It's only here to
+            # avoid the nasty situation where EP builds would silently fail if they were misconfigured and the
+            # `install(FILES...)` call was merely made `OPTIONAL`.
+            install(CODE
+                "if (NOT EXISTS \"${FILE_PATH}\" AND EXISTS \"${STAMPFILE}\") \n\
+                    message(FATAL_ERROR \"No such file or directory:\\n   ${FILE_PATH}\\nDid you misconfigure your external project?\") \n\
+                endif()"
+            )
+        endif()
+
+        install(FILES "${FILE_PATH}" ${OPT_FLAG}
+            PERMISSIONS "${PERMS}"
+            DESTINATION "${${KEY}_DESTINATION}"
+            ${${KEY}_FORWARD}
+        )
     endforeach()
 endfunction()
