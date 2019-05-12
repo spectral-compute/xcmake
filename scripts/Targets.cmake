@@ -135,7 +135,8 @@ function(apply_default_standard_properties TARGET)
         -Wno-comma                           # Half of our code is "misuse of the comma operator"
         -Wno-conversion                      # Can't do literal arrays of templated type due to implicit conversions.
         -Wno-trigraphs                       # Regexes often contain trigraphs, and we do indeed want to ignore them :D
-        -Wno-format-nonliteral                  # Being warned that a format parmaeter is nonliteral isn't helpful.
+        -Wno-format-nonliteral               # Being warned that a format parmaeter is nonliteral isn't helpful.
+        -Wno-ctad-maybe-unsupported          # Don't forbid implicit class template argument deduction guides...
 
         # Re-enable parts of `-Wconversion` that we can cope with.
         -Wdouble-promotion                   # Warn about implicit double promotion: a common performance problem.
