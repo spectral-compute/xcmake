@@ -357,3 +357,44 @@ function (add_shell_script TARGET FILE)
         install(PROGRAMS ${FILE} DESTINATION bin)
     endif()
 endfunction()
+
+# Forbid implicit "link by string". If you want it, do `target_link_libraries(myTarget PRIVATE RAW somelib)`. This
+# avoids the common and _deeply obnoxious_ situation of typoing a target name and getting a raw link instead of the
+# desired target link.
+# In almost all cases, you want to use an IMPORTED target instead of a raw link anyway. If you want to add linker flags,
+# use the
+function (target_link_libraries TARGET)
+    set(CURRENT_KEYWORD "")
+    set(ALLOW_RAW FALSE)
+
+    foreach (_ARG ${ARGN})
+        # We can't sanitise generator expressions...
+        string(GENEX_STRIP "${_ARG}" _ARG_SANITISED)
+        if (NOT "${_ARG}" STREQUAL "${_ARG_SANITISED}")
+            # If it contained a generator expression, skip it.
+            continue()
+        endif()
+
+        if ("${_ARG}" STREQUAL "PRIVATE" OR
+            "${_ARG}" STREQUAL "PUBLIC" OR
+            "${_ARG}" STREQUAL "INTERFACE")
+            set(CURRENT_KEYWORD ${_ARG})
+            set(ALLOW_RAW FALSE)
+        elseif ("${ARG}" STREQUAL "RAW")
+            set(ALLOW_RAW TRUE)
+        else()
+            if ("${CURRENT_KEYWORD}" STREQUAL "")
+                message(FATAL_ERROR "Keywordless target_link_libraries() is not allowed.")
+            elseif (NOT TARGET "${_ARG}")
+                message(FATAL_ERROR
+                    "Tried to link to nonexistent target \"${_ARG}\".\n"
+                    "Did you typo your target name?\n"
+                    "If you are trying to add linker flags, cmake now has `target_link_options()` for doing that.\n"
+                    "If you are trying to link an external library by its raw name, use an IMPORTED target instead."
+                )
+            endif()
+        endif()
+    endforeach()
+
+    _target_link_libraries(${TARGET} ${ARGN})
+endfunction()
