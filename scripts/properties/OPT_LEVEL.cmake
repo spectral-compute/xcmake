@@ -23,6 +23,7 @@ function(OPT_LEVEL_EFFECTS TARGET)
 
     target_compile_options(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE
         -O0
+        -Wno-pass-failed # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
     )
 
     target_compile_options(${TARGET}_size_OPT_LEVEL_EFFECTS INTERFACE
@@ -32,6 +33,7 @@ function(OPT_LEVEL_EFFECTS TARGET)
 
     target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
         -Og
+        -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
     )
 
     target_compile_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE
