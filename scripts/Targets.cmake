@@ -119,6 +119,8 @@ function(apply_default_standard_properties TARGET)
         -Wno-c++11-compat-pedantic
         -Wno-c++14-compat-pedantic
 
+        -Wno-unknown-warning-option          # Don't crash old compilers. Unless they're so old they don't have this.
+
         -Wno-old-style-cast                  # It's sometimes nice to do C-style casts...
         -Wno-reserved-id-macro               # This isn't really relevant any more.
         -Wno-exit-time-destructors           # We *use* these!
