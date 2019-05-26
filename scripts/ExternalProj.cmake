@@ -64,9 +64,12 @@ function(AddExternalProject TARGET)
 
     # If it's a git-source set UPDATE_COMMAND to "", and re-add the GIT_REPOSITORY argument we consumed
     if (ep_GIT_REPOSITORY)
-        # Re-add the GIT_REPOSITORY arg we consumed above.
         list(APPEND EXTRA_ARGS
+            # Re-add the GIT_REPOSITORY arg we consumed above.
             GIT_REPOSITORY ${ep_GIT_REPOSITORY}
+
+            # Tell git to use parallel submodule fetching to speed things up.
+            GIT_CONFIG submodule.fetchJobs=5
         )
 
         # Default to not having an update command at all.
