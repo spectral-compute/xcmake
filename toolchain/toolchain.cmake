@@ -82,7 +82,7 @@ foreach (_TGT IN LISTS XCMAKE_GPUS)
 endforeach()
 
 defaultTcValue(XCMAKE_INTEGRATED_GPU "OFF")
-defaultTcValue(XCMAKE_GPU_TYPE "0")  # No GPU
+defaultTcValue(XCMAKE_GPU_TYPE "OFF")  # No GPU
 
 # Make sure we don't have a mixture of GPU targets...
 list(LENGTH TARGET_AMD_GPUS AMD_GPU_LENGTH)
