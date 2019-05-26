@@ -47,12 +47,16 @@ function(AddExternalProject TARGET)
         default_value(ep_CMAKE_ARGS "")
 
         list(APPEND ep_CMAKE_ARGS
-             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-             -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-             -DCMAKE_LINKER=${CMAKE_LINKER}
+            # Propagate a few flags from the outer project.
+            -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+            -DCMAKE_LINKER=${CMAKE_LINKER}
+
+            # Avoid install-time logspam
+            -DCMAKE_INSTALL_MESSAGE=NEVER
         )
     endif ()
 
