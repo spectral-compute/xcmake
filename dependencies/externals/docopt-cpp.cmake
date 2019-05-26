@@ -1,3 +1,6 @@
+SubdirectoryGuard(Docopt)
+include(ExternalProj)
+
 AddExternalProject(docopt_proj
     GIT_REPOSITORY https://github.com/docopt/docopt.cpp.git
     GIT_TAG v0.6.2
