@@ -44,10 +44,8 @@ function(AddExternalProject TARGET)
 
     # Set or override some of the CMake arguments, if it's a CMake build system
     if (ep_CMAKE OR ep_CMAKE_ARGS)
-        # This is needed if we want to allow no CMAKE_ARGS in the function call
-        if (NOT ep_CMAKE_ARGS)
-            set(ep_CMAKE_ARGS)
-        endif ()
+        default_value(ep_CMAKE_ARGS "")
+
         list(APPEND ep_CMAKE_ARGS
              -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
              -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
