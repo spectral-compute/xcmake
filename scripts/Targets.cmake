@@ -399,3 +399,16 @@ function (target_link_libraries TARGET)
 
     _target_link_libraries(${TARGET} ${ARGN})
 endfunction()
+
+# Override target_sources to call fix_source_file_properties() again each time. Not exactly efficient, but it does
+# the trick :D
+# TODO: a more elaborate override that only iterates _new_ source files for the iteration. If we ever care enough about
+#       performance...
+# Note that cmake's default behaviour doesn't actually require true file names for input sources: it will automatically
+# try with various file extensions. Replicating that behaviour is much of why doing the incremental version of this
+# function would be a bit more fiddly than I can be bothered with just now.
+function (target_sources TARGET)
+    _target_sources(${TARGET} ${ARGN})
+
+    fix_source_file_properties(${TARGET})
+endfunction()
