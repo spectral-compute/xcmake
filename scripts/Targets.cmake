@@ -125,6 +125,7 @@ function(apply_default_standard_properties TARGET)
         -Wno-reserved-id-macro               # This isn't really relevant any more.
         -Wno-exit-time-destructors           # We *use* these!
         -Wno-padded
+        -Wno-shadow-field
         -Wno-shadow-field-in-constructor     # Sorry Nick, I like doing this. :D
         -Wshadow-field-in-constructor-modified # The above turns this off, but we want it back on.
         -Wno-global-constructors             # We also use these
