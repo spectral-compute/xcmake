@@ -243,8 +243,17 @@ function(add_export_header TARGET)
     set(EXPORT_HDR_PATH ${EXPORT_HEADER_DIR}/${EXPORT_FILE_NAME})
     get_filename_component(EXPORT_DIRECTORY_NAME "${EXPORT_FILE_NAME}" DIRECTORY)
 
+    # Exclude windows DLL functionality when compiling for device
+    # Indented poorly so the resulting output is nice
+    set(DLL_EXCLUDE
+"\n#if defined(_WIN32) && defined(__CUDA__) && defined(__CUDA_ARCH__) \n\
+    #undef ${BASE_NAME}_EXPORT \n\
+    #define ${BASE_NAME}_EXPORT \n\
+#endif\n"
+    )
+
     # Generate the header.
-    generate_export_header(${TARGET} BASE_NAME "${BASE_NAME}" EXPORT_FILE_NAME "${EXPORT_HDR_PATH}")
+    generate_export_header(${TARGET} BASE_NAME "${BASE_NAME}" EXPORT_FILE_NAME "${EXPORT_HDR_PATH}" CUSTOM_CONTENT_FROM_VARIABLE DLL_EXCLUDE)
 
     # Install the header.
     if (NOT args_NOINSTALL)
