@@ -322,7 +322,7 @@ function(add_library TARGET)
         if (NOT args_NOEXPORT)
             set(EXPORT_FLAGS EXPORT ${PROJECT_NAME})
         endif()
-        install(TARGETS ${TARGET} ${EXPORT_FLAGS} ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+        install(TARGETS ${TARGET} ${EXPORT_FLAGS})
     endif()
 endfunction()
 
@@ -338,7 +338,7 @@ function(add_executable TARGET)
     fix_source_file_properties(${TARGET})
 
     if (NOT args_NOINSTALL)
-        install(TARGETS ${TARGET} RUNTIME DESTINATION bin)
+        install(TARGETS ${TARGET})
     endif()
 endfunction()
 

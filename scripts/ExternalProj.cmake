@@ -139,11 +139,7 @@ function(AddExternalProject TARGET)
     # Configure the exported targets...
     foreach (_ARTEFACT IN LISTS ep_STATIC_LIBRARIES ep_SHARED_LIBRARIES ep_EXECUTABLES)
         add_dependencies(${_ARTEFACT} ${TARGET})
-
-        install(TARGETS ${_ARTEFACT} EP_TARGET
-            RUNTIME DESTINATION bin
-            LIBRARY DESTINATION lib
-        )
+        install(TARGETS ${_ARTEFACT} EP_TARGET)
     endforeach ()
 endfunction()
 
