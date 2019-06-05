@@ -164,6 +164,16 @@ function (locate_cuda_library _outvar _name _path_ext)
   endif()
 endfunction()
 
+function(create_cuda_library LIB_NAME IMP_PATH LIB_TYPE)
+  add_library(${LIB_NAME} ${LIB_TYPE} IMPORTED GLOBAL)
+  set_target_properties(${LIB_NAME} PROPERTIES
+      IMPORTED_LOCATION "${IMP_PATH}"
+  )
+  if(${LIB_TYPE} STREQUAL SHARED)
+    install(TARGETS ${LIB_NAME})
+  endif()
+  target_include_directories(${LIB_NAME} INTERFACE "${CUDA_TOOLKIT_INCLUDE}")
+endfunction()
 
 function(cuda_find_library _NAME)
   # Try to find the dynamic library.
@@ -177,28 +187,23 @@ function(cuda_find_library _NAME)
   locate_cuda_library(${DYLIB_VAR} ${DYLIB_NAME} "")
   locate_cuda_library(${SLIB_VAR} ${SLIB_NAME} "")
 
+  # Create library targets for paths we found
   if (${DYLIB_VAR})
-    add_library(${_NAME} SHARED IMPORTED GLOBAL)
-    set_target_properties(${_NAME} PROPERTIES
-        IMPORTED_LOCATION "${${DYLIB_VAR}}"
-    )
-    target_include_directories(${_NAME} INTERFACE "${CUDA_TOOLKIT_INCLUDE}")
+    create_cuda_library(${_NAME} ${${DYLIB_VAR}} SHARED)
   endif()
 
+  # Names static as dynamic would have been if dynamic wasn't found.
+  # Please for the love of god let us alias IMPORTED targets...
   if (${SLIB_VAR})
-    add_library(${_NAME}_static STATIC IMPORTED GLOBAL)
-    set_target_properties(${_NAME}_static PROPERTIES
-        IMPORTED_LOCATION "${${SLIB_VAR}}"
-    )
-    target_include_directories(${_NAME}_static INTERFACE "${CUDA_TOOLKIT_INCLUDE}")
+    if(NOT TARGET ${_NAME})
+      create_cuda_library(${_NAME} ${${SLIB_VAR}} STATIC)
+    else()
+      create_cuda_library(${_NAME}_static ${${SLIB_VAR}} STATIC)
+    endif()
   endif()
 
-  if (NOT TARGET ${_NAME})
-    if (TARGET ${_NAME}_static)
-      set(${_NAME} ${_NAME}_static)
-    else()
-      message(FATAL_ERROR "Failed to find ${_NAME}")
-    endif()
+  if (NOT TARGET ${_NAME} AND NOT TARGET ${_NAME}_static)
+    message(FATAL_ERROR "Failed to find ${_NAME}")
   endif()
 endfunction()
 
@@ -208,26 +213,30 @@ if(NOT CUDA_VERSION VERSION_LESS "5.0")
   cuda_find_library(cudadevrt)
 endif()
 
-if (TARGET cudart_static)
-  if (UNIX)
-    find_package(Threads REQUIRED)
+# Special treatments for cudart when using the static version
+if (TARGET cudart)
+  get_target_property(CUDART_TYPE cudart TYPE)
+  if(${CUDART_TYPE} STREQUAL STATIC_LIBRARY)
+    if (UNIX)
+      find_package(Threads REQUIRED)
 
-    if (NOT APPLE)
-      # On Linux, you must link against librt when using the static cuda runtime.
-      find_library(CUDA_rt_LIBRARY rt)
-      target_link_libraries(cudart_static INTERFACE ${CUDA_rt_LIBRARY})
-      if (NOT CUDA_rt_LIBRARY)
-        message(WARNING "Expecting to find librt for libcudart_static, but didn't find it.")
+      if (NOT APPLE)
+        # On Linux, you must link against librt when using the static cuda runtime.
+        find_library(CUDA_rt_LIBRARY rt)
+        target_link_libraries(cudart INTERFACE ${CUDA_rt_LIBRARY})
+        if (NOT CUDA_rt_LIBRARY)
+          message(WARNING "Expecting to find librt for libcudart_static, but didn't find it.")
+        endif()
       endif()
     endif()
-  endif()
 
-  target_link_libraries(cudart_static INTERFACE ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+    target_link_libraries(cudart INTERFACE ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
 
-  if(APPLE)
-    # We need to add the default path to the driver (libcuda.dylib) as an rpath, so that
-    # the static cuda runtime can find it at runtime.
-    target_link_options(cudart_static INTERFACE -Wl,-rpath,/usr/local/cuda/lib)
+    if(APPLE)
+      # We need to add the default path to the driver (libcuda.dylib) as an rpath, so that
+      # the static cuda runtime can find it at runtime.
+      target_link_options(cudart INTERFACE -Wl,-rpath,/usr/local/cuda/lib)
+    endif()
   endif()
 endif()
 
