@@ -11,6 +11,11 @@ define_xcmake_target_property(
     BRIEF_DOCS "Strip symbols - default-on in release builds"
     DEFAULT ${DEFAULT_STRIP}
 )
-set_target_properties(STRIP_EFFECTS
-    PROPERTIES INTERFACE_LINK_LIBRARIES -Wl,--strip-all
-)
+
+# --strip-all is not supported by lld-link.exe on Windows
+# TODO: Investigate using RULE_LAUNCH_LINK to call to strip or llvm-strip after linking
+if (NOT WIN32)
+    set_target_properties(STRIP_EFFECTS
+        PROPERTIES INTERFACE_LINK_LIBRARIES -Wl,--strip-all
+    )
+endif()
