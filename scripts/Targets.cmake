@@ -1,5 +1,7 @@
 include(GenerateExportHeader)
 
+set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
+
 # Find all the source files for enabled languages according to the given pattern.
 function(find_sources OUT)
     # Build the glob pattern using the list of enabled languages.
@@ -177,6 +179,29 @@ function(apply_default_standard_properties TARGET)
         -fdiagnostics-show-option
         -fdiagnostics-show-category=name
     )
+    if (WIN32)
+        target_compile_options(${TARGET} PRIVATE
+            # We use clang-cl on Windows instead of clang++, so we need a few clang-cl flags
+            /EHs # CL error handling mode (s == synchronous)
+            /GS- # Suppress buffer overrun detection
+
+            # Add /MD if the target is a shared library.
+            $<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,SHARED_LIBRARY>,/MD,>
+
+            # Add /MT if the target is a static library.
+            $<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,STATIC_LIBRARY>,/MT,>
+
+            # These flags enable clang's compatibility with Microsoft's C++ libraries and extensions
+            -fms-extensions
+            -fms-compatibility
+
+            # TODO: Refactor to using new functions where we can, and turning off the warning locally instead
+            -Wno-deprecated
+
+            # TODO: Figure out what is adding the unused -TP argument on Windows and stop it
+            -Wno-unused-command-line-argument
+        )
+    endif ()
 endfunction()
 
 macro(ensure_not_imported TARGET)
