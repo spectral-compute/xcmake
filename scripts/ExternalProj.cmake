@@ -156,5 +156,5 @@ function(getFinalStampPath OUTVAR TARGET)
         endif()
     endforeach()
 
-    message_colour(FATAL_ERROR BoldRed "Failed to compute stampfile path for ${TARGET}")
+    message(FATAL_ERROR "Failed to compute stampfile path for ${TARGET}")
 endfunction()

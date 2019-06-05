@@ -83,7 +83,7 @@ function(install)
     # Consider each target for special treatment, possibly delegating it to `install()`.
     foreach (TGT ${i_TARGETS})
         if (NOT TARGET ${TGT})
-            message_colour(FATAL_ERROR BoldRed "Tried to install nonexistent target: ${TGT}")
+            message(FATAL_ERROR "Tried to install nonexistent target: ${TGT}")
         endif()
 
         get_target_property(IS_IMPORTED ${TGT} IMPORTED)
