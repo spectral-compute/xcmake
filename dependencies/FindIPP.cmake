@@ -19,7 +19,11 @@ macro(find_ipp_lib SILLY_NAME PRETTY_NAME)
         )
 
         if (IPP_${PRETTY_NAME})
-            add_library(IPP::${PRETTY_NAME} SHARED IMPORTED GLOBAL)
+            if(WIN32)
+                add_library(IPP::${PRETTY_NAME} STATIC IMPORTED GLOBAL)
+            else()
+                add_library(IPP::${PRETTY_NAME} SHARED IMPORTED GLOBAL)
+            endif()
 
             set_target_properties(IPP::${PRETTY_NAME} PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${IPP_INCLUDE_DIR}"
