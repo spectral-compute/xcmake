@@ -28,8 +28,9 @@ function(AddExternalProject TARGET)
     )
     set(multiValueArgs
         # Custom
-        STATIC_LIBRARIES
+        LIBRARIES
         SHARED_LIBRARIES
+        STATIC_LIBRARIES
         EXECUTABLES
 
         # Built-in
@@ -37,6 +38,13 @@ function(AddExternalProject TARGET)
         BUILD_BYPRODUCTS
     )
     cmake_parse_arguments("ep" "${flags}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
+
+    # Send the LIBRARIES list to create the right type of targets
+    if(ep_LIBRARIES AND ${BUILD_SHARED_LIBS})
+        list(APPEND ep_SHARED_LIBRARIES ${ep_LIBRARIES})
+    elseif(ep_LIBRARIES)
+        list(APPEND ep_STATIC_LIBRARIES ${ep_LIBRARIES})
+    endif()
 
     # Construct the list of arguments to just forward directly to ExternalProject_Add. We start with
     # all the arguments not consumed by `cmake_parse_arguments`
