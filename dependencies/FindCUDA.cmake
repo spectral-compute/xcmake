@@ -141,10 +141,17 @@ function (locate_cuda_library _outvar _name _path_ext)
   # (lib/Win32) and the old path (lib).
   find_library(${_outvar}
     NAMES ${_name}
-    PATHS "${CUDA_TOOLKIT_TARGET_DIR}"
-    ENV CUDA_PATH
-    ENV CUDA_LIB_PATH
-    PATH_SUFFIXES ${_cuda_64bit_lib_dir} "${_path_ext}lib/Win32" "${_path_ext}lib" "${_path_ext}libWin32"
+    PATHS
+      "${CUDA_TOOLKIT_TARGET_DIR}"
+      ENV CUDA_PATH
+      ENV CUDA_LIB_PATH
+      ENV NVTOOLSEXT_PATH
+    PATH_SUFFIXES
+      ${_cuda_64bit_lib_dir}
+      "${_path_ext}lib/Win32"
+      "${_path_ext}lib"
+      "${_path_ext}libWin32"
+      "${_path_ext}lib/x64"
     NO_DEFAULT_PATH
   )
 
