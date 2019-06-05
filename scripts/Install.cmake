@@ -86,18 +86,17 @@ function(install)
             message(FATAL_ERROR "Tried to install nonexistent target: ${TGT}")
         endif()
 
+        # Delegate installation of non-IMPORTED targets
         get_target_property(IS_IMPORTED ${TGT} IMPORTED)
-        get_target_property(TGT_TYPE ${TGT} TYPE)
         if (NOT IS_IMPORTED)
-            # Delegate!
             _install(TARGETS ${TGT} ${DELEGATE_ARGS})
             continue()
         endif()
-        get_target_property(FILE_PATH ${TGT} IMPORTED_LOCATION)
 
         set(DEFAULT_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 
         # Install the imported target as a proper file.
+        get_target_property(TGT_TYPE ${TGT} TYPE)
         if ("${TGT_TYPE}" STREQUAL SHARED_LIBRARY)
             set(KEY LIBRARY)
         elseif("${TGT_TYPE}" STREQUAL STATIC_LIBRARY)
@@ -113,6 +112,7 @@ function(install)
         # If it's an EP target, set the OPTIONAL flag here and set up an existence assert if the stampfile exists
         # (meaning the installed file must exist if the EP target ran). If it isn't an EP target, the artefact is
         # expected to exist unconditionally.
+        get_target_property(FILE_PATH ${TGT} IMPORTED_LOCATION)
         set(OPT_FLAG "")
         if (i_EP_TARGET)
             set(OPT_FLAG "OPTIONAL")
