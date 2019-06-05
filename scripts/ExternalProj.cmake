@@ -14,7 +14,7 @@ function(AddExternalProject TARGET)
     # - Built-in arguments we want as variables within this function
     set(flags
         # Custom
-        CMAKE
+        CMAKE # Allows a CMAKE EP to be declared with no additional CMAKE arguments
     )
     set(oneValueArgs
         # Built-in
@@ -50,12 +50,13 @@ function(AddExternalProject TARGET)
     # all the arguments not consumed by `cmake_parse_arguments`
     set(EXTRA_ARGS "${ep_UNPARSED_ARGUMENTS}")
 
-    # Set or override some of the CMake arguments, if it's a CMake build system
-    if (ep_CMAKE OR ep_CMAKE_ARGS)
-        default_value(ep_CMAKE_ARGS "")
+    if(ep_CMAKE AND NOT ep_CMAKE_ARGS)
+        set(ep_CMAKE_ARGS)
+    endif()
 
+    # Set or override some of the CMake arguments, if it's a CMake build system
+    if (ep_CMAKE_ARGS)
         list(APPEND ep_CMAKE_ARGS
-            # Propagate a few flags from the outer project.
             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
