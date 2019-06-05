@@ -3,7 +3,7 @@ include(FindPackageHandleStandardArgs)
 find_path(PCRE2_INCLUDE_DIR pcre2.h)
 
 foreach(_C 8 16 32)
-    find_library(PCRE2_C${_C} pcre2-${_C})
+    find_library(PCRE2_C${_C} NAMES pcre2-${_C} pcre2-${_C}-static libpcre2-${_C}-static libpcre2-${_C})
 
     if (PCRE2_C${_C})
         if (NOT TARGET PCRE2::C${_C})
