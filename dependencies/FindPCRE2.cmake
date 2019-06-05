@@ -7,7 +7,11 @@ foreach(_C 8 16 32)
 
     if (PCRE2_C${_C})
         if (NOT TARGET PCRE2::C${_C})
-            add_library(PCRE2::C${_C} SHARED IMPORTED GLOBAL)
+            if(WIN32)
+                add_library(PCRE2::C${_C} STATIC IMPORTED GLOBAL)
+            else()
+                add_library(PCRE2::C${_C} SHARED IMPORTED GLOBAL)
+            endif()
 
             set_target_properties(PCRE2::C${_C} PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${PCRE2_INCLUDE_DIR}"
