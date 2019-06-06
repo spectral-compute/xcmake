@@ -1,4 +1,4 @@
-SubdirectoryGuard(GTest)
+IncludeGuard(GTest)
 
 set(GTEST_TAG master CACHE STRING "Allow user to set the GTEST external project's checkout tag")
 mark_as_advanced(GTEST_TAG) # This option probably shouldn't exist at all...
