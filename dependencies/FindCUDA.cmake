@@ -130,35 +130,40 @@ else()
     set(CUDA_HAS_FP16 FALSE)
 endif()
 
-function (locate_cuda_library _outvar _name _path_ext)
-    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-        # CUDA 3.2+ on Windows moved the library directories, so we need the new
-        # and old paths.
-        set(_cuda_64bit_lib_dir "${_path_ext}lib/x64" "${_path_ext}lib64" "${_path_ext}libx64" )
-    endif()
+function (locate_cuda_library)
+    set(oneValueArgs OUTVAR TYPE PATH_EXT)
+    set(multiValueArgs NAMES)
+    cmake_parse_arguments("arg" "" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
+
+    # Fully populate the names to search for
+    set(FULL_NAMES "")
+    foreach(NAME ${arg_NAMES})
+        LIST(APPEND FULL_NAMES ${CMAKE_${arg_TYPE}_LIBRARY_PREFIX}${NAME}${CMAKE_${arg_TYPE}_LIBRARY_SUFFIX})
+    endforeach()
 
     # CUDA 3.2+ on Windows moved the library directories, so we need to new
     # (lib/Win32) and the old path (lib).
-    find_library(${_outvar}
-        NAMES ${_name}
+    find_library(${arg_OUTVAR}
+        NAMES ${FULL_NAMES}
         PATHS
             "${CUDA_TOOLKIT_TARGET_DIR}"
             ENV CUDA_PATH
             ENV CUDA_LIB_PATH
             ENV NVTOOLSEXT_PATH
         PATH_SUFFIXES
-            ${_cuda_64bit_lib_dir}
-            "${_path_ext}lib/Win32"
-            "${_path_ext}lib"
-            "${_path_ext}libWin32"
-            "${_path_ext}lib/x64"
+            "${arg_PATH_EXT}lib/x64"
+            "${arg_PATH_EXT}lib64"
+            "${arg_PATH_EXT}libx64"
+            "${arg_PATH_EXT}lib/Win32"
+            "${arg_PATH_EXT}lib"
+            "${arg_PATH_EXT}libWin32"
         NO_DEFAULT_PATH
     )
 
     if(NOT CMAKE_CROSSCOMPILING)
         # Search default search paths, after we search our own set of paths.
-        find_library(${_outvar}
-            NAMES ${_name}
+        find_library(${arg_OUTVAR}
+            NAMES ${FULL_NAMES}
             PATHS "/usr/lib/nvidia-current"
         )
     endif()
@@ -175,39 +180,44 @@ function(create_cuda_library LIB_NAME IMP_PATH LIB_TYPE)
     target_include_directories(${LIB_NAME} INTERFACE "${CUDA_TOOLKIT_INCLUDE}")
 endfunction()
 
-function(cuda_find_library _NAME)
-    # Try to find the dynamic library.
-    set(DYLIB_NAME ${CMAKE_SHARED_LIBRARY_PREFIX}${_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
-    set(SLIB_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}${_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX})
+function(cuda_find_library LIBNAME)
+    set(flags FATAL)
+    set(multiValueArgs EXTRANAMES)
+    cmake_parse_arguments("arg" "${flags}" "" "${multiValueArgs}" "${ARGN}")
 
-    string(TOUPPER ${_NAME} UNAME)
+    # Try to find the library locations
+    string(TOUPPER ${LIBNAME} UNAME)
     set(DYLIB_VAR ${UNAME}_SHARED_PATH)
     set(SLIB_VAR ${UNAME}_STATIC_PATH)
 
-    locate_cuda_library(${DYLIB_VAR} ${DYLIB_NAME} "")
-    locate_cuda_library(${SLIB_VAR} ${SLIB_NAME} "")
+    locate_cuda_library(OUTVAR ${DYLIB_VAR} NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE SHARED PATH_EXT "")
+    locate_cuda_library(OUTVAR ${SLIB_VAR} NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE STATIC PATH_EXT "")
 
     # Create library targets for paths we found
     if (${DYLIB_VAR})
-        create_cuda_library(${_NAME} ${${DYLIB_VAR}} SHARED)
+        create_cuda_library(${LIBNAME} ${${DYLIB_VAR}} SHARED)
     endif()
 
     # Names static as dynamic would have been if dynamic wasn't found.
     # Please for the love of god let us alias IMPORTED targets...
     if(${SLIB_VAR})
-        if(NOT TARGET ${_NAME})
-            create_cuda_library(${_NAME} ${${SLIB_VAR}} STATIC)
+        if(NOT TARGET ${LIBNAME})
+            create_cuda_library(${LIBNAME} ${${SLIB_VAR}} STATIC)
         else()
-            create_cuda_library(${_NAME}_static ${${SLIB_VAR}} STATIC)
+            create_cuda_library(${LIBNAME}_static ${${SLIB_VAR}} STATIC)
         endif()
     endif()
 
-    if(NOT TARGET ${_NAME} AND NOT TARGET ${_NAME}_static)
-        message(FATAL_ERROR "Failed to find ${_NAME}")
+    if(NOT TARGET ${LIBNAME} AND NOT TARGET ${LIBNAME}_static)
+        if(arg_FATAL)
+            message(FATAL_ERROR "Failed to find ${LIBNAME}")
+        else()
+            message(WARNING "Failed to find ${LIBNAME}")
+        endif()
     endif()
 endfunction()
 
-cuda_find_library(cudart)
+cuda_find_library(cudart EXTRANAMES cudart_static)
 
 if(NOT CUDA_VERSION VERSION_LESS "5.0")
     cuda_find_library(cudadevrt)
@@ -245,8 +255,13 @@ cuda_find_library(cufft)
 cuda_find_library(cublas)
 cuda_find_library(cusparse)
 cuda_find_library(curand)
-cuda_find_library(nvToolsExt)
-if (WIN32)
+
+# The tools extension library is an optional package, so some users may be building software which doesn't require it
+# Therefore, allow xcmake to silently fail-to-find when told it's allowed to (-DXCMAKE_NVTOOLSEXT_REQUIRED=FALSE)
+default_value(XCMAKE_NVTOOLSEXT_REQUIRED TRUE)
+cuda_find_library(nvToolsExt EXTRANAMES nvToolsExt64_1 FATAL ${XCMAKE_NVTOOLSEXT_REQUIRED})
+
+if(WIN32 AND XCMAKE_USE_CUDA_VIDEO)
   cuda_find_library(nvcuvenc)
   cuda_find_library(nvcuvid)
 endif()
