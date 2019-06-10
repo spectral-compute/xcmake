@@ -18,3 +18,5 @@ else ()
       SHARED_LIBRARIES  gtest gmock gtest_main gmock_main
     )
 endif ()
+
+target_link_libraries(gtest INTERFACE RAW ${CMAKE_DL_LIBS})
