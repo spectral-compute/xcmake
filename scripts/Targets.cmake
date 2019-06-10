@@ -385,10 +385,11 @@ function (target_link_libraries TARGET)
             set(ALLOW_RAW FALSE)
         elseif ("${_ARG}" STREQUAL "RAW")
             set(ALLOW_RAW TRUE)
+            remove_argument(FLAG ARGN RAW)
         else()
             if ("${CURRENT_KEYWORD}" STREQUAL "")
                 message(FATAL_ERROR "Keywordless target_link_libraries() is not allowed.")
-            elseif (NOT TARGET "${_ARG}")
+            elseif (NOT TARGET "${_ARG}" AND NOT "${ALLOW_RAW}")
                 message(FATAL_ERROR
                     "Tried to link to nonexistent target \"${_ARG}\".\n"
                     "Did you typo your target name?\n"
