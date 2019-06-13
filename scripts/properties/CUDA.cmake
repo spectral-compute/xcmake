@@ -45,20 +45,23 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
 
         # The various PTX versions that were requested...
         --cuda-gpu-arch=sm_$<JOIN:${TARGET_CUDA_COMPUTE_CAPABILITIES}, --cuda-gpu-arch=sm_>
-
-        # Flush denormals in nvidia CUDA code, if this is target is compiled with the unsafe optimization level.
-        $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,unsafe>,-fcuda-flush-denormals-to-zero,>
     )
 
-    # Get PTXAS to be less unhelpful, provided we have a version of cmake supporting the
+    # Pass a bunch of extra useful ptxas flags, provided we have a version of cmake supporting the
     # "Please don't fucking deduplicate my fucking compiler flags" option, which for some
     # reason is what they implemented instead of just *NOT DEDUPLICATING COMPILER OPTIONS?!?!*.
     if (NOT ${CMAKE_VERSION} VERSION_LESS "3.12.0")
         list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
-            -Xcuda-ptxas --warn-on-spills
+            # Only enable local memory warnings in configurations that aren't expecting them.
+            # Bonus points if anyone can work out how to make cmake accept splitting this across multiple lines :/
+            $<IF:$<OR:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,none>,$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,size>,$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,debug>>,,-Xcuda-ptxas --warn-on-local-memory-usage -Xcuda-ptxas --warn-on-spills>
 
-            # Assertions imply local memory usage, so don't enable this warning when assertions are turned on.
-            $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,-Xcuda-ptxas --warn-on-local-memory-usage>
+            # Unsafe math optimisations for CUDA that aren't automatically enabled by `-Ofast` in clang.
+            $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,unsafe>,-fcuda-flush-denormals-to-zero -Xcuda-ptxas --optimize-float-atomics,>
+
+            # `-O<n>` propagates through clang into ptxas, but there are several ptxas flags that aren't enabled
+            # automatically when you pass `-Og` to ptxas.
+            $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,debug>,-Xcuda-ptxas --return-at-end -Xcuda-ptxas --dont-merge-basicblocks -Xcuda-ptxas --disable-optimizer-constants,>
         )
     endif()
 
