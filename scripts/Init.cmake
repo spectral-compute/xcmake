@@ -64,6 +64,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Include the rest of xcmake, for convenience.
 include(ArgHandle)
+include(Find)
 include(Targets)
 include(IncludeGuard)
 include(Headers)
