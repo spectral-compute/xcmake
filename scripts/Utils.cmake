@@ -1,4 +1,10 @@
 # Globally-available utility functions, included everywhere.
+macro(default_ifempty NAME VALUE)
+    if (NOT ${NAME})
+        set(${NAME} ${VALUE})
+    endif()
+endmacro()
+
 macro(default_value NAME VALUE)
     if (NOT DEFINED ${NAME})
         set(${NAME} ${VALUE})

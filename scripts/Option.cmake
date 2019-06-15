@@ -19,18 +19,21 @@ function (option VAR HELP)
     # The final case to handle is if a default value was already set in the cache (such as via the command
     # line or a different script). In which case, everything above will have been a no-op, and there will
     # be an existing cache value with the wrong helptext and advancedness properties. So let's fix those.
+    ensure_documented(${VAR} "${HELP}" BOOL)
+endfunction()
 
+# Ensure that the cache variable VAR is visible, documented, and documented with the given help string.
+function (ensure_documented VAR HELP TYPE)
     # We have to do it in this amusingly contrived way to avoid  writing to the cache unnecessarily
     # (and triggering a rebuild). This way, we'll only modify the cache if the cache has alreay
     # been modified earlier by whatever wrote the variable into the cache.
     get_property(HELPSTR CACHE ${VAR} PROPERTY HELPSTRING)
     if (NOT "${HELPSTR}" STREQUAL "${HELP}")
         set_property(CACHE ${VAR} PROPERTY HELPSTRING "${HELP}")
-    endif()
+    endif ()
 
-    # Always should be bool...
     get_property(OPTTYPE CACHE ${VAR} PROPERTY TYPE)
-    if (NOT "${OPTTYPE}" STREQUAL "BOOL")
-        set_property(CACHE ${VAR} PROPERTY TYPE "BOOL")
+    if (NOT "${OPTTYPE}" STREQUAL "${TYPE}")
+        set_property(CACHE ${VAR} PROPERTY TYPE "${TYPE}")
     endif ()
 endfunction()

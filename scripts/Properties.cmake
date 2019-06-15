@@ -16,8 +16,14 @@ macro(define_xcmake_target_property NAME)
 
     cmake_parse_arguments("tp" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    default_value(tp_DEFAULT OFF)
-    default_value(tp_FULL_DOCS ${tp_BRIEF_DOCS})
+    if (tp_FLAG)
+        set(OPTTYPE BOOL)
+        default_ifempty(tp_DEFAULT OFF)
+    else ()
+        set(OPTTYPE STRING)
+    endif ()
+
+    default_ifempty(tp_FULL_DOCS ${tp_BRIEF_DOCS})
 
     define_property(
         TARGET PROPERTY ${NAME}
@@ -25,9 +31,9 @@ macro(define_xcmake_target_property NAME)
         FULL_DOCS "${tp_FULL_DOCS}"
     )
 
-    if (NOT CACHE{XCMAKE_${NAME}})
-        set(XCMAKE_${NAME} ${tp_DEFAULT} CACHE STRING "${tp_FULL_DOCS}")
-    endif()
+    # TODO: Maybe override set() to call ensure_documented in cases like this...?
+    set(XCMAKE_${NAME} ${tp_DEFAULT} CACHE ${OPTTYPE} "${tp_FULL_DOCS}")
+    ensure_documented(XCMAKE_${NAME} "${tp_FULL_DOCS}" ${OPTTYPE})
 
     # If it's a simple flag property, create the target.
     if (tp_FLAG)
@@ -39,16 +45,22 @@ endmacro()
 
 macro(define_xcmake_global_property NAME)
     set(flags FLAG)
-    set(oneValueArgs DEFAULT)
+    set(oneValueArgs BRIEF_DOCS FULL_DOCS DEFAULT)
     set(multiValueArgs)
 
     cmake_parse_arguments("tp" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if (NOT tp_DEFAULT)
-        set(tp_DEFAULT OFF)
-    endif ()
+    if (tp_FLAG)
+        set(OPTTYPE BOOL)
+        default_ifempty(tp_DEFAULT OFF)
+    else()
+        set(OPTTYPE STRING)
+    endif()
+    default_ifempty(tp_FULL_DOCS ${tp_BRIEF_DOCS})
 
-    default_value(${NAME} ${tp_DEFAULT})
+    set(XCMAKE_${NAME} ${tp_DEFAULT} CACHE ${OPTTYPE} "${tp_FULL_DOCS}")
+    ensure_documented(XCMAKE_${NAME} "${tp_FULL_DOCS}" ${OPTTYPE})
+
     list(APPEND XCMAKE_GLOBAL_PROPERTIES ${NAME})
 endmacro()
 
