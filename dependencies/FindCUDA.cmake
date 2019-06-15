@@ -118,6 +118,7 @@ find_path(CUDA_TOOLKIT_INCLUDE
   NO_DEFAULT_PATH
 )
 set(CUDA_INCLUDE_DIRS ${CUDA_TOOLKIT_INCLUDE} CACHE STRING "CUDA Include directories")
+mark_as_advanced(CUDA_INCLUDE_DIRS)
 
 # Search default search paths, after we search our own set of paths.
 find_path(CUDA_TOOLKIT_INCLUDE device_functions.h)

@@ -8,6 +8,9 @@ set(XCMAKE_INCLUDED ON)
 cmake_policy(VERSION 3.13)
 
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/../toolchain/toolchain.cmake)
+
+# We have on toolchain file to rule them all, so users are not expected to need to change it. Ever.
+mark_as_advanced(CMAKE_TOOLCHAIN_FILE)
 include(${CMAKE_TOOLCHAIN_FILE})
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../dependencies)

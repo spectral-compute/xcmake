@@ -1,10 +1,12 @@
 SubdirectoryGuard(GTest)
 
 set(GTEST_TAG master CACHE STRING "Allow user to set the GTEST external project's checkout tag")
+mark_as_advanced(GTEST_TAG) # This option probably shouldn't exist at all...
 
 include(ExternalProj)
 
 option(XCMAKE_SYSTEM_GTEST "Use system gtest rather than build our own" Off)
+mark_as_advanced(XCMAKE_SYSTEM_GTEST) # Should really just be using the find-or-build-package system...
 
 if (XCMAKE_SYSTEM_GTEST)
     find_package(GTest)
