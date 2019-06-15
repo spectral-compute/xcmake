@@ -16,20 +16,18 @@ macro(define_xcmake_target_property NAME)
 
     cmake_parse_arguments("tp" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    if (NOT tp_DEFAULT)
-        set(tp_DEFAULT OFF)
-    endif()
-
-    if (NOT tp_FULL_DOCS)
-        set(tp_FULL_DOCS ${tp_BRIEF_DOCS})
-    endif()
+    default_value(tp_DEFAULT OFF)
+    default_value(tp_FULL_DOCS ${tp_BRIEF_DOCS})
 
     define_property(
         TARGET PROPERTY ${NAME}
         BRIEF_DOCS "${tp_BRIEF_DOCS}"
         FULL_DOCS "${tp_FULL_DOCS}"
     )
-    default_value(XCMAKE_${NAME} ${tp_DEFAULT})
+
+    if (NOT CACHE{XCMAKE_${NAME}})
+        set(XCMAKE_${NAME} ${tp_DEFAULT} CACHE STRING "${tp_FULL_DOCS}")
+    endif()
 
     # If it's a simple flag property, create the target.
     if (tp_FLAG)
