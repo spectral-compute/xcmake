@@ -81,7 +81,9 @@ foreach (_TGT IN LISTS XCMAKE_GPUS)
     endif()
 endforeach()
 
-defaultTcValue(XCMAKE_INTEGRATED_GPU "OFF")
+set(XCMAKE_INTEGRATED_GPU OFF CACHE BOOL "Does the GPU share the same memory as the host?")
+set(XCMAKE_GPUS "${XCMAKE_GPUS}" CACHE STRING "GPUs to build for")
+
 defaultTcValue(XCMAKE_GPU_TYPE "OFF")  # No GPU
 
 # Make sure we don't have a mixture of GPU targets...
