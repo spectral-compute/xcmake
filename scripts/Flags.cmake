@@ -8,6 +8,8 @@ option(XCMAKE_ENABLE_TESTS "Build unit tests for all projects" ON)
 # Add project-specific toggles
 option(${XCMAKE_PROJECT_NAME_UPPER}_ENABLE_DOCS "Build the documentation for this project" ${XCMAKE_ENABLE_DOCS})
 option(${XCMAKE_PROJECT_NAME_UPPER}_ENABLE_TESTS "Build the units tests for this project" ${XCMAKE_ENABLE_TESTS})
+mark_as_advanced(${XCMAKE_PROJECT_NAME_UPPER}_ENABLE_DOCS)
+mark_as_advanced(${XCMAKE_PROJECT_NAME_UPPER}_ENABLE_TESTS)
 
 # Aborts the calling function if the desired docs aren't turned on
 # PROJECT - The project flag to check
