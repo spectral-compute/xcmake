@@ -3,7 +3,7 @@ include_guard(GLOBAL)
 define_xcmake_target_property(
     SANITISER
     BRIEF_DOCS "The clang-sanitiser to use"
-    FULL_DOCS "Use of multiple sanitisers causes problems. Valid values are: Address, Leak, Memory, Thread, Undefined"
+    FULL_DOCS "Enable a clang sanitiser. Valid values are: Address, Leak, Memory, Thread, Undefined"
 )
 add_library(common_SANITISER_EFFECTS INTERFACE)
 add_library(Address_SANITISER_EFFECTS INTERFACE)

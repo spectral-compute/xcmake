@@ -2,6 +2,7 @@ include_guard(GLOBAL)
 
 define_xcmake_global_property(
     CLANG_TIDY FLAG
+    BRIEF_DOCS "Enable clang-tidy. Is not applied to device code since that does not work yet..."
     DEFAULT OFF
 )
 

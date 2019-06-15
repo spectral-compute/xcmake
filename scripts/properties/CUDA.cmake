@@ -3,7 +3,7 @@ include_guard(GLOBAL)
 define_xcmake_target_property(
     CUDA
     BRIEF_DOCS "Enable CUDA support"
-    FULL_DOCS "Note that this does have a few downsides (like no LTO), so use only when necessary."
+    FULL_DOCS "Enable CUDA support. Note that this does have a few downsides (like no LTO), so use only when necessary."
     DEFAULT OFF
 )
 add_library(CUDA_EFFECTS INTERFACE)
