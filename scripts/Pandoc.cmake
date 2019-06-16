@@ -56,15 +56,15 @@ endfunction()
 
 # Add a manual.
 function (add_manual LIB_NAME)
+    # Abort if library has docs disabled
+    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE ${LIB_NAME})
+
     # Ensure pandoc is installed
     find_program(PANDOC_BINARY pandoc)
     if (NOT PANDOC_BINARY)
         message_colour(STATUS BoldYellow "Compilation of ${LIB_NAME} manual will be skipped because `pandoc` is not installed.")
         return()
     endif ()
-
-    # Abort if library has docs disabled
-    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE ${LIB_NAME})
 
     string(TOLOWER ${LIB_NAME} LOWER_LIB_NAME)
     set(TARGET ${LOWER_LIB_NAME}_manual)
@@ -135,6 +135,9 @@ endfunction()
 # DEPENDENCIES A list of dependencies for the given script. This is relative to the MANUAL_SRC directory given to
 #              add_manual().
 function (add_manual_generator LIB_NAME)
+    # Abort if library has docs disabled
+    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE ${LIB_NAME})
+
     set(flags)
     set(oneValueArgs SCRIPT)
     set(multiValueArgs DEPENDENCIES)
