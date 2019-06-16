@@ -113,11 +113,12 @@ function(apply_default_standard_properties TARGET)
     target_compile_options(${TARGET} BEFORE PRIVATE
         -Weverything # We like warnings.
 
-        # Obviously none of these make sense.
+        # Don't warn for using cool things.
         -Wno-c++98-c++11-c++14-c++17-compat-pedantic
         -Wno-c++98-compat-pedantic
         -Wno-c++11-compat-pedantic
         -Wno-c++14-compat-pedantic
+        -Wno-spectral-extensions
 
         -Wno-unknown-warning-option          # Don't crash old compilers. Unless they're so old they don't have this.
 
