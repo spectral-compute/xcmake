@@ -17,4 +17,7 @@ target_compile_definitions(ASSERTIONS_EFFECTS INTERFACE
 target_compile_options(ASSERTIONS_EFFECTS INTERFACE
     # Crash on integer overflow errors (which is undefined behaviour).
     -ftrapv
+
+    # Don't warn about optimiser failures (assertions cause lots of them).
+    -Wno-pass-failed
 )
