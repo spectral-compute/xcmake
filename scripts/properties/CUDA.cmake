@@ -59,12 +59,19 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
             $<IF:$<OR:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,none>,$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,size>,$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,debug>>,,-Xcuda-ptxas --warn-on-local-memory-usage -Xcuda-ptxas --warn-on-spills>
 
             # Unsafe math optimisations for CUDA that aren't automatically enabled by `-Ofast` in clang.
-            $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,unsafe>,-fcuda-flush-denormals-to-zero -Xcuda-ptxas --optimize-float-atomics,>
+            $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,unsafe>,-fcuda-flush-denormals-to-zero,>
 
             # `-O<n>` propagates through clang into ptxas, but there are several ptxas flags that aren't enabled
             # automatically when you pass `-Og` to ptxas.
             $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,debug>,-Xcuda-ptxas --return-at-end -Xcuda-ptxas --dont-merge-basicblocks -Xcuda-ptxas --disable-optimizer-constants,>
         )
+
+        if ("${CUDA_VERSION_MAJOR}" GREATER_EQUAL 9)
+            list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
+                # Unsafe math optimisations for CUDA that aren't automatically enabled by `-Ofast` in clang.
+                $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,unsafe>,-Xcuda-ptxas --optimize-float-atomics,>
+            )
+        endif()
     endif()
 
     message_colour(STATUS BoldGreen "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
