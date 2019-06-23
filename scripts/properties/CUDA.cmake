@@ -14,12 +14,6 @@ list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
     -x cuda
 )
 
-if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
-    list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
-        -fcuda-short-ptr
-    )
-endif()
-
 if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
     find_package(Scale REQUIRED)
 
