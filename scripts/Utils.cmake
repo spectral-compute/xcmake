@@ -11,13 +11,6 @@ macro(default_value NAME VALUE)
     endif()
 endmacro()
 
-# Use *sparingly*
-macro(default_cache_value NAME VALUE)
-    if (NOT DEFINED ${NAME})
-        set(${NAME} ${VALUE} CACHE INTERNAL "")
-    endif()
-endmacro()
-
 # Directory for temporary scripts.
 set(XCMAKE_TMP_SCRIPT_DIR "${CMAKE_BINARY_DIR}/tmp/cmake")
 file(MAKE_DIRECTORY "${XCMAKE_TMP_SCRIPT_DIR}")
