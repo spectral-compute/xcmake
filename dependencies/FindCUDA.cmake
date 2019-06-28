@@ -71,7 +71,7 @@ else()
     SET(CUDA_TOOLKIT_TARGET_DIR ${CUDA_TOOLKIT_ROOT_DIR})
 endif()
 
-# add known CUDA targetr root path to the set of directories we search for programs, libraries and headers
+# Add known CUDA target root path to the set of directories we search for programs, libraries and headers
 set(CMAKE_FIND_ROOT_PATH "${CUDA_TOOLKIT_TARGET_DIR};${CMAKE_FIND_ROOT_PATH}")
 
 # CUDA_NVCC_EXECUTABLE
@@ -260,6 +260,12 @@ cuda_find_library(curand)
 # Therefore, allow xcmake to silently fail-to-find when told it's allowed to (-DXCMAKE_NVTOOLSEXT_REQUIRED=FALSE)
 default_value(XCMAKE_NVTOOLSEXT_REQUIRED TRUE)
 cuda_find_library(nvToolsExt EXTRANAMES nvToolsExt64_1 FATAL ${XCMAKE_NVTOOLSEXT_REQUIRED})
+
+# NVidia conveniently changed the location of the tool extension headers packaged with the rest of CUDA in 10.0
+# Prior versions they are in the same place as the other headers, so get added in create_cuda_library
+if(TARGET nvToolsExt AND (CUDA_VERSION STREQUAL "10.0" OR CUDA_VERSION VERSION_GREATER "10.0"))
+    target_include_directories(nvToolsExt INTERFACE "${CUDA_TOOLKIT_INCLUDE}/nvtx3")
+endif()
 
 if(WIN32 AND XCMAKE_USE_CUDA_VIDEO)
   cuda_find_library(nvcuvenc)
