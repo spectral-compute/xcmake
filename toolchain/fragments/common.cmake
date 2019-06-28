@@ -3,5 +3,5 @@
 # Prepend to the language flags.
 listJoin(C_FLAGS XCMAKE_COMPILER_FLAGS " ")
 listJoin(CXX_FLAGS XCMAKE_COMPILER_FLAGS " ")
-defaultTcValue(CMAKE_C_FLAGS "${C_FLAGS}")
-defaultTcValue(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
+default_cache_value(CMAKE_C_FLAGS "${C_FLAGS}")
+default_cache_value(CMAKE_CXX_FLAGS "${CXX_FLAGS}")

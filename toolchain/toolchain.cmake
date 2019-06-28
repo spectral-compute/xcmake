@@ -151,9 +151,9 @@ else()
 endif()
 
 # Make sure that CMAKE_LINKER actually sets the linker. Can hook this up to XCMAKE_CLANG_LINKER_FLAGS if we ever care...
-defaultTcValue(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
-defaultTcValue(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
-defaultTcValue(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+default_cache_value(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+default_cache_value(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+default_cache_value(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
 
 # Handle the XCMAKE_SHOW_TRIBBLE case.
 if (XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
