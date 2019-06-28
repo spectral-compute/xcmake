@@ -183,7 +183,9 @@ function(apply_default_standard_properties TARGET)
         target_compile_options(${TARGET} PRIVATE
             # We use clang-cl on Windows instead of clang++, so we need a few clang-cl flags
             /EHs # CL error handling mode (s == synchronous)
-            /GS- # Suppress buffer overrun detection
+
+            # Suppress buffer overrun detection, except in assert builds.
+            $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,/GS->
 
             # Add /MD if the target is a shared library.
             $<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,SHARED_LIBRARY>,/MD,>
