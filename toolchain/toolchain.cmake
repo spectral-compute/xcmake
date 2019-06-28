@@ -126,6 +126,35 @@ defaultTcValue(CMAKE_INSTALL_SYSCONFDIR "etc")
 defaultTcValue(CMAKE_INSTALL_SHARESTATEDIR "com")
 defaultTcValue(CMAKE_INSTALL_LOCALSTATEDIR "var")
 
+# Set `OUTVAR` to the first program in `NAMES` that can be found, or crash. If `OUTVAR` is already set to something
+# (because the user or a toolchain fragment explicitly set that program to something), then do nothing.
+macro (find_default_program OUTVAR)
+    if (NOT ${OUTVAR})
+        find_program(${OUTVAR} NAMES ${ARGN})
+        set(${OUTVAR} ${${OUTVAR}} CACHE INTERNAL "") # Cache it.
+
+        if (NOT ${OUTVAR})
+            message(FATAL_ERROR "Failed to find default ${OUTVAR} using these names: ${NAMES}.")
+        endif()
+    endif()
+endmacro()
+
+# Find the default compilers/linkers/etc.
+if (WIN32)
+    find_default_program(CMAKE_LINKER "lld-link.exe")
+    find_default_program(CMAKE_C_COMPILER "clang-cl.exe")
+    find_default_program(CMAKE_CXX_COMPILER "clang-cl.exe")
+else()
+    find_default_program(CMAKE_LINKER ld.lld ld.gold ld.bfd ld)
+    find_default_program(CMAKE_C_COMPILER clang)
+    find_default_program(CMAKE_CXX_COMPILER clang++)
+endif()
+
+# Make sure that CMAKE_LINKER actually sets the linker. Can hook this up to XCMAKE_CLANG_LINKER_FLAGS if we ever care...
+defaultTcValue(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+defaultTcValue(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+defaultTcValue(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+
 # Handle the XCMAKE_SHOW_TRIBBLE case.
 if (XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
     foreach (_var IN ITEMS CMAKE_C_COMPILER
