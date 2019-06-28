@@ -2,8 +2,10 @@
 macro(configure_test_target TARGET)
     install(
         TARGETS ${TARGET}
-        RUNTIME DESTINATION test/bin
-        LIBRARY DESTINATION test/lib
+        # Prefix all the install dirs with `./test`
+        RUNTIME DESTINATION test/${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION test/${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION test/${CMAKE_INSTALL_LIBDIR}
     )
 
     # Tune the warnings that nobody cares about in test code down a wee bit.
