@@ -92,7 +92,7 @@ function(AddExternalProject TARGET)
     foreach (_LIB ${ep_STATIC_LIBRARIES})
         add_library(${_LIB} STATIC IMPORTED GLOBAL)
 
-        set(SLIB_PATH ${EP_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${_LIB}${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set(SLIB_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${_LIB}${CMAKE_STATIC_LIBRARY_SUFFIX})
         list(APPEND ep_BUILD_BYPRODUCTS ${SLIB_PATH})
         set_target_properties(${_LIB} PROPERTIES
             IMPORTED_LOCATION ${SLIB_PATH}
@@ -104,11 +104,18 @@ function(AddExternalProject TARGET)
     foreach (_LIB ${ep_SHARED_LIBRARIES})
         add_library(${_LIB} SHARED IMPORTED GLOBAL)
 
-        set(DLIB_PATH ${EP_INSTALL_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${_LIB}${CMAKE_SHARED_LIBRARY_SUFFIX})
+        # Since we're just referring to a file here, cmake can't make this distinction for us so we have to hand-hold.
+        if (WIN32)
+            set(INSTALL_DIR ${CMAKE_INSTALL_BINDIR})
+        else()
+            set(INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+        endif()
+
+        set(DLIB_PATH ${EP_INSTALL_DIR}/${INSTALL_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${_LIB}${CMAKE_SHARED_LIBRARY_SUFFIX})
         list(APPEND ep_BUILD_BYPRODUCTS ${DLIB_PATH})
         set_target_properties(${_LIB} PROPERTIES
             IMPORTED_LOCATION ${DLIB_PATH}
-            IMPORTED_IMPLIB ${EP_INSTALL_DIR}/lib/${CMAKE_IMPORT_LIBRARY_PREFIX}${_LIB}${CMAKE_IMPORT_LIBRARY_SUFFIX}
+            IMPORTED_IMPLIB ${EP_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_IMPORT_LIBRARY_PREFIX}${_LIB}${CMAKE_IMPORT_LIBRARY_SUFFIX}
         )
 
         target_include_directories(${_LIB} INTERFACE ${EP_INSTALL_DIR}/include)
@@ -117,7 +124,7 @@ function(AddExternalProject TARGET)
     foreach (_EXE ${ep_EXECUTABLES})
         add_executable(${_EXE} STATIC IMPORTED GLOBAL)
 
-        set(EXE_PATH ${EP_INSTALL_DIR}/bin/${_EXE}${CMAKE_EXECUTABLE_SUFFIX})
+        set(EXE_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_BINDIR}/${_EXE}${CMAKE_EXECUTABLE_SUFFIX})
         list(APPEND ep_BUILD_BYPRODUCTS ${EXE_PATH})
         set_target_properties(${_EXE} PROPERTIES
             IMPORTED_LOCATION ${EXE_PATH}
