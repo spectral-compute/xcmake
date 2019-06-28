@@ -15,7 +15,5 @@ define_xcmake_target_property(
 # --strip-all is not supported by lld-link.exe on Windows
 # TODO: Investigate using RULE_LAUNCH_LINK to call to strip or llvm-strip after linking
 if (NOT WIN32)
-    set_target_properties(STRIP_EFFECTS
-        PROPERTIES INTERFACE_LINK_LIBRARIES -Wl,--strip-all
-    )
+    target_link_options(STRIP_EFFECTS INTERFACE -Wl,--strip-all)
 endif()
