@@ -16,6 +16,9 @@ target_compile_options(CUDA_FLAGS INTERFACE
     -Wno-cuda-compat  # Clang is less restrictive when compiling CUDA than NVCC
     -x cuda
 )
+target_optional_compile_options(CUDA_FLAGS INTERFACE
+    -fcuda-short-ptr
+)
 
 if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
     find_package(AmdCuda REQUIRED)
