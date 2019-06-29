@@ -45,8 +45,8 @@ function(OPT_LEVEL_EFFECTS TARGET)
     )
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         -Ofast
-        # There are also CUDA translation unit specific flags that are in XCMAKE_CUDA_COMPILE_FLAGS, predicated on the
-        # OPT_LEVEL target property.
+        # There are also CUDA translation unit specific flags, predicated on the
+        # OPT_LEVEL target property, defined in CUDA.cmake
     )
     target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         # An experimental but years-old optimisation.

@@ -8,8 +8,11 @@ define_xcmake_target_property(
 )
 add_library(CUDA_EFFECTS INTERFACE)
 
-set(XCMAKE_CUDA_COMPILE_FLAGS "")
-list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
+# Handy target to hold the CUDA flags. Not actually interface-linked, however, since these flags are only applied to
+# cuda translation units (not to whole targets).
+add_library(CUDA_FLAGS INTERFACE)
+
+target_compile_options(CUDA_FLAGS INTERFACE
     -Wno-cuda-compat  # Clang is less restrictive when compiling CUDA than NVCC
     -x cuda
 )
@@ -17,7 +20,7 @@ list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
 if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
     find_package(AmdCuda REQUIRED)
 
-    list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
+    target_compile_options(CUDA_FLAGS INTERFACE
         --cuda-path=$<SHELL_PATH:${AMDCUDA_TOOLKIT_ROOT_DIR}>
         # The GPU targets selected...
         --cuda-gpu-arch=$<JOIN:${TARGET_AMD_GPUS}, --cuda-gpu-arch=>
@@ -34,7 +37,7 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
         message(WARNING "CUDA 9 has been found to harm performance. Consider upgrading (or downgrading).")
     endif ()
 
-    list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
+    target_compile_options(CUDA_FLAGS INTERFACE
         --cuda-path=$<SHELL_PATH:${CUDA_TOOLKIT_ROOT_DIR}>
 
         # The various PTX versions that were requested...
@@ -45,7 +48,7 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     # "Please don't fucking deduplicate my fucking compiler flags" option, which for some
     # reason is what they implemented instead of just *NOT DEDUPLICATING COMPILER OPTIONS?!?!*.
     if (NOT ${CMAKE_VERSION} VERSION_LESS "3.12.0")
-        list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
+        target_compile_options(CUDA_FLAGS INTERFACE
             # Only enable local memory warnings in configurations that aren't expecting them.
             # Bonus points if anyone can work out how to make cmake accept splitting this across multiple lines :/
             $<IF:$<OR:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,none>,$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,size>,$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,debug>>,,-Xcuda-ptxas --warn-on-local-memory-usage -Xcuda-ptxas --warn-on-spills>
@@ -59,7 +62,7 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
         )
 
         if ("${CUDA_VERSION_MAJOR}" GREATER_EQUAL 9)
-            list(APPEND XCMAKE_CUDA_COMPILE_FLAGS
+            target_compile_options(CUDA_FLAGS INTERFACE
                 # Unsafe math optimisations for CUDA that aren't automatically enabled by `-Ofast` in clang.
                 $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,unsafe>,-Xcuda-ptxas --optimize-float-atomics,>
             )
@@ -68,5 +71,5 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
 
     message_colour(STATUS BoldGreen "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
 else()
-    list(APPEND XCMAKE_CUDA_COMPILE_FLAGS --cuda-works-better-if-you-enable-gpu-support-in-xcmake) # :D
+    target_compile_options(CUDA_FLAGS INTERFACE --cuda-works-better-if-you-enable-gpu-support-in-xcmake) # :D
 endif()
