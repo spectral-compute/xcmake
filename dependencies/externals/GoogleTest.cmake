@@ -16,7 +16,7 @@ else()
     AddExternalProject(googletest
         GIT_REPOSITORY    git@gitlab.com:spectral-ai/engineering/thirdparty/googletest
         GIT_TAG           ${GTEST_TAG}
-        CMAKE_ARGS        -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
+        CMAKE_ARGS        -DCMAKE_BUILD_TYPE=Release
         LIBRARIES         ${GT_PRODUCTS}
     )
 endif()

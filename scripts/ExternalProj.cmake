@@ -63,6 +63,7 @@ function(AddExternalProject TARGET)
             -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
             -DCMAKE_LINKER=${CMAKE_LINKER}
+            -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
 
             # Avoid install-time logspam
             -DCMAKE_INSTALL_MESSAGE=NEVER
