@@ -90,3 +90,8 @@ default_value(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 # A "make all the documentation" target. The scripts that make documentation targets attach their targets to this.
 add_custom_target(docs ALL)
 
+# Exclude effect targets from the output of cmake GraphViz graphs.
+file(WRITE ${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake
+    "set(GRAPHVIZ_IGNORE_TARGETS \".*_EFFECTS\")"
+)
+include(CMakeGraphVizOptions)
