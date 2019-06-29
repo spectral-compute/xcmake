@@ -72,7 +72,7 @@ function(target_optional_compile_options TARGET)
         check_cxx_compiler_flag(${_F} ${CACHE_VAR})
 
         if (${CACHE_VAR})
-            target_compile_options(${TARGET} ${KEYWORD} ${MAYBE_BEFORE} ${_F})
+            target_compile_options(${TARGET} ${MAYBE_BEFORE} ${KEYWORD} ${_F})
         endif ()
     endforeach ()
 endfunction()
