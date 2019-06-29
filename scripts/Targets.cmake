@@ -44,6 +44,39 @@ function(find_sources OUT)
     set(${OUT} ${FOUND_SOURCES} PARENT_SCOPE)
 endfunction()
 
+# Try to add some compile options, but - for each one - only do so if the compiler accepts them.
+# This is useful for things like warning or optimisation flags that aren't strictly required, but are
+# preferred. It means your cmake script can work with lots of different compiler versions without the need
+# to have complicated compiler version checks to see if the flag is really supported.
+#
+# The downside is that this function is quite slow, so if you use it a lot your cmake configure time will get
+# rather long. Note, however, that the overhead is linear in the number of unique flags ever passed to this
+# function, not in the number of targets multiplied by the number of flags.
+#
+# This accepts the same argument sas `target_compile_options`, except that you may only use one keyword at a time.
+# Use multiple calls if you want to use multiple different keywords (or make the argument parsing more clever...)
+function(target_optional_compile_options TARGET)
+    cmake_parse_arguments("d" "BEFORE" "" "" ${ARGN})
+    if (d_BEFORE)
+        set(MAYBE_BEFORE BEFORE)
+    else ()
+        set(MAYBE_BEFORE "")
+    endif ()
+
+    # Pop the keyword off.
+    list(GET d_UNPARSED_ARGUMENTS 0 KEYWORD)
+    list(REMOVE_AT d_UNPARSED_ARGUMENTS 0)
+
+    foreach (_F ${d_UNPARSED_ARGUMENTS})
+        string(MAKE_C_IDENTIFIER ${_F} CACHE_VAR)
+        check_cxx_compiler_flag(${_F} ${CACHE_VAR})
+
+        if (${CACHE_VAR})
+            target_compile_options(${TARGET} ${KEYWORD} ${MAYBE_BEFORE} ${_F})
+        endif ()
+    endforeach ()
+endfunction()
+
 # Apply the default values (from the XCMAKE_* global variables) of all our custom target properties.
 function(apply_default_properties TARGET)
     foreach (_I ${XCMAKE_TGT_PROPERTIES})
@@ -106,13 +139,8 @@ function(apply_default_standard_properties TARGET)
 
     set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
 
-    # Compiler flags that should be unconditionally applied to *everything*.
-    # Since these flags go ahead of any others, individual targets can add their own flags to override things (such as
-    # disabling warnings). In general though, we aim to avoid doing that, and if we are disabling a warning, it's
-    # preferable to do so with an inline pragma around the silly bit of code.
-    #
-    # Optimisation flags don't belong here. Those probably want to go in either CUDA.cmake or OPT_LEVEL.cmake.
-    target_compile_options(${TARGET} BEFORE PRIVATE
+    # Diagnostic flags to be applied globally.
+    target_optional_compile_options(${TARGET} BEFORE PRIVATE
         -Weverything # We like warnings.
 
         # Don't warn for using cool things.

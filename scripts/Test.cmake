@@ -9,7 +9,7 @@ macro(configure_test_target TARGET)
     )
 
     # Tune the warnings that nobody cares about in test code down a wee bit.
-    target_compile_options(${TARGET} PRIVATE
+    target_optional_compile_options(${TARGET} PRIVATE
         -Wno-weak-vtables
         -Wno-missing-variable-declarations
     )

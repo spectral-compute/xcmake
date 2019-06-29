@@ -23,7 +23,9 @@ function(OPT_LEVEL_EFFECTS TARGET)
 
     target_compile_options(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE
         -O0
-        -Wno-pass-failed # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
+    )
+    target_optional_compile_options(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE
+        -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
     )
 
     target_compile_options(${TARGET}_size_OPT_LEVEL_EFFECTS INTERFACE
@@ -33,6 +35,8 @@ function(OPT_LEVEL_EFFECTS TARGET)
 
     target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
         -Og
+    )
+    target_optional_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
         -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
     )
 
@@ -41,12 +45,12 @@ function(OPT_LEVEL_EFFECTS TARGET)
     )
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         -Ofast
-
-        # An experimental but years-old optimisation.
-        -fstrict-vtable-pointers
-
         # There are also CUDA translation unit specific flags that are in XCMAKE_CUDA_COMPILE_FLAGS, predicated on the
         # OPT_LEVEL target property.
+    )
+    target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
+        # An experimental but years-old optimisation.
+        -fstrict-vtable-pointers
     )
 
     # I realise this is ridiculous.
