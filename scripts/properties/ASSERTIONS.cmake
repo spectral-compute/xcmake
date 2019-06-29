@@ -14,7 +14,7 @@ define_xcmake_target_property(
 target_compile_definitions(ASSERTIONS_EFFECTS INTERFACE
     -DENABLE_ASSERTIONS
 )
-target_compile_options(ASSERTIONS_EFFECTS INTERFACE
+target_optional_compile_options(ASSERTIONS_EFFECTS INTERFACE
     # Crash on integer overflow errors (which is undefined behaviour).
     -ftrapv
 
