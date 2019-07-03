@@ -11,6 +11,7 @@ define_xcmake_target_property(
     BRIEF_DOCS "Optimisation level to use"
     FULL_DOCS "Valid values are: none, debug, size, safe, and unsafe. Does more than just setting -Ofoo!"
     DEFAULT ${DEFAULT_OPT}
+    VALID_VALUES none debug size safe unsafe
 )
 
 # This one has to be funtion-style so we can run a generator expression on TARGET.
