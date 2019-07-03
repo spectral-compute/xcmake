@@ -1,12 +1,11 @@
 include_guard(GLOBAL)
 
 define_xcmake_target_property(
-    CUDA
+    CUDA FLAG
     BRIEF_DOCS "Enable CUDA support"
     FULL_DOCS "Enable CUDA support. Note that this does have a few downsides (like no LTO), so use only when necessary."
     DEFAULT OFF
 )
-add_library(CUDA_EFFECTS INTERFACE)
 
 # Handy target to hold the CUDA flags. Not actually interface-linked, however, since these flags are only applied to
 # cuda translation units (not to whole targets).

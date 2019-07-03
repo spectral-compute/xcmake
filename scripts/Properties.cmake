@@ -12,7 +12,7 @@ file(
 macro(define_xcmake_target_property NAME)
     set(flags FLAG)
     set(oneValueArgs BRIEF_DOCS FULL_DOCS DEFAULT)
-    set(multiValueArgs)
+    set(multiValueArgs VALID_VALUES)
 
     cmake_parse_arguments("tp" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -31,9 +31,7 @@ macro(define_xcmake_target_property NAME)
         FULL_DOCS "${tp_FULL_DOCS}"
     )
 
-    # TODO: Maybe override set() to call ensure_documented in cases like this...?
-    set(XCMAKE_${NAME} ${tp_DEFAULT} CACHE ${OPTTYPE} "${tp_FULL_DOCS}")
-    ensure_documented(XCMAKE_${NAME} "${tp_FULL_DOCS}" ${OPTTYPE})
+    option(XCMAKE_${NAME} "${tp_FULL_DOCS}" "${tp_DEFAULT}" "${OPTTYPE}" "${tp_VALID_VALUES}")
 
     # If it's a simple flag property, create the target.
     if (tp_FLAG)
@@ -46,7 +44,7 @@ endmacro()
 macro(define_xcmake_global_property NAME)
     set(flags FLAG)
     set(oneValueArgs BRIEF_DOCS FULL_DOCS DEFAULT)
-    set(multiValueArgs)
+    set(multiValueArgs VALID_VALUES)
 
     cmake_parse_arguments("tp" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -58,8 +56,7 @@ macro(define_xcmake_global_property NAME)
     endif()
     default_ifempty(tp_FULL_DOCS ${tp_BRIEF_DOCS})
 
-    set(XCMAKE_${NAME} ${tp_DEFAULT} CACHE ${OPTTYPE} "${tp_FULL_DOCS}")
-    ensure_documented(XCMAKE_${NAME} "${tp_FULL_DOCS}" ${OPTTYPE})
+    option(XCMAKE_${NAME} "${tp_FULL_DOCS}" "${tp_DEFAULT}" "${OPTTYPE}" "${tp_VALID_VALUES}")
 
     list(APPEND XCMAKE_GLOBAL_PROPERTIES ${NAME})
 endmacro()

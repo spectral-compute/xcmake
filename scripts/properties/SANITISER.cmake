@@ -4,8 +4,11 @@ define_xcmake_target_property(
     SANITISER
     BRIEF_DOCS "The clang-sanitiser to use"
     FULL_DOCS "Enable a clang sanitiser. Valid values are: Address, Leak, Memory, Thread, Undefined"
+    VALID_VALUES OFF Address Leak Memory Thread Undefined
+    DEFAULT OFF
 )
 add_library(common_SANITISER_EFFECTS INTERFACE)
+add_library(OFF_SANITISER_EFFECTS INTERFACE)  # Nothing.
 add_library(Address_SANITISER_EFFECTS INTERFACE)
 add_library(Leak_SANITISER_EFFECTS INTERFACE)
 add_library(Memory_SANITISER_EFFECTS INTERFACE)
