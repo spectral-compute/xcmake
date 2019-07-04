@@ -220,11 +220,10 @@ function(apply_default_standard_properties TARGET)
             # Suppress buffer overrun detection, except in assert builds.
             $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,/GS->
 
-            # Add /MD if the target is a shared library.
-            $<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,SHARED_LIBRARY>,/MD,>
-
-            # Add /MT if the target is a static library.
-            $<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,STATIC_LIBRARY>,/MT,>
+            # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
+            # This is _technically_ defaulted to by... something somewhere... However, we're leaving it here so there's a 
+            # reminder about it if we ever get /MD vs /MT clashes again
+            /MD
 
             # These flags enable clang's compatibility with Microsoft's C++ libraries and extensions
             -fms-extensions
