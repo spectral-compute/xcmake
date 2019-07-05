@@ -1,7 +1,8 @@
 SubdirectoryGuard(Docopt)
 include(ExternalProj)
 
-if(WIN32)
+set(DOCOPT_FLAGS "")
+if (WIN32)
     set(DOCOPT_FLAGS "/EHsc")
 endif()
 
