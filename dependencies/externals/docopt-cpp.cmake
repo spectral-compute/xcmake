@@ -2,8 +2,8 @@ include_guard(GLOBAL)
 include(ExternalProj)
 
 set(DOCOPT_FLAGS "")
-if (WIN32)
-    set(DOCOPT_FLAGS "/EHsc")
+if(MSVC)
+    set(DOCOPT_FLAGS "/EHsc") # Sets the exception handling mode
 endif()
 
 add_external_project(docopt_proj
