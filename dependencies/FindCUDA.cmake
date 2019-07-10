@@ -131,7 +131,7 @@ else()
 endif()
 
 function (locate_cuda_library)
-    set(oneValueArgs OUTVAR TYPE PATH_EXT)
+    set(oneValueArgs OUTVAR TYPE)
     set(multiValueArgs NAMES)
     cmake_parse_arguments("arg" "" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
 
@@ -151,12 +151,12 @@ function (locate_cuda_library)
             ENV CUDA_LIB_PATH
             ENV NVTOOLSEXT_PATH
         PATH_SUFFIXES
-            "${arg_PATH_EXT}lib/x64"
-            "${arg_PATH_EXT}lib64"
-            "${arg_PATH_EXT}libx64"
-            "${arg_PATH_EXT}lib/Win32"
-            "${arg_PATH_EXT}lib"
-            "${arg_PATH_EXT}libWin32"
+            lib/x64
+            lib64
+            libx64
+            lib/Win32
+            lib
+            libWin32
         NO_DEFAULT_PATH
     )
 
@@ -190,8 +190,8 @@ function(cuda_find_library LIBNAME)
     set(DYLIB_VAR ${UNAME}_SHARED_PATH)
     set(SLIB_VAR ${UNAME}_STATIC_PATH)
 
-    locate_cuda_library(OUTVAR ${DYLIB_VAR} NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE SHARED PATH_EXT "")
-    locate_cuda_library(OUTVAR ${SLIB_VAR} NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE STATIC PATH_EXT "")
+    locate_cuda_library(OUTVAR ${DYLIB_VAR} NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE SHARED)
+    locate_cuda_library(OUTVAR ${SLIB_VAR} NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE STATIC)
 
     # Create library targets for paths we found
     if (${DYLIB_VAR})
