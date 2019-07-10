@@ -49,10 +49,14 @@ function(OPT_LEVEL_EFFECTS TARGET)
         # There are also CUDA translation unit specific flags, predicated on the
         # OPT_LEVEL target property, defined in CUDA.cmake
     )
-    target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
-        # An experimental but years-old optimisation.
-        -fstrict-vtable-pointers
-    )
+
+    # Filter on Windows until Clang issue #270 is properly resolved
+    if(NOT WIN32)
+        target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
+            # An experimental but years-old optimisation.
+            -fstrict-vtable-pointers
+        )
+    endif()
 
     # I realise this is ridiculous.
     target_link_libraries(
