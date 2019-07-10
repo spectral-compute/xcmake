@@ -97,8 +97,17 @@ function(install)
 
         # Install the imported target as a proper file.
         get_target_property(TGT_TYPE ${TGT} TYPE)
+
+        get_target_property(FILE_PATH ${TGT} IMPORTED_LOCATION)
+        get_target_property(IMPLIB_FILE_PATH ${TGT} IMPORTED_IMPLIB)
+
+        # On DLL platforms, we need to set the key to RUNTIME for shared libraries
         if ("${TGT_TYPE}" STREQUAL SHARED_LIBRARY)
-            set(KEY LIBRARY)
+            if(IMPLIB_FILE_PATH)
+                set(KEY RUNTIME)
+            else()
+                set(KEY LIBRARY)
+            endif()
         elseif("${TGT_TYPE}" STREQUAL STATIC_LIBRARY)
             set(KEY ARCHIVE)
         elseif("${TGT_TYPE}" STREQUAL EXECUTABLE)
@@ -112,27 +121,42 @@ function(install)
         # If it's an EP target, set the OPTIONAL flag here and set up an existence assert if the stampfile exists
         # (meaning the installed file must exist if the EP target ran). If it isn't an EP target, the artefact is
         # expected to exist unconditionally.
-        get_target_property(FILE_PATH ${TGT} IMPORTED_LOCATION)
-        set(OPT_FLAG "")
-        if (i_EP_TARGET)
-            set(OPT_FLAG "OPTIONAL")
-            get_final_stamp_path(STAMPFILE ${TGT})
-
-            # Crash if, at install time, the artefact does not exist but the stamp file does.
-            # This can be conditionally disabled for generators that don't like `install(CODE...)`. It's only here to
-            # avoid the nasty situation where EP builds would silently fail if they were misconfigured and the
-            # `install(FILES...)` call was merely made `OPTIONAL`.
-            install(CODE
-                "if (NOT EXISTS \"${FILE_PATH}\" AND EXISTS \"${STAMPFILE}\") \n\
-                    message(FATAL_ERROR \"No such file or directory:\\n   ${FILE_PATH}\\nDid you misconfigure your external project?\") \n\
-                endif()"
-            )
-        endif()
+        handleEP(${FILE_PATH})
 
         install(FILES "${FILE_PATH}" ${OPT_FLAG}
             PERMISSIONS "${PERMS}"
             DESTINATION "${${KEY}_DESTINATION}"
             ${${KEY}_FORWARD}
         )
+
+        # Handle implib installation if present
+        if(IMPLIB_FILE_PATH)
+            handleEP(${IMPLIB_FILE_PATH})
+
+            install(FILES "${IMPLIB_FILE_PATH}" ${OPT_FLAG}
+                PERMISSIONS "${PERMS}"
+                DESTINATION "${ARCHIVE_DESTINATION}"
+                ${ARCHIVE_FORWARD}
+            )
+        endif()
+
     endforeach()
 endfunction()
+
+macro(handleEP CHECKPATH)
+    set(OPT_FLAG "")
+    if(i_EP_TARGET)
+        set(OPT_FLAG "OPTIONAL")
+        get_final_stamp_path(STAMPFILE ${TGT})
+
+        # Crash if, at install time, the artefact does not exist but the stamp file does.
+        # This can be conditionally disabled for generators that don't like `install(CODE...)`. It's only here to
+        # avoid the nasty situation where EP builds would silently fail if they were misconfigured and the
+        # `install(FILES...)` call was merely made `OPTIONAL`.
+        install(CODE
+            "if (NOT EXISTS \"${CHECKPATH}\" AND EXISTS \"${STAMPFILE}\") \n\
+                message(FATAL_ERROR \"No such file or directory:\\n   ${CHECKPATH}\\nDid you misconfigure your external project?\") \n\
+            endif()"
+        )
+    endif()
+endmacro()
