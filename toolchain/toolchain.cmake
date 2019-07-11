@@ -126,6 +126,13 @@ defaultTcValue(CMAKE_INSTALL_SYSCONFDIR "etc")
 defaultTcValue(CMAKE_INSTALL_SHARESTATEDIR "com")
 defaultTcValue(CMAKE_INSTALL_LOCALSTATEDIR "var")
 
+# Provide a variable to denote if the platform we're on uses IMPLIBS for its shared libraries
+# Please flesh this out with more possibilities as they're needed
+defaultTcValue(XCMAKE_IMPLIB_PLATFORM FALSE)
+if(WIN32)
+    set(XCMAKE_IMPLIB_PLATFORM TRUE)
+endif()
+
 # Set `OUTVAR` to the first program in `NAMES` that can be found, or crash. If `OUTVAR` is already set to something
 # (because the user or a toolchain fragment explicitly set that program to something), then do nothing.
 macro (find_default_program OUTVAR)
@@ -140,7 +147,7 @@ macro (find_default_program OUTVAR)
 endmacro()
 
 # Find the default compilers/linkers/etc.
-if (WIN32)
+if(WIN32)
     find_default_program(CMAKE_LINKER "lld-link.exe")
     find_default_program(CMAKE_C_COMPILER "clang-cl.exe")
     find_default_program(CMAKE_CXX_COMPILER "clang-cl.exe")
@@ -156,7 +163,7 @@ default_cache_value(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
 default_cache_value(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
 
 # Handle the XCMAKE_SHOW_TRIBBLE case.
-if (XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
+if(XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
     foreach (_var IN ITEMS CMAKE_C_COMPILER
                            CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN
                            CMAKE_C_COMPILER_TARGET
