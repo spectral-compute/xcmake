@@ -113,15 +113,17 @@ function(add_external_project TARGET)
     foreach (_LIB ${ep_SHARED_LIBRARIES})
         add_library(${_LIB} SHARED IMPORTED GLOBAL)
 
-        # Since we're just referring to a file here, cmake can't make this distinction for us so we have to hand-hold.
-        if (WIN32)
+        set(INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+        set(IMPLIB_PATH "")
+
+        # Only put IMPLIB data in place on platforms which need it
+        if(XCMAKE_IMPLIB_PLATFORM)
             set(INSTALL_DIR ${CMAKE_INSTALL_BINDIR})
-        else()
-            set(INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+            set(IMPLIB_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_IMPORT_LIBRARY_PREFIX}${_LIB}${CMAKE_IMPORT_LIBRARY_SUFFIX})
         endif()
 
         set(DLIB_PATH ${EP_INSTALL_DIR}/${INSTALL_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${_LIB}${CMAKE_SHARED_LIBRARY_SUFFIX})
-        set(IMPLIB_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_IMPORT_LIBRARY_PREFIX}${_LIB}${CMAKE_IMPORT_LIBRARY_SUFFIX})
+
         list(APPEND ep_BUILD_BYPRODUCTS ${DLIB_PATH} ${IMPLIB_PATH})
         set_target_properties(${_LIB} PROPERTIES
             IMPORTED_LOCATION ${DLIB_PATH}
