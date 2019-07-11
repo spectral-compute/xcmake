@@ -131,7 +131,7 @@ else()
 endif()
 
 function (locate_cuda_library)
-    set(oneValueArgs OUTVAR TYPE)
+    set(oneValueArgs LIBPATH DLLPATH TYPE)
     set(multiValueArgs NAMES)
     cmake_parse_arguments("arg" "" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
 
@@ -143,8 +143,8 @@ function (locate_cuda_library)
 
     # CUDA 3.2+ on Windows moved the library directories, so we need to new
     # (lib/Win32) and the old path (lib).
-    find_library(${arg_OUTVAR}
-        NAMES ${FULL_NAMES}
+    find_library(${arg_LIBPATH}
+        NAMES ${arg_NAMES}
         PATHS
             "${CUDA_TOOLKIT_TARGET_DIR}"
             ENV CUDA_PATH
@@ -160,48 +160,77 @@ function (locate_cuda_library)
         NO_DEFAULT_PATH
     )
 
+    if(XCMAKE_IMPLIB_PLATFORM AND arg_DLLPATH)
+        find_file(${arg_DLLPATH}
+            NAMES ${FULL_NAMES}
+            PATHS
+                "${CUDA_TOOLKIT_TARGET_DIR}"
+                ENV CUDA_PATH
+                ENV CUDA_LIB_PATH
+                ENV NVTOOLSEXT_PATH
+            PATH_SUFFIXES
+                bin
+                bin/x64
+                bin/Win32
+            NO_DEFAULT_PATH
+        )
+    endif()
+
     if(NOT CMAKE_CROSSCOMPILING)
         # Search default search paths, after we search our own set of paths.
-        find_library(${arg_OUTVAR}
+        find_library(${arg_LIBPATH}
             NAMES ${FULL_NAMES}
             PATHS "/usr/lib/nvidia-current"
         )
+        if(XCMAKE_IMPLIB_PLATFORM)
+            find_file(${arg_DLLPATH}
+                NAMES ${FULL_NAMES}
+                PATHS "/usr/lib/nvidia-current"
+            )
+        endif()
     endif()
 endfunction()
 
-function(create_cuda_library LIB_NAME IMP_PATH LIB_TYPE)
+function(create_cuda_library LIB_NAME LIB_TYPE IMPORT_PATH IMPLIB_PATH)
     add_library(${LIB_NAME} ${LIB_TYPE} IMPORTED GLOBAL)
     set_target_properties(${LIB_NAME} PROPERTIES
-            IMPORTED_LOCATION "${IMP_PATH}"
+            IMPORTED_LOCATION "${IMPORT_PATH}"
+            IMPORTED_IMPLIB "${IMPLIB_PATH}"
     )
     target_include_directories(${LIB_NAME} INTERFACE "${CUDA_TOOLKIT_INCLUDE}")
 endfunction()
 
 function(cuda_find_library LIBNAME)
     set(flags FATAL)
-    set(multiValueArgs EXTRANAMES)
-    cmake_parse_arguments("arg" "${flags}" "" "${multiValueArgs}" "${ARGN}")
+    set(oneValueArgs STATICNAME) # For when the static and dynamic libs have fully different names
+    set(multiValueArgs EXTRANAMES) # For when we have to go find weird names, such as on windows
+    cmake_parse_arguments("arg" "${flags}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
+
+    # find_library creates a cache variable, so to make it unique append the library name to the start
+    set(IMPLIB_PATH ${LIBNAME}_IMPLIB_PATH)
+    set(DLL_PATH ${LIBNAME}_DLL_PATH)
+    set(STATIC_PATH ${LIBNAME}_STATIC_PATH)
+
+    list(APPEND arg_EXTRANAMES ${LIBNAME}64_100) # TODO: This needs to harvest 32/64 bit, and a condensed cuda version
 
     # Try to find the library locations
-    string(TOUPPER ${LIBNAME} UNAME)
-    set(DYLIB_VAR ${UNAME}_SHARED_PATH)
-    set(SLIB_VAR ${UNAME}_STATIC_PATH)
-
-    locate_cuda_library(OUTVAR ${DYLIB_VAR} NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE SHARED)
-    locate_cuda_library(OUTVAR ${SLIB_VAR} NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE STATIC)
+    # Filenames are located in the order they are presented to the NAMES argument
+    # Put STATICNAME first so that, in the event of implib, it grabs the dedicated static library
+    locate_cuda_library(LIBPATH ${IMPLIB_PATH} DLLPATH "${DLL_PATH}" NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE SHARED)
+    locate_cuda_library(LIBPATH "${STATIC_PATH}" NAMES ${arg_STATICNAME} ${LIBNAME} ${arg_EXTRANAMES} TYPE STATIC)
 
     # Create library targets for paths we found
-    if (${DYLIB_VAR})
-        create_cuda_library(${LIBNAME} ${${DYLIB_VAR}} SHARED)
+    if (${IMPLIB_PATH} AND ${DLL_PATH})
+        create_cuda_library(${LIBNAME} SHARED ${${DLL_PATH}} ${${IMPLIB_PATH}})
     endif()
 
     # Names static as dynamic would have been if dynamic wasn't found.
     # Please for the love of god let us alias IMPORTED targets...
-    if(${SLIB_VAR})
+    if(${STATIC_PATH})
         if(NOT TARGET ${LIBNAME})
-            create_cuda_library(${LIBNAME} ${${SLIB_VAR}} STATIC)
+            create_cuda_library(${LIBNAME} STATIC ${${STATIC_PATH}} "")
         else()
-            create_cuda_library(${LIBNAME}_static ${${SLIB_VAR}} STATIC)
+            create_cuda_library(${LIBNAME}_static STATIC ${${STATIC_PATH}} "")
         endif()
     endif()
 
@@ -214,7 +243,7 @@ function(cuda_find_library LIBNAME)
     endif()
 endfunction()
 
-cuda_find_library(cudart EXTRANAMES cudart_static)
+cuda_find_library(cudart STATICNAME cudart_static)
 
 if(NOT CUDA_VERSION VERSION_LESS "5.0")
     cuda_find_library(cudadevrt)
