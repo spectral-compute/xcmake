@@ -155,12 +155,13 @@ else()
     find_default_program(CMAKE_LINKER ld.lld ld.gold ld.bfd ld)
     find_default_program(CMAKE_C_COMPILER clang)
     find_default_program(CMAKE_CXX_COMPILER clang++)
-endif()
 
-# Make sure that CMAKE_LINKER actually sets the linker. Can hook this up to XCMAKE_CLANG_LINKER_FLAGS if we ever care...
-default_cache_value(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
-default_cache_value(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
-default_cache_value(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
+    # Make sure that CMAKE_LINKER actually sets the linker. Can hook this up to XCMAKE_CLANG_LINKER_FLAGS if we ever care...
+    # -fuse-ld is an unknown argument to lld-link
+    default_cache_value(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
+    default_cache_value(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
+    default_cache_value(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
+endif()
 
 # Handle the XCMAKE_SHOW_TRIBBLE case.
 if(XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
