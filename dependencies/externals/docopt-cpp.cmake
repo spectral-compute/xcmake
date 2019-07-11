@@ -16,3 +16,8 @@ AddExternalProject(docopt_proj
     STATIC_LIBRARIES ${DOCOPT_STATIC_NAME}
     SHARED_LIBRARIES docopt
 )
+ExternalProject_Add_Step(docopt_proj RUNCOMMAND
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/external_projects/inst/lib/docopt.dll ${CMAKE_BINARY_DIR}/external_projects/inst/bin
+    COMMENT "Completed copy of docopt.dll from lib to bin"
+    DEPENDEES install
+)
