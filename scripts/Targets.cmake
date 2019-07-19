@@ -393,7 +393,15 @@ function(add_executable TARGET)
     cmake_parse_arguments(args "NOINSTALL" "" "" ${ARGN})
 
     _add_executable(${TARGET} ${args_UNPARSED_ARGUMENTS})
+
+    # Don't screw with settings if it's imported
     ensure_not_imported(${TARGET})
+
+    # On implib platforms, create a command that will create symbolic links to
+    # all DLL dependencies at the install destination
+    handle_symlinks(${TARGET})
+
+    # Apply standard settings and properties
     apply_default_standard_properties(${TARGET})
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
@@ -440,41 +448,58 @@ endfunction()
 # desired target link.
 # In almost all cases, you want to use an IMPORTED target instead of a raw link anyway. If you want to add linker flags,
 # use the
-function (target_link_libraries TARGET)
+function(target_link_libraries TARGET)
     set(CURRENT_KEYWORD "")
     set(ALLOW_RAW FALSE)
 
-    foreach (_ARG ${ARGN})
+    foreach(_ARG ${ARGN})
         # We can't sanitise generator expressions...
         string(GENEX_STRIP "${_ARG}" _ARG_SANITISED)
-        if (NOT "${_ARG}" STREQUAL "${_ARG_SANITISED}")
-            # If it contained a generator expression, skip it.
+
+        # If it contained a generator expression, skip it.
+        if(NOT "${_ARG}" STREQUAL "${_ARG_SANITISED}")
+            # We still want to process DLL path interface property though
+            propogate_dll_paths(${CURRENT_KEYWORD} ${TARGET} ${_ARG})
             continue()
         endif()
 
-        if ("${_ARG}" STREQUAL "PRIVATE" OR
+        if("${_ARG}" STREQUAL "PRIVATE" OR
             "${_ARG}" STREQUAL "PUBLIC" OR
             "${_ARG}" STREQUAL "INTERFACE")
             set(CURRENT_KEYWORD ${_ARG})
             set(ALLOW_RAW FALSE)
-        elseif ("${_ARG}" STREQUAL "RAW")
+        elseif("${_ARG}" STREQUAL "RAW")
             set(ALLOW_RAW TRUE)
             remove_argument(FLAG ARGN RAW)
         else()
-            if ("${CURRENT_KEYWORD}" STREQUAL "")
+            if("${CURRENT_KEYWORD}" STREQUAL "")
                 message(FATAL_ERROR "Keywordless target_link_libraries() is not allowed.")
-            elseif (NOT TARGET "${_ARG}" AND NOT "${ALLOW_RAW}")
+            elseif(NOT TARGET "${_ARG}" AND NOT "${ALLOW_RAW}")
                 message(FATAL_ERROR
                     "Tried to link to nonexistent target \"${_ARG}\".\n"
                     "Did you typo your target name?\n"
                     "If you are trying to add linker flags, cmake now has `target_link_options()` for doing that.\n"
                     "If you are trying to link an external library by its raw name, use an IMPORTED target instead."
                 )
+            elseif(NOT ${ALLOW_RAW})
+                propogate_dll_paths(${CURRENT_KEYWORD} ${TARGET} ${_ARG})
             endif()
         endif()
     endforeach()
 
     _target_link_libraries(${TARGET} ${ARGN})
+endfunction()
+
+function(propogate_dll_paths KEYWORD TARGET LINKED)
+    get_target_property(TARGET_TYPE ${TARGET} TYPE)
+    set(LINKED_PATHS_CONTENT "$<GENEX_EVAL:$<$<BOOL:${LINKED}>:$<TARGET_PROPERTY:${LINKED},INTERFACE_DLL_SEARCH_PATHS>>>")
+
+    # Handle linking to libraries
+    if("${TARGET_TYPE}" MATCHES "LIBRARY" AND NOT "${TARGET_TYPE}" STREQUAL "OBJECT_LIBRARY" AND NOT "${KEYWORD}" STREQUAL "PRIVATE")
+        set_property(TARGET ${TARGET} APPEND PROPERTY INTERFACE_DLL_SEARCH_PATHS ${LINKED_PATHS_CONTENT})
+    elseif("${TARGET_TYPE}" STREQUAL EXECUTABLE)
+        set_property(TARGET ${TARGET} APPEND PROPERTY DLL_SEARCH_PATHS ${LINKED_PATHS_CONTENT})
+    endif()
 endfunction()
 
 # Override target_sources to call fix_source_file_properties() again each time. Not exactly efficient, but it does
@@ -488,4 +513,25 @@ function (target_sources TARGET)
     _target_sources(${TARGET} ${ARGN})
 
     fix_source_file_properties(${TARGET})
+endfunction()
+
+# This function adds a build-time command to run an external script finding DLLs
+function(handle_symlinks TARGET)
+    if(NOT XCMAKE_IMPLIB_PLATFORM)
+        return()
+    endif()
+
+    # Get the path to the executable's eventual directory
+    get_target_property(EXE_DIR ${TARGET} BINARY_DIR)
+
+    add_custom_command(
+        TARGET ${TARGET}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -P ${XCMAKE_SYMLINK_SCRIPT_PATH}
+            "${EXE_DIR}"
+            "${TARGET}"
+            "$<GENEX_EVAL:$<TARGET_PROPERTY:${TARGET},DLL_SEARCH_PATHS>>"
+            "${CMAKE_BINARY_DIR}"
+        COMMENT "Creating symbolic links for ${EXE_DIR}/${TARGET}.exe"
+    )
 endfunction()
