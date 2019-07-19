@@ -12,8 +12,3 @@ add_external_project(docopt_proj
     CMAKE_ARGS "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} ${DOCOPT_FLAGS}"
     STATIC_LIBRARIES docopt
 )
-externalproject_add_step(docopt_proj RUNCOMMAND
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/external_projects/inst/lib/docopt.dll ${CMAKE_BINARY_DIR}/external_projects/inst/bin
-    COMMENT "Completed copy of docopt.dll from lib to bin"
-    DEPENDEES install
-)
