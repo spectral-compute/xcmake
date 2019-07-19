@@ -2,7 +2,7 @@
 include(ExternalData)
 set(ExternalData_URL_TEMPLATES
         "https://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml")
-ExternalData_Expand_Arguments(cppreference_data STL_TAG_FILE
+externaldata_expand_arguments(cppreference_data STL_TAG_FILE
         "DATA{${XCMAKE_TOOLS_DIR}/doxygen/externaltags/cppreference/cppreference-doxygen-web.tag.xml}")
 set(STL_TAG_FILE "${STL_TAG_FILE}" CACHE INTERNAL "")
-ExternalData_Add_Target(cppreference_data)
+externaldata_add_target(cppreference_data)

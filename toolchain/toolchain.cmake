@@ -84,7 +84,7 @@ endforeach()
 set(XCMAKE_INTEGRATED_GPU OFF CACHE BOOL "Does the GPU share the same memory as the host?")
 set(XCMAKE_GPUS "${XCMAKE_GPUS}" CACHE STRING "GPUs to build for")
 
-defaultTcValue(XCMAKE_GPU_TYPE "OFF")  # No GPU
+default_tc_value(XCMAKE_GPU_TYPE "OFF")  # No GPU
 
 # Make sure we don't have a mixture of GPU targets...
 list(LENGTH TARGET_AMD_GPUS AMD_GPU_LENGTH)
@@ -100,8 +100,8 @@ if (XCMAKE_GPU_TYPE STREQUAL "amd")
 elseif(XCMAKE_GPU_TYPE STREQUAL "nvidia")
     set(XCMAKE_NVIDIA_GPU 1)
 endif()
-defaultTcValue(XCMAKE_NVIDIA_GPU 0)
-defaultTcValue(XCMAKE_AMD_GPU 0)
+default_tc_value(XCMAKE_NVIDIA_GPU 0)
+default_tc_value(XCMAKE_AMD_GPU 0)
 
 # Set the global macro definition for integrated GPU targets.
 if (XCMAKE_INTEGRATED_GPU)
@@ -109,26 +109,26 @@ if (XCMAKE_INTEGRATED_GPU)
 endif()
 
 # Provide default values for a bunch of cmake builtins that don't have it. This mostly exists to silence warnings
-defaultTcValue(CMAKE_STATIC_LIBRARY_PREFIX "")
-defaultTcValue(CMAKE_STATIC_LIBRARY_SUFFIX "")
-defaultTcValue(CMAKE_SHARED_LIBRARY_PREFIX "")
-defaultTcValue(CMAKE_SHARED_LIBRARY_SUFFIX "")
-defaultTcValue(CMAKE_IMPORT_LIBRARY_PREFIX "")
-defaultTcValue(CMAKE_IMPORT_LIBRARY_SUFFIX "")
+default_tc_value(CMAKE_STATIC_LIBRARY_PREFIX "")
+default_tc_value(CMAKE_STATIC_LIBRARY_SUFFIX "")
+default_tc_value(CMAKE_SHARED_LIBRARY_PREFIX "")
+default_tc_value(CMAKE_SHARED_LIBRARY_SUFFIX "")
+default_tc_value(CMAKE_IMPORT_LIBRARY_PREFIX "")
+default_tc_value(CMAKE_IMPORT_LIBRARY_SUFFIX "")
 
-defaultTcValue(CMAKE_FIND_ROOT_PATH "")
+default_tc_value(CMAKE_FIND_ROOT_PATH "")
 
-defaultTcValue(CMAKE_INSTALL_BINDIR "bin")
-defaultTcValue(CMAKE_INSTALL_SBINDIR "sbin")
-defaultTcValue(CMAKE_INSTALL_LIBDIR "lib")
-defaultTcValue(CMAKE_INSTALL_INCLUDEDIR "include")
-defaultTcValue(CMAKE_INSTALL_SYSCONFDIR "etc")
-defaultTcValue(CMAKE_INSTALL_SHARESTATEDIR "com")
-defaultTcValue(CMAKE_INSTALL_LOCALSTATEDIR "var")
+default_tc_value(CMAKE_INSTALL_BINDIR "bin")
+default_tc_value(CMAKE_INSTALL_SBINDIR "sbin")
+default_tc_value(CMAKE_INSTALL_LIBDIR "lib")
+default_tc_value(CMAKE_INSTALL_INCLUDEDIR "include")
+default_tc_value(CMAKE_INSTALL_SYSCONFDIR "etc")
+default_tc_value(CMAKE_INSTALL_SHARESTATEDIR "com")
+default_tc_value(CMAKE_INSTALL_LOCALSTATEDIR "var")
 
 # Provide a variable to denote if the platform we're on uses IMPLIBS for its shared libraries
 # Please flesh this out with more possibilities as they're needed
-defaultTcValue(XCMAKE_IMPLIB_PLATFORM FALSE)
+default_tc_value(XCMAKE_IMPLIB_PLATFORM FALSE)
 if(WIN32)
     set(XCMAKE_IMPLIB_PLATFORM TRUE)
 endif()
@@ -165,38 +165,40 @@ endif()
 
 # Handle the XCMAKE_SHOW_TRIBBLE case.
 if(XCMAKE_SHOW_TRIBBLE OR DEFINED CMAKE_SCRIPT_MODE_FILE)
-    foreach (_var IN ITEMS CMAKE_C_COMPILER
-                           CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN
-                           CMAKE_C_COMPILER_TARGET
-                           CMAKE_C_FLAGS
-                           CMAKE_CROSSCOMPILING
-                           CMAKE_CXX_COMPILER
-                           CMAKE_CXX_COMPILER_EXTERNAL_TOOLCHAIN
-                           CMAKE_CXX_COMPILER_TARGET
-                           CMAKE_CXX_FLAGS
-                           CMAKE_EXE_LINKER_FLAGS
-                           CMAKE_FIND_ROOT_PATH
-                           CMAKE_FIND_ROOT_PATH_MODE_INCLUDE
-                           CMAKE_FIND_ROOT_PATH_MODE_LIBRARY
-                           CMAKE_FIND_ROOT_PATH_MODE_PACKAGE
-                           CMAKE_FIND_ROOT_PATH_MODE_PROGRAM
-                           CMAKE_MODULE_LINKER_FLAGS
-                           CMAKE_SHARED_LINKER_FLAGS
-                           CMAKE_SYSTEM_NAME
+    foreach (_var IN ITEMS
+            CMAKE_C_COMPILER
+            CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN
+            CMAKE_C_COMPILER_TARGET
+            CMAKE_C_FLAGS
+            CMAKE_CROSSCOMPILING
+            CMAKE_CXX_COMPILER
+            CMAKE_CXX_COMPILER_EXTERNAL_TOOLCHAIN
+            CMAKE_CXX_COMPILER_TARGET
+            CMAKE_CXX_FLAGS
+            CMAKE_EXE_LINKER_FLAGS
+            CMAKE_FIND_ROOT_PATH
+            CMAKE_FIND_ROOT_PATH_MODE_INCLUDE
+            CMAKE_FIND_ROOT_PATH_MODE_LIBRARY
+            CMAKE_FIND_ROOT_PATH_MODE_PACKAGE
+            CMAKE_FIND_ROOT_PATH_MODE_PROGRAM
+            CMAKE_MODULE_LINKER_FLAGS
+            CMAKE_SHARED_LINKER_FLAGS
+            CMAKE_SYSTEM_NAME
 
-                           XCMAKE_ARCH
-                           XCMAKE_GPU_TYPE
-                           XCMAKE_AMD_GPU
-                           XCMAKE_NVIDIA_GPU
-                           XCMAKE_CLANG_LINKER_FLAGS
-                           XCMAKE_COMPILER_FLAGS
-                           XCMAKE_CONVENTIONAL_TRIPLE
-                           XCMAKE_CTNG_SAMPLE
-                           XCMAKE_GENERIC_TRIBBLE
-                           XCMAKE_MICROARCH
-                           XCMAKE_OS
-                           XCMAKE_TOOLCHAIN_DIR
-                           XCMAKE_TRIBBLE)
-        Stdout("${_var}=${${_var}}")
+            XCMAKE_ARCH
+            XCMAKE_GPU_TYPE
+            XCMAKE_AMD_GPU
+            XCMAKE_NVIDIA_GPU
+            XCMAKE_CLANG_LINKER_FLAGS
+            XCMAKE_COMPILER_FLAGS
+            XCMAKE_CONVENTIONAL_TRIPLE
+            XCMAKE_CTNG_SAMPLE
+            XCMAKE_GENERIC_TRIBBLE
+            XCMAKE_MICROARCH
+            XCMAKE_OS
+            XCMAKE_TOOLCHAIN_DIR
+            XCMAKE_TRIBBLE
+        )
+        stdout("${_var}=${${_var}}")
     endforeach()
 endif()

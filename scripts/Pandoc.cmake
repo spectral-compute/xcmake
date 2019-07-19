@@ -31,27 +31,29 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
 
     # TODO: `--toc` (and other options) could be exposed per-file as a source file property :D
     add_custom_command(OUTPUT ${OUT_FILE}
-                       COMMAND pandoc
-                       --fail-if-warnings
-                       --from markdown
-                       --to html
-                       #                      --toc
-                       --css ${DOTSLASHES}style.css
-                       --standalone ${MARKDOWN_FILE} > ${OUT_FILE}
-                       COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
-                       DEPENDS "${MARKDOWN_FILE}"
-                       WORKING_DIRECTORY "${d_MANUAL_SRC}"
-                       VERBATIM)
+        COMMAND pandoc
+        --fail-if-warnings
+        --from markdown
+        --to html
+        #                      --toc
+        --css ${DOTSLASHES}style.css
+        --standalone ${MARKDOWN_FILE} > ${OUT_FILE}
+        COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
+        DEPENDS "${MARKDOWN_FILE}"
+        WORKING_DIRECTORY "${d_MANUAL_SRC}"
+        VERBATIM
+    )
 endfunction()
 
 function (add_dot_graph TARGET BASEDIR DOT_FILE)
     make_src_target("${TARGET}" "${BASEDIR}" "${DOT_FILE}" ".svg")
     add_custom_command(OUTPUT ${OUT_FILE}
-                       COMMAND dot -Tsvg ${DOT_FILE} > ${OUT_FILE}
-                       COMMENT "dot-compiling ${DOT_FILE}..."
-                       DEPENDS "${DOT_FILE}"
-                       WORKING_DIRECTORY "${d_MANUAL_SRC}"
-                       VERBATIM)
+        COMMAND dot -Tsvg ${DOT_FILE} > ${OUT_FILE}
+        COMMENT "dot-compiling ${DOT_FILE}..."
+        DEPENDS "${DOT_FILE}"
+        WORKING_DIRECTORY "${d_MANUAL_SRC}"
+        VERBATIM
+    )
 endfunction()
 
 # Add a manual.
@@ -185,12 +187,13 @@ function (add_manual_generator LIB_NAME)
     endforeach()
 
     add_custom_command(OUTPUT ${GENERATED_PATHS}
-                       COMMAND "./${SCRIPT_FILE}" "WRITE" "${INTERMEDIATE_DIR}"
-                       WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
-                       COMMENT "Running documentation generation script ${d_SCRIPT}"
-                       DEPENDS "${d_MANUAL_SRC}/${d_SCRIPT}" "${DEPENDENCIES}"
-                       WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
-                       VERBATIM)
+        COMMAND "./${SCRIPT_FILE}" "WRITE" "${INTERMEDIATE_DIR}"
+        WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
+        COMMENT "Running documentation generation script ${d_SCRIPT}"
+        DEPENDS "${d_MANUAL_SRC}/${d_SCRIPT}" "${DEPENDENCIES}"
+        WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
+        VERBATIM
+    )
 
     # Add all the generated files to the manual.
     foreach (outFile IN LISTS GENERATED_FILES)

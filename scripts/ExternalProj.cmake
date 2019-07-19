@@ -7,7 +7,7 @@ include(ExternalProject)
 set(EP_ROOT_DIR "${CMAKE_BINARY_DIR}/external_projects" CACHE INTERNAL "")
 set(EP_INSTALL_DIR "${EP_ROOT_DIR}/inst" CACHE INTERNAL "")
 
-function(AddExternalProject TARGET)
+function(add_external_project TARGET)
     # Parse the function arguments. These are split into three categories:
     # - Arguments added in XCMake which dictate libraries or executables to be created and marked dependent on TARGET
     # - Arguments we just want to delete, because this function sets them automatically
@@ -142,7 +142,7 @@ function(AddExternalProject TARGET)
         )
     endforeach ()
 
-    ExternalProject_Add(
+    externalproject_add(
         ${TARGET}
         EXCLUDE_FROM_ALL 1
         PREFIX ${EP_ROOT_DIR}/${TARGET}
@@ -162,7 +162,7 @@ function(AddExternalProject TARGET)
 endfunction()
 
 # Get the path to the stamp file representing the completion of the build for the given IMPORTED target.
-function(getFinalStampPath OUTVAR TARGET)
+function(get_final_stamp_path OUTVAR TARGET)
     get_target_property(MAN_DEPS ${TARGET} MANUALLY_ADDED_DEPENDENCIES)
 
     foreach (DEP ${MAN_DEPS})

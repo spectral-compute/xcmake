@@ -2,7 +2,7 @@ include_guard(GLOBAL)
 
 # Print a summary of the config so people realise if they screwed up.
 
-function(PrintTargetConfig TARGET INDENT)
+function(print_target_config TARGET INDENT)
     ensure_not_object(${TARGET})
     ensure_not_imported(${TARGET})
     ensure_not_interface(${TARGET})
@@ -21,7 +21,7 @@ function(PrintTargetConfig TARGET INDENT)
     endforeach ()
 endfunction()
 
-function(PrintDirectorySummary DIR INDENT)
+function(print_directory_summary DIR INDENT)
     set(NEWINDENT "${INDENT}    ")
 
     # Trim dir prefix
@@ -33,13 +33,13 @@ function(PrintDirectorySummary DIR INDENT)
     # Summarise the targets from this directory.
     get_directory_property(TARGET_LIST DIRECTORY ${DIR} BUILDSYSTEM_TARGETS)
     foreach (_T ${TARGET_LIST})
-        PrintTargetConfig(${_T} "${NEWINDENT}")
+        print_target_config(${_T} "${NEWINDENT}")
     endforeach ()
 
     # Explore the next level.
     get_directory_property(DIR_LIST DIRECTORY ${DIR} SUBDIRECTORIES)
     foreach (_D ${DIR_LIST})
-        PrintDirectorySummary("${_D}" ${NEWINDENT})
+        print_directory_summary("${_D}" ${NEWINDENT})
     endforeach ()
 endfunction()
 
@@ -53,7 +53,7 @@ function(PrintConfig)
     message("")
 
     # Explore the entire buildsystem looking for targets to describe.
-    PrintDirectorySummary(${CMAKE_SOURCE_DIR}/ "")
+    print_directory_summary(${CMAKE_SOURCE_DIR}/ "")
 endfunction()
 
 function(PrintCompiler)
@@ -69,5 +69,5 @@ function(PrintCompiler)
     message_colour(STATUS BoldBlue "C++ compiler version: ${Bold}${CXX_VERSION}${BoldOff}")
 endfunction()
 
-AddExitFunction(PrintConfig)
-AddExitFunction(PrintCompiler)
+add_exit_function(PrintConfig)
+add_exit_function(PrintCompiler)

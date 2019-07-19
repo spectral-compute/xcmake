@@ -9,7 +9,7 @@
 #
 # Still, it does the job :D
 
-macro(AddExitFunction NAME)
+macro(add_exit_function NAME)
     # Amusing abuse of cache
     set(${NAME}_EOFHOOK_HAS_RUN 0 CACHE INTERNAL "")
     function(${NAME}_EOFHOOK Variable Access)

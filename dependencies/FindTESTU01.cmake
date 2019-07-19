@@ -1,3 +1,5 @@
+include(FindPackageHandleStandardArgs)
+
 find_path(
     TESTU01_INCLUDE_DIR
     NAMES TestU01.h
@@ -11,7 +13,7 @@ find_library(TESTU01_MYLIB NAMES mylib)
 
 mark_as_advanced(TESTU01_LIB TESTU01_PROBDIST TESTU01_MYLIB)
 
-find_package_handle_standard_args(TestU01
+find_package_handle_standard_args(TESTU01
     REQUIRED_VARS TESTU01_INCLUDE_DIR TESTU01_MYLIB TESTU01_LIB TESTU01_PROBDIST
 )
 

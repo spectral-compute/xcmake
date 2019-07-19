@@ -13,7 +13,7 @@ set(GT_PRODUCTS gtest gmock gtest_main gmock_main)
 if(XCMAKE_SYSTEM_GTEST)
     find_package(GTest)
 else()
-    AddExternalProject(googletest
+    add_external_project(googletest
         GIT_REPOSITORY    git@gitlab.com:spectral-ai/engineering/thirdparty/googletest
         GIT_TAG           ${GTEST_TAG}
         CMAKE_ARGS        -DCMAKE_BUILD_TYPE=Release
