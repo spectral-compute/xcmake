@@ -1,4 +1,4 @@
-IncludeGuard(GTest)
+include_guard(GLOBAL)
 
 option(GTEST_TAG "Specify the tag to checkout the gtest fork to" master STRING)
 mark_as_advanced(GTEST_TAG) # This option probably shouldn't exist at all...

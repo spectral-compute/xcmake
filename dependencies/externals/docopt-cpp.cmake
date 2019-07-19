@@ -1,4 +1,4 @@
-SubdirectoryGuard(Docopt)
+include_guard(GLOBAL)
 include(ExternalProj)
 
 set(DOCOPT_FLAGS "")
