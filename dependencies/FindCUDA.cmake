@@ -39,9 +39,9 @@ if(NOT CUDA_TOOLKIT_ROOT_DIR AND NOT CMAKE_CROSSCOMPILING)
 endif()
 
 if(CMAKE_CROSSCOMPILING)
-    SET (CUDA_TOOLKIT_ROOT $ENV{CUDA_TOOLKIT_ROOT})
+    set (CUDA_TOOLKIT_ROOT $ENV{CUDA_TOOLKIT_ROOT})
 else()
-    SET(CUDA_TOOLKIT_ROOT "${CUDA_TOOLKIT_ROOT_DIR}")
+    set (CUDA_TOOLKIT_ROOT "${CUDA_TOOLKIT_ROOT_DIR}")
 endif()
 
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7-a")
@@ -56,7 +56,7 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
         set(CUDA_TOOLKIT_TARGET_NAME "aarch64-linux-androideabi")
     else()
         set(CUDA_TOOLKIT_TARGET_NAME "aarch64-linux")
-    endif (ANDROID_ARCH_NAME STREQUAL "arm64")
+    endif ()
 else()
     # This usually works... :D
     set(CUDA_TOOLKIT_TARGET_NAME ${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME})
@@ -65,10 +65,10 @@ endif()
 
 if(EXISTS "${CUDA_TOOLKIT_ROOT}/targets/${CUDA_TOOLKIT_TARGET_NAME}")
     set(CUDA_TOOLKIT_TARGET_DIR "${CUDA_TOOLKIT_ROOT}/targets/${CUDA_TOOLKIT_TARGET_NAME}" CACHE PATH "CUDA Toolkit target location.")
-    SET (CUDA_TOOLKIT_ROOT_DIR ${CUDA_TOOLKIT_ROOT})
+    set(CUDA_TOOLKIT_ROOT_DIR ${CUDA_TOOLKIT_ROOT})
     mark_as_advanced(CUDA_TOOLKIT_TARGET_DIR)
 else()
-    SET(CUDA_TOOLKIT_TARGET_DIR ${CUDA_TOOLKIT_ROOT_DIR})
+    set(CUDA_TOOLKIT_TARGET_DIR ${CUDA_TOOLKIT_ROOT_DIR})
 endif()
 
 # Add known CUDA target root path to the set of directories we search for programs, libraries and headers
@@ -138,7 +138,7 @@ function (locate_cuda_library)
     # Fully populate the names to search for
     set(FULL_NAMES "")
     foreach(NAME ${arg_NAMES})
-        LIST(APPEND FULL_NAMES ${CMAKE_${arg_TYPE}_LIBRARY_PREFIX}${NAME}${CMAKE_${arg_TYPE}_LIBRARY_SUFFIX})
+        list(APPEND FULL_NAMES ${CMAKE_${arg_TYPE}_LIBRARY_PREFIX}${NAME}${CMAKE_${arg_TYPE}_LIBRARY_SUFFIX})
     endforeach()
 
     # CUDA 3.2+ on Windows moved the library directories, so we need to new
@@ -265,8 +265,8 @@ if(TARGET nvToolsExt AND (CUDA_VERSION STREQUAL "10.0" OR CUDA_VERSION VERSION_G
 endif()
 
 if(WIN32 AND XCMAKE_USE_CUDA_VIDEO)
-  cuda_find_library(nvcuvenc)
-  cuda_find_library(nvcuvid)
+    cuda_find_library(nvcuvenc)
+    cuda_find_library(nvcuvid)
 endif()
 
 if(CUDA_VERSION VERSION_GREATER "5.0" AND CUDA_VERSION VERSION_LESS "9.2")
@@ -314,4 +314,4 @@ find_package_handle_standard_args(CUDA
         CUDA_NVCC_EXECUTABLE
     VERSION_VAR
         CUDA_VERSION
-    )
+)

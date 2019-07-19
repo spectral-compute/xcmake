@@ -221,7 +221,7 @@ function(apply_default_standard_properties TARGET)
             $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,/GS->
 
             # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
-            # This is _technically_ defaulted to by... something somewhere... However, we're leaving it here so there's a 
+            # This is _technically_ defaulted to by... something somewhere... However, we're leaving it here so there's a
             # reminder about it if we ever get /MD vs /MT clashes again
             /MD
 

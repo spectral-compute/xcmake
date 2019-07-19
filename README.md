@@ -57,7 +57,7 @@ It's unclear why you'd ever want these things to differ, soo...
 
 ## [Automatic external project binding](./scripts/ExternalProj.cmake)
 
-`AddExternalProject` is a wrapper around ExternalProject_Add that provides `IMPORTED` target generation. The following
+`add_external_project` is a wrapper around ExternalProject_Add that provides `IMPORTED` target generation. The following
 extra options are provided:
 - STATIC_LIBRARIES
 - DYNAMIC_LIBRARIES

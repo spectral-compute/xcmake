@@ -2,7 +2,7 @@
 string(ASCII 27 ESC)
 
 # Macro for defining a formatting code. Sets it to empty-string if colour isn't supported
-macro(defineFormatCode NAME VALUE)
+macro(define_format_code NAME VALUE)
     # Clion doesn't do coloured cmake output, alas.
     if (DEFINED ENV{CLION_IDE})
         set(${NAME} "")
@@ -12,47 +12,47 @@ macro(defineFormatCode NAME VALUE)
 endmacro()
 
 # Reset all formatting
-defineFormatCode(Rst "${ESC}[0m")
+define_format_code(Rst "${ESC}[0m")
 
-defineFormatCode(Bold "${ESC}[1m")
-defineFormatCode(BoldOff "${ESC}[21m")
+define_format_code(Bold "${ESC}[1m")
+define_format_code(BoldOff "${ESC}[21m")
 
 # Dim/underlined/blink don't seem useful...
 
-defineFormatCode(Invert "${ESC}[7m")
-defineFormatCode(InvertOff "${ESC}[27m")
+define_format_code(Invert "${ESC}[7m")
+define_format_code(InvertOff "${ESC}[27m")
 
 # See: https://misc.flogisoft.com/bash/tip_colors_and_formatting
-defineFormatCode(Black "${ESC}[30m")
-defineFormatCode(Red "${ESC}[31m")
-defineFormatCode(Green "${ESC}[32m")
-defineFormatCode(Yellow "${ESC}[33m")
-defineFormatCode(Blue "${ESC}[34m")
-defineFormatCode(Magenta "${ESC}[35m")
-defineFormatCode(Cyan "${ESC}[36m")
+define_format_code(Black "${ESC}[30m")
+define_format_code(Red "${ESC}[31m")
+define_format_code(Green "${ESC}[32m")
+define_format_code(Yellow "${ESC}[33m")
+define_format_code(Blue "${ESC}[34m")
+define_format_code(Magenta "${ESC}[35m")
+define_format_code(Cyan "${ESC}[36m")
 
-defineFormatCode(Grey "${ESC}[90m")
-defineFormatCode(DarkGrey "${ESC}[90m")
-defineFormatCode(LightGrey "${ESC}[37m")
+define_format_code(Grey "${ESC}[90m")
+define_format_code(DarkGrey "${ESC}[90m")
+define_format_code(LightGrey "${ESC}[37m")
 
-defineFormatCode(LightRed "${ESC}[91m")
-defineFormatCode(LightGreen "${ESC}[92m")
-defineFormatCode(LightYellow "${ESC}[93m")
-defineFormatCode(LightBlue "${ESC}[94m")
-defineFormatCode(LightMagenta "${ESC}[95m")
-defineFormatCode(LightCyan "${ESC}[96m")
+define_format_code(LightRed "${ESC}[91m")
+define_format_code(LightGreen "${ESC}[92m")
+define_format_code(LightYellow "${ESC}[93m")
+define_format_code(LightBlue "${ESC}[94m")
+define_format_code(LightMagenta "${ESC}[95m")
+define_format_code(LightCyan "${ESC}[96m")
 
-defineFormatCode(White "${ESC}[97m")
+define_format_code(White "${ESC}[97m")
 
 # Handy composite ones...
-defineFormatCode(BoldRed "${ESC}[1;31m")
-defineFormatCode(BoldGreen "${ESC}[1;32m")
-defineFormatCode(BoldYellow "${ESC}[1;33m")
-defineFormatCode(BoldBlue "${ESC}[1;34m")
-defineFormatCode(BoldMagenta "${ESC}[1;35m")
-defineFormatCode(BoldCyan "${ESC}[1;36m")
-defineFormatCode(BoldGrey "${ESC}[1m${ESC}[90m")
-defineFormatCode(BoldWhite "${ESC}[1;97m")
+define_format_code(BoldRed "${ESC}[1;31m")
+define_format_code(BoldGreen "${ESC}[1;32m")
+define_format_code(BoldYellow "${ESC}[1;33m")
+define_format_code(BoldBlue "${ESC}[1;34m")
+define_format_code(BoldMagenta "${ESC}[1;35m")
+define_format_code(BoldCyan "${ESC}[1;36m")
+define_format_code(BoldGrey "${ESC}[1m${ESC}[90m")
+define_format_code(BoldWhite "${ESC}[1;97m")
 
 # Default colours for each loglevel
 set(StatusColour BoldWhite)
@@ -78,8 +78,8 @@ function(contextual_format OUT MSG)
     if ("${MSG}" MATCHES "^Found")
         set(${OUT} Yellow PARENT_SCOPE)
     elseif (("${MSG}" MATCHES "^Looking for") OR
-             ("${MSG}" MATCHES "^Performing Test") OR
-             ("${MSG}" MATCHES "^Detecting"))
+            ("${MSG}" MATCHES "^Performing Test") OR
+            ("${MSG}" MATCHES "^Detecting"))
         set(${OUT} Grey PARENT_SCOPE)
     else()
         set(${OUT} BoldWhite PARENT_SCOPE)

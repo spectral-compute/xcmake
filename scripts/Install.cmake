@@ -116,7 +116,7 @@ function(install)
         set(OPT_FLAG "")
         if (i_EP_TARGET)
             set(OPT_FLAG "OPTIONAL")
-            getFinalStampPath(STAMPFILE ${TGT})
+            get_final_stamp_path(STAMPFILE ${TGT})
 
             # Crash if, at install time, the artefact does not exist but the stamp file does.
             # This can be conditionally disabled for generators that don't like `install(CODE...)`. It's only here to

@@ -34,11 +34,11 @@ function (option VAR HELP)
 
     ensure_documented(${VAR} "${HELP}" ${TYPE} "${VALID_VALUES}")
 
-    validateOption(${VAR})
+    validate_option(${VAR})
 endfunction()
 
 # Explode if an option has a value excluded by its list of allowed values.
-function(validateOption VAR)
+function(validate_option VAR)
     get_property(CVAL CACHE ${VAR} PROPERTY VALUE)
     get_property(OPTTYPE CACHE ${VAR} PROPERTY TYPE)
     get_property(VALID_STRINGS CACHE ${VAR} PROPERTY STRINGS)

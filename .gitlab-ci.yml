@@ -1,0 +1,13 @@
+stages:
+  - lint
+
+.base:
+  image: $DOCKER_REGISTRY/spectral/build/base
+
+lint:
+  extends:
+    - .base
+  tags: ["gpu:gfx900"]
+  stage: lint
+  script:
+    - run "./src/ci/lint.sh $(pwd)/src"

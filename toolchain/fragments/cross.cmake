@@ -2,11 +2,11 @@
 set(CMAKE_CROSSCOMPILING 1)
 
 # Calculate the generic tribble.
-defaultTcValue(XCMAKE_GENERIC_TRIBBLE "${XCMAKE_OS}-${XCMAKE_ARCH}-generic")
+default_tc_value(XCMAKE_GENERIC_TRIBBLE "${XCMAKE_OS}-${XCMAKE_ARCH}-generic")
 
 # Calculate the crosstool-NG template and the conventional target tuple.
-defaultTcValue(XCMAKE_TRIPLE_VENDOR unknown)
-defaultTcValue(XCMAKE_CTNG_VENDOR ${XCMAKE_TRIPLE_VENDOR})
+default_tc_value(XCMAKE_TRIPLE_VENDOR unknown)
+default_tc_value(XCMAKE_CTNG_VENDOR ${XCMAKE_TRIPLE_VENDOR})
 if (XCMAKE_TRIPLE_ABI)
     set(XCMAKE_CTNG_SAMPLE "${XCMAKE_ARCH}-${XCMAKE_CTNG_VENDOR}-${XCMAKE_TRIPLE_OS}-${XCMAKE_TRIPLE_ABI}")
     set(XCMAKE_CONVENTIONAL_TRIPLE "${XCMAKE_ARCH}-${XCMAKE_TRIPLE_VENDOR}-${XCMAKE_TRIPLE_OS}-${XCMAKE_TRIPLE_ABI}")
@@ -16,8 +16,8 @@ else()
 endif()
 
 # Set up Clang's target.
-defaultTcValue(CMAKE_C_COMPILER_TARGET "${XCMAKE_CONVENTIONAL_TRIPLE}")
-defaultTcValue(CMAKE_CXX_COMPILER_TARGET "${XCMAKE_CONVENTIONAL_TRIPLE}")
+default_tc_value(CMAKE_C_COMPILER_TARGET "${XCMAKE_CONVENTIONAL_TRIPLE}")
+default_tc_value(CMAKE_CXX_COMPILER_TARGET "${XCMAKE_CONVENTIONAL_TRIPLE}")
 
 # Get the toolchain location.
 if (NOT DEFINED XCMAKE_TOOLCHAIN_DIR)
@@ -33,11 +33,11 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE only)
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM never)
 
 # Set up Clang's toolchain location.
-defaultTcValue(CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN "${XCMAKE_TOOLCHAIN_DIR}/toolchain")
-defaultTcValue(CMAKE_CXX_COMPILER_EXTERNAL_TOOLCHAIN "${XCMAKE_TOOLCHAIN_DIR}/toolchain")
+default_tc_value(CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN "${XCMAKE_TOOLCHAIN_DIR}/toolchain")
+default_tc_value(CMAKE_CXX_COMPILER_EXTERNAL_TOOLCHAIN "${XCMAKE_TOOLCHAIN_DIR}/toolchain")
 
 # Set the sysroot location.
-defaultTcValue(CMAKE_SYSROOT "${XCMAKE_TOOLCHAIN_DIR}/toolchain/${XCMAKE_CONVENTIONAL_TRIPLE}/sysroot")
+default_tc_value(CMAKE_SYSROOT "${XCMAKE_TOOLCHAIN_DIR}/toolchain/${XCMAKE_CONVENTIONAL_TRIPLE}/sysroot")
 
 # Set the linker to use.
 set(XCMAKE_CLANG_LINKER_FLAGS "-fuse-ld=${XCMAKE_TOOLCHAIN_DIR}/toolchain/bin/${XCMAKE_CONVENTIONAL_TRIPLE}-ld")

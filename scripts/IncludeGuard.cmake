@@ -1,5 +1,5 @@
 # Makes the second add_subdirectory of an equivalent thing a no-op. Handy for duplicated submodules.
-macro(SubdirectoryGuard X)
+macro(subdirectory_guard X)
     if (TARGET ${X}-GUARD)
         return()
     endif ()
