@@ -4,7 +4,7 @@ stages:
 .base:
   image: $DOCKER_REGISTRY/spectral/build/base
 
-lint:
+cmake:
   extends:
     - .base
   tags: ["gpu:gfx900"]
