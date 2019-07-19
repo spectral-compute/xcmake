@@ -60,6 +60,9 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
             # Unsafe math optimisations for CUDA that aren't automatically enabled by `-Ofast` in clang.
             $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,unsafe>,-fcuda-flush-denormals-to-zero,>
 
+            # Nicer nvdiasm output, larger binary size.
+            $<IF:$<BOOL:$<TARGET_PROPERTY:DEBUG_INFO>>,-Xcuda-ptxas --preserve-relocs,>
+
             # `-O<n>` propagates through clang into ptxas, but there are several ptxas flags that aren't enabled
             # automatically when you pass `-Og` to ptxas.
             $<IF:$<STREQUAL:$<TARGET_PROPERTY:OPT_LEVEL>,debug>,-Xcuda-ptxas --return-at-end -Xcuda-ptxas --dont-merge-basicblocks -Xcuda-ptxas --disable-optimizer-constants,>
