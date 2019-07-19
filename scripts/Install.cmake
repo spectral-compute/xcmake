@@ -86,24 +86,11 @@ function(install)
             message(FATAL_ERROR "Tried to install nonexistent target: ${TGT}")
         endif()
 
-        # Delegate installation of non-IMPORTED targets
-        get_target_property(IS_IMPORTED ${TGT} IMPORTED)
-        if (NOT IS_IMPORTED)
-            _install(TARGETS ${TGT} ${DELEGATE_ARGS})
-            continue()
-        endif()
-
-        set(DEFAULT_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
-
-        # Install the imported target as a proper file.
         get_target_property(TGT_TYPE ${TGT} TYPE)
 
-        get_target_property(FILE_PATH ${TGT} IMPORTED_LOCATION)
-        get_target_property(IMPLIB_FILE_PATH ${TGT} IMPORTED_IMPLIB)
-
-        # On DLL platforms, we need to set the key to RUNTIME for shared libraries
+        # Set appropriate name for destination and argument forwarding
         if ("${TGT_TYPE}" STREQUAL SHARED_LIBRARY)
-            if(IMPLIB_FILE_PATH)
+            if(XCMAKE_IMPLIB_PLATFORM) # On DLL platforms, we need to set the key to RUNTIME for shared libraries
                 set(KEY RUNTIME)
             else()
                 set(KEY LIBRARY)
@@ -115,14 +102,26 @@ function(install)
             list(APPEND DEFAULT_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
         endif()
 
-        set(PERMS "${${KEY}_PERMISSIONS}")
-        default_value(PERMS "${DEFAULT_PERMISSIONS}")
+
+        # Delegate installation of non-IMPORTED targets
+        get_target_property(IS_IMPORTED ${TGT} IMPORTED)
+        if (NOT IS_IMPORTED)
+            _install(TARGETS ${TGT} ${DELEGATE_ARGS})
+            continue()
+        endif()
 
         # If it's an EP target, set the OPTIONAL flag here and set up an existence assert if the stampfile exists
         # (meaning the installed file must exist if the EP target ran). If it isn't an EP target, the artefact is
         # expected to exist unconditionally.
-        handleEP(${FILE_PATH})
+        get_target_property(FILE_PATH ${TGT} IMPORTED_LOCATION)
+        handle_ep(${FILE_PATH})
 
+        # Define standard permission sets
+        set(PERMS "${${KEY}_PERMISSIONS}")
+        set(DEFAULT_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
+        default_value(PERMS "${DEFAULT_PERMISSIONS}")
+
+        # Install the imported target as a proper file.
         install(FILES "${FILE_PATH}" ${OPT_FLAG}
             PERMISSIONS "${PERMS}"
             DESTINATION "${${KEY}_DESTINATION}"
@@ -130,8 +129,13 @@ function(install)
         )
 
         # Handle implib installation if present
-        if(IMPLIB_FILE_PATH)
-            handleEP(${IMPLIB_FILE_PATH})
+        if(XCMAKE_IMPLIB_PLATFORM AND "${TGT_TYPE}" STREQUAL "SHARED_LIBRARY")
+            get_target_property(IMPLIB_FILE_PATH ${TGT} IMPORTED_IMPLIB)
+            if(NOT IMPLIB_FILE_PATH)
+                message(FATAL_ERROR "IMPORTED_IMPLIB not populated for shared library ${TGT}.")
+            endif()
+
+            handle_ep(${IMPLIB_FILE_PATH})
 
             install(FILES "${IMPLIB_FILE_PATH}" ${OPT_FLAG}
                 PERMISSIONS "${PERMS}"
@@ -139,11 +143,10 @@ function(install)
                 ${ARCHIVE_FORWARD}
             )
         endif()
-
     endforeach()
 endfunction()
 
-macro(handleEP CHECKPATH)
+macro(handle_ep CHECKPATH)
     set(OPT_FLAG "")
     if(i_EP_TARGET)
         set(OPT_FLAG "OPTIONAL")
