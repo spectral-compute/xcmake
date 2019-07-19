@@ -1,4 +1,4 @@
-IncludeGuard(EXTERNAL_PROJECT)
+include_guard()
 
 ### A more elaborate ExternalProject module that provides imported targets.
 include(ExternalProject)

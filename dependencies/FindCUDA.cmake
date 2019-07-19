@@ -1,4 +1,4 @@
-SubdirectoryGuard(FindCuda)
+include_guard(GLOBAL)
 
 # Search for the cuda distribution.
 if(NOT CUDA_TOOLKIT_ROOT_DIR AND NOT CMAKE_CROSSCOMPILING)

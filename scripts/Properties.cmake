@@ -1,5 +1,4 @@
-include(IncludeGuard)
-IncludeGuard(Properties)
+include_guard()
 
 # Find all the property definition files.
 file(

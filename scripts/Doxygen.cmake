@@ -1,6 +1,5 @@
 include(IncludeGuard)
-
-IncludeGuard(Doxygen)
+include_guard()
 
 function(add_cppreference_tagfile TARGET)
     if (TARGET cppreference_data)
