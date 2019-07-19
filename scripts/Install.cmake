@@ -100,8 +100,21 @@ function(install)
         elseif("${TGT_TYPE}" STREQUAL EXECUTABLE)
             set(KEY RUNTIME)
             list(APPEND DEFAULT_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
-        endif()
 
+            # Install any symlink folders
+            if(XCMAKE_IMPLIB_PLATFORM)
+                # Handle test install paths
+                set(EXE_DEST "${${KEY}_DESTINATION}")
+                if("${DELEGATE_ARGS}" MATCHES "test/bin")
+                    set(EXE_DEST "test/${${KEY}_DESTINATION}")
+                endif()
+
+                get_target_property(EXE_DIR ${TGT} BINARY_DIR)
+                _install(DIRECTORY "${EXE_DIR}/${TGT}_SYMLINKS/"
+                    DESTINATION "${EXE_DEST}"
+                )
+            endif()
+        endif()
 
         # Delegate installation of non-IMPORTED targets
         get_target_property(IS_IMPORTED ${TGT} IMPORTED)
