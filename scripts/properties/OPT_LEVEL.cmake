@@ -61,6 +61,6 @@ function(OPT_LEVEL_EFFECTS TARGET)
     # I realise this is ridiculous.
     target_link_libraries(
         ${TARGET} PRIVATE
-        $<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},OPT_LEVEL>>,${TARGET}_$<TARGET_PROPERTY:${TARGET},OPT_LEVEL>_OPT_LEVEL_EFFECTS,>
+        $<$<BOOL:$<TARGET_PROPERTY:${TARGET},OPT_LEVEL>>:${TARGET}_$<TARGET_PROPERTY:${TARGET},OPT_LEVEL>_OPT_LEVEL_EFFECTS>
     )
 endfunction()
