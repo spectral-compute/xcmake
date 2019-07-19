@@ -174,9 +174,6 @@ function(create_cuda_library LIB_NAME IMP_PATH LIB_TYPE)
     set_target_properties(${LIB_NAME} PROPERTIES
             IMPORTED_LOCATION "${IMP_PATH}"
     )
-    if(${LIB_TYPE} STREQUAL SHARED)
-        install(TARGETS ${LIB_NAME})
-    endif()
     target_include_directories(${LIB_NAME} INTERFACE "${CUDA_TOOLKIT_INCLUDE}")
 endfunction()
 
