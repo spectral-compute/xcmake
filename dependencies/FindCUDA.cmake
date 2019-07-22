@@ -190,17 +190,21 @@ function (locate_cuda_library)
     endif()
 endfunction()
 
-function(create_cuda_library LIB_NAME LIB_TYPE IMPORT_PATH IMPLIB_PATH)
+function(create_cuda_library LIB_NAME LIB_TYPE IMPORT_PATH)
+    cmake_parse_arguments("arg" "" "IMPLIB_PATH" "" "${ARGN}")
+
     add_library(${LIB_NAME} ${LIB_TYPE} IMPORTED GLOBAL)
 
-    set_target_properties(${LIB_NAME} PROPERTIES
-            IMPORTED_LOCATION "${IMPORT_PATH}"
-            IMPORTED_IMPLIB "${IMPLIB_PATH}"
-    )
+    # This is the shared library on Linux and the DLL on Windows
+    set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION "${IMPORT_PATH}")
 
-    # Strip filename from IMPORT PATH for storage as search path
-    get_filename_component(DLL_PATH ${IMPORT_PATH} DIRECTORY)
-    set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_DLL_SEARCH_PATHS "${DLL_PATH}")
+    if(XCMAKE_IMPLIB_PLATFORM)
+        set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_IMPLIB "${arg_IMPLIB_PATH}")
+
+        # Strip filename from IMPORT PATH for storage as search path
+        get_filename_component(DLL_PATH ${IMPORT_PATH} DIRECTORY)
+        set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_DLL_SEARCH_PATHS "${DLL_PATH}")
+    endif()
 
     target_include_directories(${LIB_NAME} INTERFACE "${CUDA_TOOLKIT_INCLUDE}")
 endfunction()
@@ -212,30 +216,35 @@ function(cuda_find_library LIBNAME)
     cmake_parse_arguments("arg" "${flags}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
 
     # find_library creates a cache variable, so to make it unique append the library name to the start
-    set(IMPLIB_PATH ${LIBNAME}_IMPLIB_PATH)
-    set(DLL_PATH ${LIBNAME}_DLL_PATH)
+    set(SHARED_PATH ${LIBNAME}_SHARED_PATH) # Shared lib on Linux. Implib on Windows.
+    set(DLL_PATH ${LIBNAME}_DLL_PATH) # Will be empty on linux systems
     set(STATIC_PATH ${LIBNAME}_STATIC_PATH)
 
-    list(APPEND arg_EXTRANAMES ${LIBNAME}64_100) # TODO: This needs to harvest 32/64 bit, and a condensed cuda version
+    # Look for stupid filenames on Windows according to CUDA version
+    list(APPEND arg_EXTRANAMES "${LIBNAME}64_100" "${LIBNAME}64_101") # TODO: This needs to harvest 32/64 bit, and a condensed cuda version
 
     # Try to find the library locations
     # Filenames are located in the order they are presented to the NAMES argument
     # Put STATICNAME first so that, in the event of implib, it grabs the dedicated static library
-    locate_cuda_library(LIBPATH ${IMPLIB_PATH} DLLPATH "${DLL_PATH}" NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE SHARED)
+    locate_cuda_library(LIBPATH ${SHARED_PATH} DLLPATH "${DLL_PATH}" NAMES ${LIBNAME} ${arg_EXTRANAMES} TYPE SHARED)
     locate_cuda_library(LIBPATH "${STATIC_PATH}" NAMES ${arg_STATICNAME} ${LIBNAME} ${arg_EXTRANAMES} TYPE STATIC)
 
     # Create library targets for paths we found
-    if (${IMPLIB_PATH} AND ${DLL_PATH})
-        create_cuda_library(${LIBNAME} SHARED ${${DLL_PATH}} ${${IMPLIB_PATH}})
+    if (${SHARED_PATH})
+        if(XCMAKE_IMPLIB_PLATFORM AND ${DLL_PATH})
+            create_cuda_library(${LIBNAME} SHARED ${${DLL_PATH}} IMPLIB_PATH ${${SHARED_PATH}})
+        elseif(NOT XCMAKE_IMPLIB_PLATFORM)
+            create_cuda_library(${LIBNAME} SHARED ${${SHARED_PATH}})
+        endif()
     endif()
 
     # Names static as dynamic would have been if dynamic wasn't found.
     # Please for the love of god let us alias IMPORTED targets...
     if(${STATIC_PATH})
         if(NOT TARGET ${LIBNAME})
-            create_cuda_library(${LIBNAME} STATIC ${${STATIC_PATH}} "")
+            create_cuda_library(${LIBNAME} STATIC ${${STATIC_PATH}})
         else()
-            create_cuda_library(${LIBNAME}_static STATIC ${${STATIC_PATH}} "")
+            create_cuda_library(${LIBNAME}_static STATIC ${${STATIC_PATH}})
         endif()
     endif()
 
