@@ -104,7 +104,6 @@ else()
     string(REGEX REPLACE "([0-9]+)\\.([0-9]+).*" "\\2" CUDA_VERSION_MINOR "${CUDA_VERSION}")
 endif()
 
-
 # Always set this convenience variable
 set(CUDA_VERSION_STRING "${CUDA_VERSION}")
 
@@ -160,7 +159,7 @@ function (locate_cuda_library)
         NO_DEFAULT_PATH
     )
 
-    if(XCMAKE_IMPLIB_PLATFORM AND arg_DLLPATH)
+    if(arg_DLLPATH)
         find_file(${arg_DLLPATH}
             NAMES ${FULL_NAMES}
             PATHS
@@ -182,7 +181,7 @@ function (locate_cuda_library)
             NAMES ${FULL_NAMES}
             PATHS "/usr/lib/nvidia-current"
         )
-        if(XCMAKE_IMPLIB_PLATFORM)
+        if(arg_DLLPATH)
             find_file(${arg_DLLPATH}
                 NAMES ${FULL_NAMES}
                 PATHS "/usr/lib/nvidia-current"
@@ -193,10 +192,16 @@ endfunction()
 
 function(create_cuda_library LIB_NAME LIB_TYPE IMPORT_PATH IMPLIB_PATH)
     add_library(${LIB_NAME} ${LIB_TYPE} IMPORTED GLOBAL)
+
     set_target_properties(${LIB_NAME} PROPERTIES
             IMPORTED_LOCATION "${IMPORT_PATH}"
             IMPORTED_IMPLIB "${IMPLIB_PATH}"
     )
+
+    # Strip filename from IMPORT PATH for storage as search path
+    get_filename_component(DLL_PATH ${IMPORT_PATH} DIRECTORY)
+    set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_DLL_SEARCH_PATHS "${DLL_PATH}")
+
     target_include_directories(${LIB_NAME} INTERFACE "${CUDA_TOOLKIT_INCLUDE}")
 endfunction()
 
