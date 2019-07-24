@@ -10,10 +10,13 @@ function(add_gtest_executable TARGET)
     cmake_parse_arguments(gt "${flags}" "" "" ${ARGN})
 
     add_test_executable(${TARGET} ${gt_UNPARSED_ARGUMENTS})
-    target_link_libraries(${TARGET} PRIVATE gmock gtest)
 
     # Link in gmock's main function if we need to
-    if (NOT "${gt_CUSTOM_MAIN}")
+    # We need to do this first, as when they're static, the linker does things in order, and gmock_main
+    # depends on gmock
+    if(NOT "${gt_CUSTOM_MAIN}")
         target_link_libraries(${TARGET} PRIVATE gmock_main)
-    endif ()
+    endif()
+
+    target_link_libraries(${TARGET} PRIVATE gmock gtest)
 endfunction()
