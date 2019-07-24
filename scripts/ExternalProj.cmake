@@ -50,13 +50,10 @@ function(add_external_project TARGET)
     # all the arguments not consumed by `cmake_parse_arguments`
     set(EXTRA_ARGS "${ep_UNPARSED_ARGUMENTS}")
 
-    if(ep_CMAKE AND NOT ep_CMAKE_ARGS)
-        set(ep_CMAKE_ARGS)
-    endif()
-
     # Set or override some of the CMake arguments, if it's a CMake build system
-    if (ep_CMAKE_ARGS)
-        list(APPEND ep_CMAKE_ARGS
+    set(CMAKE_ARGS "")
+    if (ep_CMAKE OR ep_CMAKE_ARGS)
+        list(APPEND CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
@@ -67,13 +64,15 @@ function(add_external_project TARGET)
 
             # Avoid install-time logspam
             -DCMAKE_INSTALL_MESSAGE=NEVER
+
+            ${ep_CMAKE_ARGS}
         )
     endif ()
 
     # Add our amended CMAKE_ARGS to EXTRA_ARGS to be passed along
     list(APPEND EXTRA_ARGS
         CMAKE_ARGS
-        ${ep_CMAKE_ARGS}
+        ${CMAKE_ARGS}
     )
 
     # If it's a git-source set UPDATE_COMMAND to "", and re-add the GIT_REPOSITORY argument we consumed
