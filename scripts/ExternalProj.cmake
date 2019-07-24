@@ -113,22 +113,30 @@ function(add_external_project TARGET)
     foreach (_LIB ${ep_SHARED_LIBRARIES})
         add_library(${_LIB} SHARED IMPORTED GLOBAL)
 
-        set(INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
-        set(IMPLIB_PATH "")
+        # Only put IMPLIB data in place on platforms which need it to avoid polluting the build and expecting files that won't exist
+        # The two DLIB paths differ in that non-implib platforms send their shared library to /lib, and implib platforms send the
+        # library to /bin and the implib to /lib
+        if(NOT XCMAKE_IMPLIB_PLATFORM)
+            set(DLIB_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${_LIB}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-        # Only put IMPLIB data in place on platforms which need it
-        if(XCMAKE_IMPLIB_PLATFORM)
-            set(INSTALL_DIR ${CMAKE_INSTALL_BINDIR})
+            set_target_properties(${_LIB} PROPERTIES
+                IMPORTED_LOCATION ${DLIB_PATH}
+            )
+        else()
+            set(DLL_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_BINDIR})
+            set(DLIB_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_BINDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${_LIB}${CMAKE_SHARED_LIBRARY_SUFFIX})
             set(IMPLIB_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_IMPORT_LIBRARY_PREFIX}${_LIB}${CMAKE_IMPORT_LIBRARY_SUFFIX})
+
+            set_target_properties(${_LIB} PROPERTIES
+                IMPORTED_LOCATION ${DLIB_PATH}
+                IMPORTED_IMPLIB ${IMPLIB_PATH}
+                INTERFACE_DLL_SEARCH_PATHS ${DLL_PATH}
+            )
+
+            list(APPEND ep_BUILD_BYPRODUCTS ${IMPLIB_PATH})
         endif()
 
-        set(DLIB_PATH ${EP_INSTALL_DIR}/${INSTALL_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${_LIB}${CMAKE_SHARED_LIBRARY_SUFFIX})
-
-        list(APPEND ep_BUILD_BYPRODUCTS ${DLIB_PATH} ${IMPLIB_PATH})
-        set_target_properties(${_LIB} PROPERTIES
-            IMPORTED_LOCATION ${DLIB_PATH}
-            IMPORTED_IMPLIB ${IMPLIB_PATH}
-        )
+        list(APPEND ep_BUILD_BYPRODUCTS ${DLIB_PATH})
 
         target_include_directories(${_LIB} INTERFACE ${EP_INSTALL_DIR}/include)
     endforeach ()
