@@ -3,9 +3,14 @@
 
 include_guard(GLOBAL)
 
+set(FPIC_DEFAULT ON)
+if(MSVC)
+    set(FPIC_DEFAULT OFF)
+endif()
+
 define_xcmake_target_property(
         FPIC FLAG
         BRIEF_DOCS "Enable position independent code even for static libraries"
-        DEFAULT ON
+        DEFAULT ${FPIC_DEFAULT}
 )
 target_compile_options(FPIC_EFFECTS INTERFACE -fPIC)
