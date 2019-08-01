@@ -199,11 +199,13 @@ function(create_cuda_library LIB_NAME LIB_TYPE IMPORT_PATH)
     set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION "${IMPORT_PATH}")
 
     if(XCMAKE_IMPLIB_PLATFORM)
-        set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_IMPLIB "${arg_IMPLIB_PATH}")
-
         # Strip filename from IMPORT PATH for storage as search path
         get_filename_component(DLL_PATH ${IMPORT_PATH} DIRECTORY)
-        set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_DLL_SEARCH_PATHS "${DLL_PATH}")
+
+        set_target_properties(${LIB_NAME} PROPERTIES
+            IMPORTED_IMPLIB "${arg_IMPLIB_PATH}"
+            INTERFACE_DLL_SEARCH_PATHS "${DLL_PATH}"
+        )
     endif()
 
     target_include_directories(${LIB_NAME} INTERFACE "${CUDA_TOOLKIT_INCLUDE}")
