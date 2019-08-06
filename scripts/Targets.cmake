@@ -231,7 +231,8 @@ function(apply_default_standard_properties TARGET)
 
             # TODO: Refactor to using new functions where we can, and turning off the warning locally instead
             -Wno-deprecated
-
+        )
+        target_compile_definitions(${TARGET} PRIVATE
             # Stop Windows including more headers than needed
             -DWIN32_LEAN_AND_MEAN
         )
