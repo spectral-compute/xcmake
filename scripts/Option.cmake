@@ -1,6 +1,13 @@
 # Override option() so that if the value is already set in the cache we, instead of no-oping, add
 # the documentation to it instead.
-# Arguments are optionName, helpString, DefaultValue, optionType, ListOfValidStrings
+#
+# Arguments are:
+# - optionName
+# - helpString
+# - defaultValue
+# - (Optional) optionType (Valid values: `BOOL`, `PATH`, `FILEPATH`, `STRING`)
+# - (Optional) validStrings The set of strings that a string-typed option can accept
+#
 # The list of valid strings specifies the list of acceptable values for the option if it is of STRING type.
 # All options beyong "helpString" are optional.
 function (option VAR HELP)
