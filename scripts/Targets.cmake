@@ -524,9 +524,6 @@ function(handle_symlinks TARGET)
     # Get the path to the executable's eventual directory
     get_target_property(EXE_DIR ${TARGET} BINARY_DIR)
 
-    # Append the accumulated binary dirs we're working on
-    set_property(TARGET ${TARGET} APPEND PROPERTY DLL_SEARCH_PATHS ${XCMAKE_ALL_BINARY_DIRS})
-
     add_custom_command(
         TARGET ${TARGET}
         POST_BUILD
