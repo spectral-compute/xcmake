@@ -1,8 +1,3 @@
-# Build a list of all the binary directories we'll generate
-if(NOT "${CMAKE_CURRENT_BINARY_DIR}" IN_LIST XCMAKE_ALL_BINARY_DIRS)
-    set(XCMAKE_ALL_BINARY_DIRS "${XCMAKE_ALL_BINARY_DIRS};${CMAKE_CURRENT_BINARY_DIR}" CACHE INTERNAL "A list of all the binary directories generated" FORCE)
-endif()
-
 if (XCMAKE_INCLUDED)
     return()
 endif ()
