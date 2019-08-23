@@ -15,6 +15,11 @@ target_compile_options(CUDA_FLAGS INTERFACE
     -Wno-cuda-compat  # Clang is less restrictive when compiling CUDA than NVCC
     -x cuda
 )
+
+if(WIN32)
+    target_compile_options(CUDA_FLAGS INTERFACE -Wno-unused-command-line-argument) # Don't warn about unused /TP added by cmake
+endif()
+
 target_optional_compile_options(CUDA_FLAGS INTERFACE
     -fcuda-short-ptr
 )
