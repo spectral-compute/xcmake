@@ -225,10 +225,6 @@ function(apply_default_standard_properties TARGET)
             # reminder about it if we ever get /MD vs /MT clashes again
             /MD
 
-            # These flags enable clang's compatibility with Microsoft's C++ libraries and extensions
-            -fms-extensions
-            -fms-compatibility
-
             # TODO: Refactor to using new functions where we can, and turning off the warning locally instead
             -Wno-deprecated
         )
