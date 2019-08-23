@@ -232,9 +232,6 @@ function(apply_default_standard_properties TARGET)
             # TODO: Refactor to using new functions where we can, and turning off the warning locally instead
             -Wno-deprecated
 
-            # TODO: Figure out what is adding the unused -TP argument on Windows and stop it
-            -Wno-unused-command-line-argument
-
             # Stop Windows including more headers than needed
             -DWIN32_LEAN_AND_MEAN
         )
