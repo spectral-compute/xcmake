@@ -126,6 +126,9 @@ default_tc_value(CMAKE_INSTALL_SYSCONFDIR "etc")
 default_tc_value(CMAKE_INSTALL_SHARESTATEDIR "com")
 default_tc_value(CMAKE_INSTALL_LOCALSTATEDIR "var")
 
+# This being defualt-off creates a lot of problems, and saves at best a tiny amount of binary size.
+default_tc_value(CMAKE_POSITION_INDEPENDENT_CODE "ON")
+
 # Provide a variable to denote if the platform we're on uses IMPLIBS for its shared libraries
 # Please flesh this out with more possibilities as they're needed
 default_tc_value(XCMAKE_IMPLIB_PLATFORM FALSE)
