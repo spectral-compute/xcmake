@@ -141,6 +141,11 @@ function (add_manual_generator LIB_NAME)
     # Abort if library has docs disabled
     ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE ${LIB_NAME})
 
+    find_package(Python3 COMPONENTS Interpreter)
+    if (NOT Python3_FOUND)
+        message("Can't find Python 3 interpreter. Either install it, or disable building documentation with `-DENABLE_DOCS=OFF`" FATAL_ERROR)
+    endif()
+
     set(flags)
     set(oneValueArgs SCRIPT)
     set(multiValueArgs DEPENDENCIES)
@@ -169,7 +174,7 @@ function (add_manual_generator LIB_NAME)
     file(MAKE_DIRECTORY "${INTERMEDIATE_DIR}")
 
     # Get a list of files the generator generates.
-    execute_process(COMMAND "./${SCRIPT_FILE}" "LIST"
+    execute_process(COMMAND "${Python3_EXECUTABLE}" "./${SCRIPT_FILE}" "LIST"
                     WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
                     OUTPUT_VARIABLE GENERATED_FILES)
 
