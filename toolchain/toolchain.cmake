@@ -144,7 +144,7 @@ macro (find_default_program OUTVAR)
         set(${OUTVAR} ${${OUTVAR}} CACHE INTERNAL "") # Cache it.
 
         if (NOT ${OUTVAR})
-            message(FATAL_ERROR "Failed to find default ${OUTVAR} using these names: ${NAMES}.")
+            message(FATAL_ERROR "Failed to find default ${OUTVAR} using these names: ${ARGN}.")
         endif()
     endif()
 endmacro()
