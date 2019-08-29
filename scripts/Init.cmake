@@ -60,21 +60,19 @@ else()
     message(FATAL_ERROR "Unsupported build type: ${CMAKE_BUILD_TYPE}")
 endif()
 
-# Define two custom targets to allow tracking of DLL paths on appropriate platforms
-define_property(TARGET
-                PROPERTY DLL_SEARCH_PATHS
-                BRIEF_DOCS "List of paths where dependent DLLs are found"
-                FULL_DOCS "Set on executable targets and filled from INTERFACE_DLL_SEARCH_PATHS of linked libraries. \
-                On platforms which use implibs for shared libraries, the library is not required for \
-                linking, but is required for execution. This list can be used to populate build or install trees \
-                with the necessary files (usually DLL)."
+# Target properties to track DLL search paths.
+define_property(TARGET PROPERTY DLL_SEARCH_PATHS
+    BRIEF_DOCS "List of paths where dependent DLLs are found"
+    FULL_DOCS "Set on executable targets and filled from INTERFACE_DLL_SEARCH_PATHS of linked libraries. \
+    On platforms which use implibs for shared libraries, the library is not required for \
+    linking, but is required for execution. This list can be used to populate build or install trees \
+    with the necessary files (usually DLL)."
 )
-define_property(TARGET
-                PROPERTY INTERFACE_DLL_SEARCH_PATHS
-                BRIEF_DOCS "List of paths where dependent DLLs are found"
-                FULL_DOCS "Set on library targets and propogates on INTERFACE or PUBLIC linking. On platforms \
-                which use implibs for shared libraries, the library is not required for linking, but is required \
-                for execution. This list can be used to populate build or install trees with the necessary files (usually DLL)."
+define_property(TARGET PROPERTY INTERFACE_DLL_SEARCH_PATHS
+    BRIEF_DOCS "List of paths where dependent DLLs are found"
+    FULL_DOCS "Set on library targets and propogates on INTERFACE or PUBLIC linking. On platforms \
+    which use implibs for shared libraries, the library is not required for linking, but is required \
+    for execution. This list can be used to populate build or install trees with the necessary files (usually DLL)."
 )
 
 # Saneify CMake's RPATH handling...
