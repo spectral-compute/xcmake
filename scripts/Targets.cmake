@@ -77,6 +77,67 @@ function(target_optional_compile_options TARGET)
     endforeach ()
 endfunction()
 
+# Get the name of the primary output file produced by the given target.
+# This just picks between OUTPUT_NAME and LIBRARY_OUTPUT_NAME as appropriate.
+function(get_output_name OUTVAR TARGET)
+    get_target_property(TGT_TYPE ${TARGET} TYPE)
+
+    # Output file prefix/suffix, determined by target type.
+    set(PREFIX "")
+    set(SUFFIX "")
+
+    if (${TGT_TYPE} STREQUAL STATIC_LIBRARY)
+        get_target_property(OUT_NAME ${TARGET} ARCHIVE_OUTPUT_NAME)
+        set(PREFIX "${CMAKE_STATIC_LIBRARY_PREFIX}")
+        set(SUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    elseif (${TGT_TYPE} STREQUAL SHARED_LIBRARY)
+        get_target_property(OUT_NAME ${TARGET} LIBRARY_OUTPUT_NAME)
+        set(PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
+        set(SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    elseif(${TGT_TYPE} STREQUAL EXECUTABLE)
+        get_target_property(OUT_NAME ${TARGET} RUNTIME_OUTPUT_NAME)
+        set(SUFFIX "${CMAKE_EXECUTABLE_SUFFIX}")
+    else()
+        message(FATAL_ERROR "Cannot get output name for target ${TARGET} of unsupported type ${TGT_TYPE}")
+    endif()
+
+    # Try the default output name property.
+    if (NOT OUT_NAME)
+        get_target_property(OUT_NAME ${TARGET} OUTPUT_NAME)
+    endif()
+
+    # CMake just uses the target name plus the prefixes/suffices if none of the properties are set.
+    if (NOT OUT_NAME)
+        set(OUT_NAME ${TARGET})
+    endif()
+
+    # Put it all together...
+    set(${OUTVAR} "${PREFIX}${OUT_NAME}${SUFFIX}" PARENT_SCOPE)
+endfunction()
+
+# Get the directory in which the primary output file for a target will be generated.
+function(get_output_dir OUTVAR TARGET)
+    get_target_property(TGT_TYPE ${TARGET} TYPE)
+
+    # There's a hierarchy of output directories for each type of target, and a global variable that's used as a
+    # last resort. Let's start digging...
+    if (${TGT_TYPE} STREQUAL STATIC_LIBRARY)
+        get_target_property(OUT_DIR ${TARGET} ARCHIVE_OUTPUT_DIRECTORY)
+    elseif (${TGT_TYPE} STREQUAL SHARED_LIBRARY)
+        get_target_property(OUT_DIR ${TARGET} LIBRARY_OUTPUT_DIRECTORY)
+    elseif(${TGT_TYPE} STREQUAL EXECUTABLE)
+        get_target_property(OUT_DIR ${TARGET} RUNTIME_OUTPUT_DIRECTORY)
+    else()
+        message(FATAL_ERROR "Cannot get output directory for target ${TARGET} of unsupported type ${TGT_TYPE}")
+    endif()
+
+    if (NOT OUT_DIR)
+        get_target_property(OUT_DIR ${TARGET} BINARY_DIR)
+    endif()
+
+    set(${OUTVAR} "${OUT_DIR}" PARENT_SCOPE)
+endfunction()
+
 # Apply the default values (from the XCMAKE_* global variables) of all our custom target properties.
 function(apply_default_properties TARGET)
     foreach (_I ${XCMAKE_TGT_PROPERTIES})
@@ -517,16 +578,15 @@ function(handle_symlinks TARGET)
     endif()
 
     # Get the path to the executable's eventual directory
-    get_target_property(EXE_DIR ${TARGET} BINARY_DIR)
+    get_output_dir(EXE_DIR ${TARGET})
+    get_output_name(EXE_NAME ${TARGET})
 
     add_custom_command(
         TARGET ${TARGET}
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -P ${XCMAKE_TOOLS_DIR}/SymLink.cmake
-            "${EXE_DIR}"
-            "${TARGET}"
+        COMMAND ${CMAKE_COMMAND} -P "${XCMAKE_TOOLS_DIR}/SymLink.cmake"
+            "${EXE_DIR}/${EXE_NAME}"
             "$<GENEX_EVAL:$<TARGET_PROPERTY:${TARGET},DLL_SEARCH_PATHS>>"
-            "${CMAKE_BINARY_DIR}"
         COMMENT "Creating symbolic links for ${EXE_DIR}/${TARGET}.exe"
     )
 endfunction()
