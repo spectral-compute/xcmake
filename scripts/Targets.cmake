@@ -521,7 +521,7 @@ function(handle_symlinks TARGET)
     add_custom_command(
         TARGET ${TARGET}
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -P ${XCMAKE_SYMLINK_SCRIPT_PATH}
+        COMMAND ${CMAKE_COMMAND} -P ${XCMAKE_TOOLS_DIR}/SymLink.cmake
             "${EXE_DIR}"
             "${TARGET}"
             "$<GENEX_EVAL:$<TARGET_PROPERTY:${TARGET},DLL_SEARCH_PATHS>>"

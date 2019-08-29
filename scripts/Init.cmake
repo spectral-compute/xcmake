@@ -24,9 +24,6 @@ include(Log)   # Logging utils.
 # Default to building shared libraries
 default_cache_value(BUILD_SHARED_LIBS ON)
 
-# Store the path to our SymLink script to avoid repeatedly scanning for it
-set(XCMAKE_SYMLINK_SCRIPT_PATH "${CMAKE_CURRENT_LIST_DIR}/../tools/SymLink.cmake")
-
 # Remind cmake to stop drinking drain cleaner.
 default_cache_value(CMAKE_INSTALL_MESSAGE NEVER) # No logspam during install
 default_cache_value(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON) # Prepend include directories by default.
