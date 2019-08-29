@@ -179,10 +179,11 @@ function (add_manual_generator LIB_NAME)
                     OUTPUT_VARIABLE GENERATED_FILES)
 
     set(GENERATED_PATHS "")
+    # Make any missing output directories
     foreach (outFile IN LISTS GENERATED_FILES)
         set(GENERATED_PATH "${INTERMEDIATE_DIR}/${outFile}")
-        set(GENERATED_PATHS ${GENERATED_PATHS} "${GENERATED_PATH}")
-        get_filename_component(GENERATED_DIR "${GENERATED_PATH}" DIRECTORY)
+        list(APPEND GENERATED_PATHS "${GENERATED_PATH}")
+        get_filename_component(GENERATED_DIR "${outFile}" DIRECTORY)
         file(MAKE_DIRECTORY "${INTERMEDIATE_DIR}/${GENERATED_DIR}")
     endforeach()
 
