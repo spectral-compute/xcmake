@@ -123,14 +123,12 @@ function(add_external_project TARGET)
                 IMPORTED_LOCATION ${DLIB_PATH}
             )
         else()
-            set(DLL_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_BINDIR})
             set(DLIB_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_BINDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${_LIB}${CMAKE_SHARED_LIBRARY_SUFFIX})
             set(IMPLIB_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_IMPORT_LIBRARY_PREFIX}${_LIB}${CMAKE_IMPORT_LIBRARY_SUFFIX})
 
             set_target_properties(${_LIB} PROPERTIES
                 IMPORTED_LOCATION ${DLIB_PATH}
                 IMPORTED_IMPLIB ${IMPLIB_PATH}
-                INTERFACE_DLL_SEARCH_PATHS ${DLL_PATH}
             )
 
             list(APPEND ep_BUILD_BYPRODUCTS ${IMPLIB_PATH})
