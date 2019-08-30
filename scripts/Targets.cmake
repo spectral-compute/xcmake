@@ -436,6 +436,9 @@ function(add_library TARGET)
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
 
+    # Add yourself as a dll search path for users.
+    set_property(TARGET ${TARGET} APPEND PROPERTY INTERFACE_DLL_SEARCH_PATHS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
     if (NOT args_NOINSTALL)
         if (NOT args_NOEXPORT)
             set(EXPORT_FLAGS EXPORT ${PROJECT_NAME})
@@ -546,8 +549,20 @@ function(target_link_libraries TARGET)
 endfunction()
 
 function(propogate_dll_paths KEYWORD TARGET LINKED)
-    get_target_property(TARGET_TYPE ${TARGET} TYPE)
-    set(LINKED_PATHS_CONTENT "$<GENEX_EVAL:$<$<BOOL:${LINKED}>:$<TARGET_PROPERTY:${LINKED},INTERFACE_DLL_SEARCH_PATHS>>>")
+    set(LINKED_PATHS_CONTENT "")
+
+    # If we're linking against an IMPORTED target, use its `IMPORTED_LOCATION` as `INTERFACE_DLL_SEARCH_PATHS`
+    if (TARGET ${LINKED})
+        get_target_property(LINKED_IMPORTED ${LINKED} IMPORTED)
+
+        if (LINKED_IMPORTED)
+            get_target_property(LINKED_LOCATION ${LINKED} IMPORTED_LOCATION)
+            get_filename_component(LINKED_PATHS_CONTENT "${LINKED_LOCATION}" DIRECTORY)
+        endif()
+    endif()
+
+    # Propagate the inteface property.
+    list(APPEND LINKED_PATHS_CONTENT "$<GENEX_EVAL:$<$<BOOL:${LINKED}>:$<TARGET_PROPERTY:${LINKED},INTERFACE_DLL_SEARCH_PATHS>>>")
 
     # Interface-property progation as usual.
     if (NOT "${KEYWORD}" STREQUAL "INTERFACE")
