@@ -28,6 +28,9 @@ foreach(DEPENDENCY ${DEPENDENCIES})
     # - As siblings to the executable in the object tree, so it can be run there.
     # - In a special directory that is the target of an `install(DIRECTORY` command, so the executable can be run
     #   post-installation, too.
-    execute_process(COMMAND ln -sf "${DEPENDENCY_PATH}" "${EXECUTABLE_PATH}/${DEPENDENCY}")
-    execute_process(COMMAND ln -sf "${DEPENDENCY_PATH}" "${EXECUTABLE_PATH}/${EXE_BASENAME}_SYMLINKS/${DEPENDENCY}")
+    if (NOT "${DEPENDENCY_PATH}" STREQUAL "${EXE_DIR}/${DEPENDENCY}")
+        execute_process(COMMAND ln -sf "${DEPENDENCY_PATH}" "${EXE_DIR}/${DEPENDENCY}")
+    endif()
+
+    execute_process(COMMAND ln -sf "${DEPENDENCY_PATH}" "${EXE_DIR}/${EXE_BASENAME}_SYMLINKS/${DEPENDENCY}")
 endforeach()
