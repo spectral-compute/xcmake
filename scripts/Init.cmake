@@ -24,6 +24,16 @@ include(Log)   # Logging utils.
 # Default to building shared libraries
 default_cache_value(BUILD_SHARED_LIBS ON)
 
+# Default to a canonical output directory structure.
+default_cache_value(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+default_cache_value(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+default_cache_value(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+default_cache_value(CMAKE_COMPILE_PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+default_cache_value(CMAKE_PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+
 # Remind cmake to stop drinking drain cleaner.
 default_cache_value(CMAKE_INSTALL_MESSAGE NEVER) # No logspam during install
 default_cache_value(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON) # Prepend include directories by default.
