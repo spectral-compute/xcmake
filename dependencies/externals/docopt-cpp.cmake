@@ -1,11 +1,6 @@
 include_guard(GLOBAL)
 include(ExternalProj)
 
-set(DOCOPT_BUILD_TYPE ${CMAKE_BUILD_TYPE})
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(DOCOPT_BUILD_TYPE "RelWithDebInfo")
-endif()
-
 set(DOCOPT_FLAGS "")
 if(MSVC)
     set(DOCOPT_FLAGS "/EHsc") # Sets the exception handling mode
@@ -16,7 +11,7 @@ add_external_project(docopt_proj
     GIT_TAG 72a8e3e01effe22ac0f4e29c14153743172efcb5
     CMAKE_ARGS
         "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} ${DOCOPT_FLAGS}"
-        "-DCMAKE_BUILD_TYPE=${DOCOPT_BUILD_TYPE}" # DOCOPT has a bug when built in Debug mode that causes a segfault in resulting exes
+        "-DCMAKE_BUILD_TYPE=Release"
     SHARED_LIBRARIES docopt
 )
 
