@@ -16,8 +16,9 @@ add_external_project(docopt_proj
 )
 
 if(XCMAKE_IMPLIB_PLATFORM)
+    set(LIBNAME ${CMAKE_SHARED_LIBRARY_PREFIX}docopt${CMAKE_SHARED_LIBRARY_SUFFIX})
     externalproject_add_step(docopt_proj postinstall
-        COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/external_projects/inst/lib/docopt.dll ${CMAKE_BINARY_DIR}/external_projects/inst/bin/docopt.dll
+        COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/external_projects/inst/lib/${LIBNAME} ${CMAKE_BINARY_DIR}/external_projects/inst/bin/${LIBNAME}
         COMMENT "Completed move of docopt.dll from lib to bin"
         DEPENDEES install
     )
