@@ -273,6 +273,13 @@ function(apply_default_standard_properties TARGET)
         -fmax-data-global-size=67108864
         -fmax-data-local-size=1048576
     )
+
+    # Work around a bug in Ninja that prevents coloured diagnostics by default, which they refuse to fix:
+    # https://github.com/ninja-build/ninja/issues/174
+    if (${CMAKE_GENERATOR} STREQUAL "Ninja")
+        target_optional_compile_options(${TARGET} BEFORE PRIVATE -fdiagnostics-color=always)
+    endif()
+
     if (WIN32)
         target_compile_options(${TARGET} PRIVATE
             # We use clang-cl on Windows instead of clang++, so we need a few clang-cl flags
