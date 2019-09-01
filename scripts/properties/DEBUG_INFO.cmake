@@ -12,6 +12,7 @@ define_xcmake_target_property(
     DEFAULT ${DEFAULT_DEB}
 )
 target_optional_compile_options(DEBUG_INFO_EFFECTS INTERFACE
+    -g
     -gcolumn-info
     -fdebug-macro
     -fno-limit-debug-info
