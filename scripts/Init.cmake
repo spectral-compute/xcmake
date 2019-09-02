@@ -40,6 +40,10 @@ default_cache_value(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON) # Prepend include direc
 default_cache_value(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON) # Absolute install paths are always wrong.
 default_cache_value(CMAKE_ERROR_DEPRECATED ON) # Explode on use of deprecated cmake features
 
+# It makes zero sense to limit downloads to 10 minutes by default...
+# This disables the total download time limit, but leaves the activity timeout unchanged.
+default_cache_value(ExternalData_TIMEOUT_ABSOLUTE 0)
+
 # Remind the user to stop drinking drain cleaner
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-tree builds are not wise.")
