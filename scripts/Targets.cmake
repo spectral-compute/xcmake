@@ -293,6 +293,8 @@ function(apply_default_standard_properties TARGET)
             # reminder about it if we ever get /MD vs /MT clashes again
             /MD
 
+            -fno-ms-compatibility
+
             # TODO: Refactor to using new functions where we can, and turning off the warning locally instead
             -Wno-deprecated
         )
