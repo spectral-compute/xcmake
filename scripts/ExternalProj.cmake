@@ -7,6 +7,18 @@ include(ExternalProject)
 set(EP_ROOT_DIR "${CMAKE_BINARY_DIR}/external_projects" CACHE INTERNAL "")
 set(EP_INSTALL_DIR "${EP_ROOT_DIR}/inst" CACHE INTERNAL "")
 
+# Extra CFLAGS/CXXFLAGS for external projects
+set(XCMAKE_EP_CXX_FLAGS "")
+set(XCMAKE_EP_C_FLAGS "")
+
+if(WIN32)
+    # EPs will likely expect clang to be behaving as it normally does on Windows.
+    # If the EP's own build system turns this off, that'll take precedence anyway, so this should be the
+    # arrangement that's least likely to explode.
+    list(APPEND XCMAKE_EP_CXX_FLAGS "-fms-compatibility")
+    list(APPEND XCMAKE_EP_C_FLAGS "-fms-compatibility")
+endif()
+
 function(add_external_project TARGET)
     # Parse the function arguments. These are split into three categories:
     # - Arguments added in XCMake which dictate libraries or executables to be created and marked dependent on TARGET
@@ -52,7 +64,7 @@ function(add_external_project TARGET)
 
     # Set or override some of the CMake arguments, if it's a CMake build system
     set(CMAKE_ARGS "")
-    if (ep_CMAKE OR ep_CMAKE_ARGS)
+    if(ep_CMAKE OR ep_CMAKE_ARGS)
         list(APPEND CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -61,13 +73,15 @@ function(add_external_project TARGET)
             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
             -DCMAKE_LINKER=${CMAKE_LINKER}
             -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
+            -DCMAKE_CXX_FLAGS=${XCMAKE_EP_CXX_FLAGS}
+            -DCMAKE_C_FLAGS=${XCMAKE_EP_C_FLAGS}
 
             # Avoid install-time logspam
             -DCMAKE_INSTALL_MESSAGE=NEVER
 
             ${ep_CMAKE_ARGS}
         )
-    endif ()
+    endif()
 
     # Add our amended CMAKE_ARGS to EXTRA_ARGS to be passed along
     list(APPEND EXTRA_ARGS
