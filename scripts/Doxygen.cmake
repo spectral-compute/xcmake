@@ -26,7 +26,7 @@ endfunction()
 function(add_doxygen LIB_NAME)
     find_package(Doxygen)
     if (NOT DOXYGEN_FOUND)
-        message_colour(STATUS BoldYellow "`make docs` will not be available because Doxygen is not installed.")
+        message(BOLD_YELLOW "`make docs` will not be available because Doxygen is not installed.")
         return()
     endif()
 

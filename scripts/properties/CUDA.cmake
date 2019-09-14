@@ -33,10 +33,7 @@ if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
         --cuda-gpu-arch=$<JOIN:${TARGET_AMD_GPUS}, --cuda-gpu-arch=>
     )
 
-    target_link_libraries(CUDA_EFFECTS INTERFACE Scale::AMD)
-    set(CUDA_LIBRARY Scale::AMD)
-
-    message_colour(STATUS BoldRed "${TARGET}: Found support for CUDA on AMD in ${SCALE_AMD_TOOLKIT_ROOT_DIR}")
+    message(BOLD_RED "${TARGET}: Found support for CUDA on AMD in ${SCALE_AMD_TOOLKIT_ROOT_DIR}")
 elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
     find_package(CUDA 8.0 REQUIRED)
     target_link_libraries(CUDA_EFFECTS INTERFACE cudart)
@@ -81,7 +78,7 @@ elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
         endif()
     endif()
 
-    message_colour(STATUS BoldGreen "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
+    message(BOLD_GREEN "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
 else()
     target_compile_options(CUDA_FLAGS INTERFACE --cuda-works-better-if-you-enable-gpu-support-in-xcmake) # :D
 endif()

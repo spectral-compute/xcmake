@@ -21,7 +21,7 @@ macro(ensure_docs_enabled)
 
     string(TOUPPER ${f_PROJECT} PROJECT_U)
     if (NOT ${PROJECT_U}_ENABLE_DOCS)
-        message_colour(STATUS BoldYellow
+        message(BOLD_YELLOW
                 "Not building ${f_TYPE} for ${XCMAKE_PROJECT_NAME_UPPER} because ${PROJECT_U}_ENABLE_DOCS == OFF")
         return ()
     endif ()
