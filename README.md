@@ -83,13 +83,20 @@ Both file-scope and target-scope include guard mechanisms are provided.
 
 ## [Coloured Logging](./scripts/Log.cmake)
 
-Constants are provided for ANSI colour codes, and a `message_colour` function provided:
+`message()` is overriddent in a backwards-compatible way, allowing you to optionally specify a colour and/or
+log-level in the first two arguments. There are also convenient functions such as `warn()`, `error()` for printing
+at certain log-levels, each of which takes an optional colour as the first argument, and uses a nice default otherwise.
 
 ```cmake
-message_colour(STATUS BoldRed "THE WORLD IS ON FIRE")
+# These two are equivalent.
+message(BLUE "Hello, world")
+message(STATUS BLUE "Hello, world")
 
-# Warnings are automatically coloured BoldYellow, errors BoldRed, etc.
-message(WARNING "Oh noes")
+# These foour are equivalent.
+message(FATAL_ERROR "Hello, world")
+message(FATAL_ERROR BOLD_RED "Hello, world")
+fatal_error("Hello, world")
+fatal_error(BOLD_RED "Hello, world")
 ```
 
 ## Dynamic Binding
