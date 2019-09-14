@@ -130,11 +130,10 @@ function(add_doxygen LIB_NAME)
         COMMAND cmake -E touch ${STAMP_FILE}
         COMMENT "Doxygenation of ${TARGET}..."
         DEPENDS ${DOXYFILE}
-        DEPENDS ${d_DOXYFILE_SUFFIX}
-        DEPENDS ${HEADERS_USED}
-        DEPENDS ${DOXYGEN_LAYOUT_FILE}
+                ${d_DOXYFILE_SUFFIX}
+                ${HEADERS_USED}
+                ${DOXYGEN_LAYOUT_FILE}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        VERBATIM
     )
 
     add_dependencies(${TARGET} cppreference_data)

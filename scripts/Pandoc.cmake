@@ -33,16 +33,15 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
     add_custom_command(OUTPUT ${OUT_FILE}
         COMMAND ${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh ${MARKDOWN_FILE} ${XCMAKE_SANITISE_TRADEMARKS}
         COMMAND pandoc
-        --fail-if-warnings
-        --from markdown
-        --to html
-        #                      --toc
-        --css ${DOTSLASHES}style.css
-        --standalone ${MARKDOWN_FILE} > ${OUT_FILE}
+            --fail-if-warnings
+            --from markdown
+            --to html
+#           --toc
+            --css ${DOTSLASHES}style.css
+            --standalone ${MARKDOWN_FILE} > ${OUT_FILE}
         COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
         DEPENDS "${MARKDOWN_FILE}"
         WORKING_DIRECTORY "${d_MANUAL_SRC}"
-        VERBATIM
     )
 endfunction()
 
@@ -53,7 +52,6 @@ function (add_dot_graph TARGET BASEDIR DOT_FILE)
         COMMENT "dot-compiling ${DOT_FILE}..."
         DEPENDS "${DOT_FILE}"
         WORKING_DIRECTORY "${d_MANUAL_SRC}"
-        VERBATIM
     )
 endfunction()
 
@@ -199,7 +197,6 @@ function (add_manual_generator LIB_NAME)
         COMMENT "Running documentation generation script ${d_SCRIPT}"
         DEPENDS "${d_MANUAL_SRC}/${d_SCRIPT}" "${DEPENDENCIES}"
         WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
-        VERBATIM
     )
 
     # Add all the generated files to the manual.
