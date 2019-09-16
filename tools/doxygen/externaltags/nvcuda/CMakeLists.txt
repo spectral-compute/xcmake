@@ -16,6 +16,7 @@ add_custom_command(
     DEPENDS "${CUDA_INCLUDE_DIR}/cuda_runtime_api.h"
     DEPENDS "${CMAKE_CURRENT_LIST_DIR}/preprocess.sh"
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    VERBATIM
 )
 
 add_custom_target(libnvcuda_intermediate_header
@@ -42,6 +43,7 @@ add_custom_command(
     DEPENDS ${INPUT_TAG_FILE}
     DEPENDS "${CMAKE_CURRENT_LIST_DIR}/deobfuscate.sh"
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    VERBATIM
 )
 
 add_custom_target(libnvcuda_tag_file
