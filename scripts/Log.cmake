@@ -84,10 +84,19 @@ endfunction()
 # Implementation detail.
 function(colour_log_impl LOG_LEVEL COLOUR)
     set(CHOSEN_COLOUR ${COLOUR})
+
     if (${ARGC} LESS 3)
         # No colour was provided. The colour is actually the message.
         set(CHOSEN_COLOUR "")
         set(ARGN "${COLOUR};${ARGN}")
+    else()
+        # Is the colour invalid? If so, it's not a colour, so drop it.
+        string(TOUPPER "${CHOSEN_COLOUR}" CHOSEN_COLOUR)
+        list(FIND ALL_COLOURS "${CHOSEN_COLOUR}" COLOUR_VALID)
+        if (COLOUR_VALID EQUAL -1)
+            set(CHOSEN_COLOUR "")
+            set(ARGN "${COLOUR};${ARGN}")
+        endif()
     endif()
 
     # Try assigning a default colour.
@@ -97,14 +106,6 @@ function(colour_log_impl LOG_LEVEL COLOUR)
         if (${LOG_LEVEL} STREQUAL STATUS)
             contextual_format(CHOSEN_COLOUR "${ARGN}")
         endif()
-    endif()
-
-    # Is the colour invalid?
-    string(TOUPPER "${CHOSEN_COLOUR}" CHOSEN_COLOUR)
-    list(FIND ALL_COLOURS ${CHOSEN_COLOUR} COLOUR_VALID)
-    if (COLOUR_VALID EQUAL -1)
-        # This one needs manual formatting because we haven't defined the colour logging yet.
-        _message(FATAL_ERROR "${BOLD_RED}Attempted to log with invalid colour code: ${COLOUR}${RST}")
     endif()
 
     # Finally print it, replicating cmake's weird "concat all the arguments" behaviour.
