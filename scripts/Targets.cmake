@@ -497,6 +497,7 @@ function (add_shell_script TARGET FILE)
         COMMAND cmake -E touch ${STAMP_FILE}
         COMMENT "Shellcheck for ${TARGET}..."
         DEPENDS ${FILE}
+        VERBATIM
     )
 
     add_custom_target(${TARGET} ALL
