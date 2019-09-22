@@ -280,7 +280,23 @@ function(apply_default_standard_properties TARGET)
         target_optional_compile_options(${TARGET} BEFORE PRIVATE -fdiagnostics-color=always)
     endif()
 
+    # If building for Windows...
     if (WIN32)
+        target_compile_options(${TARGET} PRIVATE
+            -fno-ms-compatibility
+
+            # TODO: Refactor to using new functions where we can, and turning off the warning locally instead
+            -Wno-deprecated
+        )
+        target_compile_definitions(${TARGET} PRIVATE
+            # Stop Windows including more headers than needed
+            -DWIN32_LEAN_AND_MEAN
+        )
+    endif()
+
+    # If the compiler accepts an MSVC-like command-line...
+    # This will be true for `clang-cl`, `msvc`, and a few others.
+    if (MSVC)
         target_compile_options(${TARGET} PRIVATE
             # We use clang-cl on Windows instead of clang++, so we need a few clang-cl flags
             /EHs # CL error handling mode (s == synchronous)
@@ -292,15 +308,6 @@ function(apply_default_standard_properties TARGET)
             # This is _technically_ defaulted to by... something somewhere... However, we're leaving it here so there's a
             # reminder about it if we ever get /MD vs /MT clashes again
             /MD
-
-            -fno-ms-compatibility
-
-            # TODO: Refactor to using new functions where we can, and turning off the warning locally instead
-            -Wno-deprecated
-        )
-        target_compile_definitions(${TARGET} PRIVATE
-            # Stop Windows including more headers than needed
-            -DWIN32_LEAN_AND_MEAN
         )
     endif ()
 endfunction()
