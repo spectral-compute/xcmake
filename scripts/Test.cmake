@@ -1,11 +1,18 @@
 # Do stuff common to all test targets.
 macro(configure_test_target TARGET)
+    # Prefix all the install dirs with `./test`, except on Windows where the lack of RPATH
+    # makes doing so an inconvenience.
+    if (WIN32)
+        set(OUTPUT_PREFIX "")
+    else()
+        set(OUTPUT_PREFIX "test/")
+    endif()
+
     install(
         TARGETS ${TARGET}
-        # Prefix all the install dirs with `./test`
-        RUNTIME DESTINATION test/${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION test/${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION test/${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${OUTPUT_PREFIX}${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${OUTPUT_PREFIX}${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${OUTPUT_PREFIX}${CMAKE_INSTALL_LIBDIR}
     )
 
     # Tune the warnings that nobody cares about in test code down a wee bit.
