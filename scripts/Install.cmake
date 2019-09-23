@@ -103,15 +103,9 @@ function(install)
 
             # Install any symlink folders
             if(XCMAKE_IMPLIB_PLATFORM)
-                # Handle test install paths
-                set(EXE_DEST "${${KEY}_DESTINATION}")
-                if("${DELEGATE_ARGS}" MATCHES "test/bin")
-                    set(EXE_DEST "test/${${KEY}_DESTINATION}")
-                endif()
-
-                get_target_property(EXE_DIR ${TGT} BINARY_DIR)
+                get_target_property(EXE_DIR ${TGT} RUNTIME_OUTPUT_DIRECTORY)
                 _install(DIRECTORY "${EXE_DIR}/${TGT}_SYMLINKS/"
-                    DESTINATION "${EXE_DEST}"
+                    DESTINATION "${${KEY}_DESTINATION}"
                 )
             endif()
         endif()
