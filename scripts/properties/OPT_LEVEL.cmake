@@ -46,12 +46,25 @@ function(OPT_LEVEL_EFFECTS TARGET)
     )
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         -Ofast
+
+        # A no-op, usually. CMake unhelpfully adds inline configruation flags that differ between Release and
+        # RelWithDebInfo, so we take back control here.
+        -finline-functions
+
         # There are also CUDA translation unit specific flags, predicated on the
         # OPT_LEVEL target property, defined in CUDA.cmake
     )
 
+    # CMake unhelpfully adds inline configruation flags that differ between Release and
+    # RelWithDebInfo, so we take back control here.
+    if (MSVC)
+        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE /Ob2)
+    else()
+        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE -finline-functions)
+    endif()
+
     # Filter on Windows until Clang issue #270 is properly resolved
-    if(NOT WIN32)
+    if (NOT WIN32)
         target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
             # An experimental but years-old optimisation.
             -fstrict-vtable-pointers
