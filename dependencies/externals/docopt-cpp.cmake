@@ -16,9 +16,14 @@ add_external_project(docopt_proj
 )
 
 if(XCMAKE_IMPLIB_PLATFORM)
-    set(LIBNAME ${CMAKE_SHARED_LIBRARY_PREFIX}docopt${CMAKE_SHARED_LIBRARY_SUFFIX})
+    set(LIBNAME "${CMAKE_SHARED_LIBRARY_PREFIX}docopt${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    set(SRC_DLL "${CMAKE_BINARY_DIR}/external_projects/inst/lib/${LIBNAME}")
+    set(DST_DLL "${CMAKE_BINARY_DIR}/external_projects/inst/bin/${LIBNAME}")
+    # Funfact: `cmake -E rename` does not work on Windows to permit file moves between directories.
+    # Cry.
     externalproject_add_step(docopt_proj postinstall
-        COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/external_projects/inst/lib/${LIBNAME} ${CMAKE_BINARY_DIR}/external_projects/inst/bin/${LIBNAME}
+        COMMAND ${CMAKE_COMMAND} -E copy "${SRC_DLL}" "${DST_DLL}"
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${SRC_DLL}"
         COMMENT "Moving docopt.dll from lib to bin"
         DEPENDEES install
     )
