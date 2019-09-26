@@ -282,7 +282,12 @@ function(apply_default_standard_properties TARGET)
 
     # If building for Windows...
     if (WIN32)
+        target_link_options(${TARGET} PRIVATE
+            /OPT:NOREF
+        )
+
         target_compile_options(${TARGET} PRIVATE
+            # No, LLVM, we don't want you to attempt to emulate bugs in the Microsoft compiler.
             -fno-ms-compatibility
 
             # TODO: Refactor to using new functions where we can, and turning off the warning locally instead
