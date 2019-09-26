@@ -3,7 +3,9 @@ include_guard(GLOBAL)
 define_xcmake_target_property(
     CUDA FLAG
     BRIEF_DOCS "Enable CUDA support"
-    FULL_DOCS "Enable CUDA support. Note that this does have a few downsides (like no LTO), so use only when necessary."
+    FULL_DOCS
+        "Enable CUDA support. This should be enabled only when necesary, since it has a few side effects: slower compilation "
+        "(even if there's no CUDA code), no LTO, hindered linker optimisation on Windows, and no incremental linking on Windows"
     DEFAULT OFF
 )
 
@@ -16,8 +18,9 @@ target_compile_options(CUDA_FLAGS INTERFACE
     -x cuda
 )
 
-if(WIN32)
-    target_compile_options(CUDA_FLAGS INTERFACE -Wno-unused-command-line-argument) # Don't warn about unused /TP added by cmake
+if (WIN32)
+    # Don't warn about unused /TP added by cmake
+    target_compile_options(CUDA_FLAGS INTERFACE -Wno-unused-command-line-argument)
 endif()
 
 target_optional_compile_options(CUDA_FLAGS INTERFACE
