@@ -296,6 +296,11 @@ function(apply_default_standard_properties TARGET)
         target_compile_definitions(${TARGET} PRIVATE
             # Stop Windows including more headers than needed
             -DWIN32_LEAN_AND_MEAN
+
+            # No bounds checks on STL containers, since they don't compile in device binaries.
+            # This seems to be a quirk of the MSVC STL.
+            -D_CONTAINER_DEBUG_LEVEL=0
+            -D_ITERATOR_DEBUG_LEVEL=0
         )
     endif()
 
