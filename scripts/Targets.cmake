@@ -209,6 +209,7 @@ function(apply_default_standard_properties TARGET)
         -Wno-c++98-compat-pedantic
         -Wno-c++11-compat-pedantic
         -Wno-c++14-compat-pedantic
+        -Wno-c99-compat
         -Wno-spectral-extensions
 
         -Wno-error-pass-failed
