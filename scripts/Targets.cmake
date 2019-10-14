@@ -512,7 +512,7 @@ function (add_shell_script TARGET FILE)
     add_custom_command(
         OUTPUT ${STAMP_FILE}
         COMMAND shellcheck -e SC2086,SC1117 ${FILE}
-        COMMAND cmake -E touch ${STAMP_FILE}
+        COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILE}
         COMMENT "Shellcheck for ${TARGET}..."
         DEPENDS ${FILE}
     )
