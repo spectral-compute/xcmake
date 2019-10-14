@@ -57,8 +57,8 @@ endfunction()
 
 # Add a manual.
 function (add_manual LIB_NAME)
-    # Abort if library has docs disabled
-    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE ${LIB_NAME})
+    # Abort if docs are disabled
+    ensure_docs_enabled()
 
     # Ensure pandoc is installed
     find_program(PANDOC_BINARY pandoc)
@@ -137,7 +137,7 @@ endfunction()
 #              add_manual().
 function (add_manual_generator LIB_NAME)
     # Abort if library has docs disabled
-    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE ${LIB_NAME})
+    ensure_docs_enabled()
 
     find_package(Python3 COMPONENTS Interpreter)
     if (NOT Python3_FOUND)
@@ -155,7 +155,7 @@ function (add_manual_generator LIB_NAME)
     set(TARGET ${LOWER_LIB_NAME}_manual)
 
     # Abort if library has docs disabled
-    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE ${LIB_NAME}_manual_generator)
+    ensure_docs_enabled()
 
     if (NOT TARGET ${TARGET})
         message(YELLOW "Can't add manual generator to nonexistant manual: " ${TARGET})

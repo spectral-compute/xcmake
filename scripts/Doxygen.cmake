@@ -24,6 +24,9 @@ endfunction()
 # The generated target will create documentation covering the provided HEADER_TARGETS, previously created with
 # `add_headers()`.
 function(add_doxygen LIB_NAME)
+    # Don't bother if docs are disabled
+    ensure_docs_enabled()
+
     find_package(Doxygen)
     if (NOT DOXYGEN_FOUND)
         message(BOLD_YELLOW "`make docs` will not be available because Doxygen is not installed.")
@@ -40,15 +43,6 @@ function(add_doxygen LIB_NAME)
     set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX)
     set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    # Abort if docs are disabled
-    ensure_docs_enabled(PROJECT ${PROJECT_NAME} TYPE doxygen)
-
-    # Check the dependencies are also all enabled
-    foreach(D ${d_DEPENDS})
-        string(TOUPPER ${D} UPPER_D)
-        ensure_docs_enabled(PROJECT ${UPPER_D} TYPE doxygen)
-    endforeach()
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
     default_value(d_DOXYFILE_SUFFIX "Doxyfile.suffix")
