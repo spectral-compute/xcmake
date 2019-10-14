@@ -127,7 +127,7 @@ function(add_doxygen LIB_NAME)
     add_custom_command(
         OUTPUT ${STAMP_FILE} ${OUT_TAGFILE}
         COMMAND doxygen
-        COMMAND cmake -E touch ${STAMP_FILE}
+        COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILE}
         COMMENT "Doxygenation of ${TARGET}..."
         DEPENDS ${DOXYFILE}
                 ${d_DOXYFILE_SUFFIX}
