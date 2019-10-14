@@ -36,7 +36,10 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
             --fail-if-warnings
             --from markdown
             --to html
-#           --toc
+
+            # Insert a pandoc metadata block at the start of your document to disable this. The opposite configuration
+            # (enabling per-document) is not supported by Pandoc.
+            --toc
             --css ${DOTSLASHES}style.css
             --standalone ${MARKDOWN_FILE} > ${OUT_FILE}
         COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
