@@ -17,18 +17,15 @@ function(add_headers TARGET)
     set(DST_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include/${TARGET}/")
 
     file(MAKE_DIRECTORY "${DST_INCLUDE_DIR}")
-    message(${SRC_INCLUDE_DIR})
 
     file(GLOB_RECURSE SRC_HEADER_FILES RELATIVE "${SRC_INCLUDE_DIR}"
         "${SRC_INCLUDE_DIR}/*.hpp"
         "${SRC_INCLUDE_DIR}/*.cuh"
         "${SRC_INCLUDE_DIR}/*.h"
     )
-    message("${SRC_HEADER_FILES}")
 
     # Create a target to process each header file (this is only moderately insane).
     foreach (SRC_HDR_FILE ${SRC_HEADER_FILES})
-        message(${SRC_HDR_FILE})
         # A unique name for the target.
         string(MAKE_C_IDENTIFIER "${TARGET}_${SRC_HDR_FILE}" FILE_TGT)
 
