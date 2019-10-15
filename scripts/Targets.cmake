@@ -261,8 +261,8 @@ function(apply_default_standard_properties TARGET)
         -fconstexpr-depth=65535              # Maximum constexpr call depth. We have a regex compiler, soo...
         -fconstexpr-steps=268435456          # Lots, but infinite loops still get diagnosed within a sensible amount of time.
 
-        # Prevent false positives from -Wdocumentation-unknown-command
-        -fcomment-block-commands=file,copydoc,concepts,satisfy,copydetails
+        # Fortunately, Doxygen shouts at us anyway, and clang's diagnostic is quite false-positive-ful.
+        -Wno-documentation-unknown-command
 
         # Make errors more readable in the presence of insane templates
         -fdiagnostics-show-template-tree
