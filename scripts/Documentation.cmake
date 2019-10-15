@@ -2,7 +2,6 @@
 
 # Toggle all documentation/tests
 option(XCMAKE_ENABLE_DOCS "Generate documentation for all projects" ON)
-option(XCMAKE_ENABLE_TESTS "Build unit tests for all projects" ON)
 
 # Aborts the calling function if the desired docs aren't turned on
 # PROJECT - The project flag to check
