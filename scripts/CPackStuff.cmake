@@ -1,0 +1,1 @@
+default_value(CPACK_PACKAGE_VENDOR "${XCMAKE_COMPANY_NAME}")

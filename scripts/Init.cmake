@@ -17,12 +17,17 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR
 
 set(XCMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(XCMAKE_TOOLS_DIR ${CMAKE_CURRENT_LIST_DIR}/../tools)
+set(XCMAKE_RESOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../res)
 
 include(Utils) # Utility functions for list manipulation and so on.
 include(Log)   # Logging utils.
 
 # Default to building shared libraries
 default_cache_value(BUILD_SHARED_LIBS ON)
+
+# Load the vendor configuration.
+default_cache_value(XCMAKE_VENDOR_CONFIG "${XCMAKE_SCRIPT_DIR}/../VendorConfig.cmake")
+include("${XCMAKE_VENDOR_CONFIG}")
 
 # Default to a canonical output directory structure.
 default_cache_value(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
@@ -111,6 +116,7 @@ include(OnExit)
 include(Summary)
 include(Doxygen)
 include(Pandoc)
+include(CPackStuff)
 
 # All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
 # build others' libraries with that toolchain.
