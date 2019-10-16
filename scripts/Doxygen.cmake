@@ -123,10 +123,14 @@ function(add_doxygen LIB_NAME)
         COMMAND doxygen
         COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILE}
         COMMENT "Doxygenation of ${TARGET}..."
-        DEPENDS ${DOXYFILE}
-                ${d_DOXYFILE_SUFFIX}
-                ${HEADERS_USED}
-                ${DOXYGEN_LAYOUT_FILE}
+        DEPENDS
+            ${DOXYFILE}
+            ${d_DOXYFILE_SUFFIX}
+            ${HEADERS_USED}
+            ${DOXYGEN_LAYOUT_FILE}
+            ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_header.html
+            ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_footer.html
+            ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_style.css
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
 
