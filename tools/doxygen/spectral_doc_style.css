@@ -1160,15 +1160,16 @@ dl.section dd {
 #projectlogo
 {
 	text-align: center;
-	vertical-align: bottom;
 	border-collapse: separate;
+	padding-left: 9px;
 }
  
-#projectlogo img
-{ 
+#projectlogo img {
 	border: 0px none;
+	height: 56px;
+	vertical-align: middle;
 }
- 
+
 #projectalign
 {
         vertical-align: middle;

@@ -40,12 +40,13 @@ function(add_doxygen LIB_NAME)
 
     # Oh, the argparse boilerplate
     set(flags NOINSTALL)
-    set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX)
+    set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX LOGO)
     set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
     default_value(d_DOXYFILE_SUFFIX "Doxyfile.suffix")
+    default_value(d_LOGO "${XCMAKE_COMPANY_LOGO_PATH}")
     configure_file(${d_DOXYFILE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX} @ONLY)
     file(READ ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX} DOXYFILE_SUFFIX_PAYLOAD)
 
