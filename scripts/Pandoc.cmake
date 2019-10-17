@@ -29,7 +29,6 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
     string(REGEX REPLACE "/[a-zA-Z0-9_-]+" "../" DOTSLASHES "${IMM_DIR}")
     string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
 
-    # TODO: `--toc` (and other options) could be exposed per-file as a source file property :D
     add_custom_command(OUTPUT ${OUT_FILE}
         COMMAND ${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh ${MARKDOWN_FILE} ${XCMAKE_SANITISE_TRADEMARKS}
         COMMAND pandoc
