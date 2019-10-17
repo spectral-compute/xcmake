@@ -9,8 +9,9 @@ set(XCMAKE_COMPANY_WEBSITE "https://spectralcompute.co.uk")
 # A path-friendly veriant of your organisation name.
 set(XCMAKE_COMPANY_PATH_NAME "Spectral Compute")
 
-# A path to your organisation's logo. You can override logos per-project, too.
-set(XCMAKE_COMPANY_LOGO_PATH "${XCMAKE_RESOURCE_DIR}/logo_nowords.svg")
+# A path to your organisation's logo. The name should be given without a file extension, and you must provide both a
+# png and an svg.
+set(XCMAKE_COMPANY_LOGO_PATH "${XCMAKE_RESOURCE_DIR}/logo_nowords")
 
 # An email address your organisation can be reached for help.
 set(XCMAKE_COMPANY_HELP_EMAIL "help@spectralcompute.co.uk")
