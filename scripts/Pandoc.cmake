@@ -195,7 +195,7 @@ function (add_manual_generator LIB_NAME)
     endforeach()
 
     add_custom_command(OUTPUT ${GENERATED_PATHS}
-        COMMAND "./${SCRIPT_FILE}" "WRITE" "${INTERMEDIATE_DIR}"
+        COMMAND "${Python3_EXECUTABLE}" "./${SCRIPT_FILE}" "WRITE" "${INTERMEDIATE_DIR}"
         WORKING_DIRECTORY "${d_MANUAL_SRC}/${SCRIPT_DIR}"
         COMMENT "Running documentation generation script ${d_SCRIPT}"
         DEPENDS "${d_MANUAL_SRC}/${d_SCRIPT}" "${DEPENDENCIES}"

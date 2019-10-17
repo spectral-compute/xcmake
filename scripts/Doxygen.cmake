@@ -16,6 +16,7 @@ function(add_nvcuda_tagfile TARGET)
     endif ()
 
     add_subdirectory("${XCMAKE_TOOLS_DIR}/doxygen/externaltags/nvcuda" "${CMAKE_BINARY_DIR}/tagfiles/nvcuda")
+    add_dependencies(libnvcuda_tag_file cppreference_data)
     add_dependencies(${TARGET} libnvcuda_tag_file)
 endfunction()
 
@@ -47,8 +48,8 @@ function(add_doxygen LIB_NAME)
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
     default_value(d_DOXYFILE_SUFFIX "Doxyfile.suffix")
     default_value(d_LOGO "${XCMAKE_COMPANY_LOGO_PATH}")
-    configure_file(${d_DOXYFILE_SUFFIX} ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX} @ONLY)
-    file(READ ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX} DOXYFILE_SUFFIX_PAYLOAD)
+    configure_file("${d_DOXYFILE_SUFFIX}" "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX}" @ONLY)
+    file(READ "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX}" DOXYFILE_SUFFIX_PAYLOAD)
 
     # Extract the list of input paths from the list of given header targets, and build a list of all the header files
     # Doxygen is about to process, so we can add them as dependencies.
@@ -58,8 +59,8 @@ function(add_doxygen LIB_NAME)
     foreach (T ${d_HEADER_TARGETS})
         get_target_property(NEW_PATHS ${T} INCLUDE_DIRECTORIES)
         foreach (NEW_PATH ${NEW_PATHS})
-            set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} ${NEW_PATH}")
-            set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} ${NEW_PATH}")
+            set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} \"${NEW_PATH}\"")
+            set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} \"${NEW_PATH}\"")
 
             file(GLOB_RECURSE NEW_HEADERS "${NEW_PATH}/*.h" "${NEW_PATH}/*.hpp" "${NEW_PATH}/*.cuh")
             list(APPEND HEADERS_USED ${NEW_HEADERS})
@@ -69,41 +70,43 @@ function(add_doxygen LIB_NAME)
     # Add things that were specified as single-file inputs
     foreach (NEW_HEADER ${d_INPUT_HEADERS})
         get_filename_component(NEW_DIR ${NEW_HEADER} DIRECTORY)
-        set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} ${NEW_HEADER}")
-        set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} ${NEW_DIR}")
+        set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} \"${NEW_HEADER}\"")
+        set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} \"${NEW_DIR}\"")
         list(APPEND HEADERS_USED ${NEW_HEADER})
     endforeach()
 
     # Add the things we always include.
-    set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} ${XCMAKE_TOOLS_DIR}/doxygen/include")
-    set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} ${XCMAKE_TOOLS_DIR}/doxygen/include")
+    set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} \"${XCMAKE_TOOLS_DIR}/doxygen/include\"")
+    set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} \"${XCMAKE_TOOLS_DIR}/doxygen/include\"")
 
     # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
-    set(STAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.stamp)
+    set(STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.stamp")
 
     add_custom_target(${TARGET}
-        DEPENDS ${STAMP_FILE}
+        DEPENDS "${STAMP_FILE}"
     )
 
     # The cppreference tagfile.
     add_cppreference_tagfile(${TARGET})
-    set(TAGFILES "${STL_TAG_FILE}=http://en.cppreference.com/w/")
+    set(TAGFILES "\"${STL_TAG_FILE}=http://en.cppreference.com/w/\"")
 
     # If we're doxygenating a CUDA target, make sure the NVCUDA crossreference target is registered.
     get_target_property(IS_CUDA ${LIB_NAME} CUDA)
     if (IS_CUDA)
         add_nvcuda_tagfile(${TARGET})
-        set(TAGFILES "${TAGFILES} ${CMAKE_BINARY_DIR}/docs/tagfiles/libnvcuda.tag=https://docs.nvidia.com/cuda/cuda-runtime-api/")
+        set(TAGFILES "${TAGFILES} \"${CMAKE_BINARY_DIR}/docs/tagfiles/libnvcuda.tag=https://docs.nvidia.com/cuda/cuda-runtime-api/\"")
     endif ()
 
     # The tagfile we're going to generate.
-    set(OUT_TAGFILE ${CMAKE_BINARY_DIR}/docs/tagfiles/${LIB_NAME}.tag)
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/docs/tagfiles)
+    # This must be quoted in the Doxyfile, but we don't put the quotes in it here because we need the _actual file name_
+    # in the cmake variable. This is in contrast to some other variables below.
+    set(OUT_TAGFILE "${CMAKE_BINARY_DIR}/docs/tagfiles/${LIB_NAME}.tag")
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/docs/tagfiles")
 
     # Collect up the tagfiles for the other doxygen targets we depend on.
     foreach (DT ${d_DEPENDS})
         add_dependencies(${TARGET} ${DT}_doxygen)
-        set(TAGFILES "${TAGFILES} ${CMAKE_BINARY_DIR}/docs/tagfiles/${DT}.tag=../../../${DT}/reference/html")
+        set(TAGFILES "${TAGFILES} \"${CMAKE_BINARY_DIR}/docs/tagfiles/${DT}.tag=../../../${DT}/reference/html\"")
     endforeach()
 
     set(DOXYGEN_LAYOUT_FILE "${XCMAKE_TOOLS_DIR}/doxygen/DoxygenLayout.xml")
@@ -113,26 +116,26 @@ function(add_doxygen LIB_NAME)
     set(DOXYFILE "${XCMAKE_TOOLS_DIR}/doxygen/Doxyfile.in")
 
     # Generate the final Doxyfile, injecting the variables we calculated above (notably including the list of inputs...)
-    configure_file(${DOXYFILE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-    configure_file(${DOXYGEN_HTML_HEADER_FILE} ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_header.html @ONLY)
-    configure_file(${DOXYGEN_HTML_FOOTER_FILE} ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_footer.html @ONLY)
-    configure_file(${DOXYGEN_HTML_STYLE_FILE} ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_style.css @ONLY)
+    configure_file(${DOXYFILE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" @ONLY)
+    configure_file(${DOXYGEN_HTML_HEADER_FILE} "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_header.html" @ONLY)
+    configure_file(${DOXYGEN_HTML_FOOTER_FILE} "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_footer.html" @ONLY)
+    configure_file(${DOXYGEN_HTML_STYLE_FILE} "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_style.css" @ONLY)
 
     # Command to actually run doxygen, depending on every header file and the doxyfile template.
     add_custom_command(
-        OUTPUT ${STAMP_FILE} ${OUT_TAGFILE}
+        OUTPUT "${STAMP_FILE}" "${OUT_TAGFILE}"
         COMMAND doxygen
-        COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILE}
+        COMMAND "${CMAKE_COMMAND}" -E touch "${STAMP_FILE}"
         COMMENT "Doxygenation of ${TARGET}..."
         DEPENDS
-            ${DOXYFILE}
-            ${d_DOXYFILE_SUFFIX}
-            ${HEADERS_USED}
-            ${DOXYGEN_LAYOUT_FILE}
-            ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_header.html
-            ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_footer.html
-            ${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_style.css
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            "${DOXYFILE}"
+            "${d_DOXYFILE_SUFFIX}"
+            ${HEADERS_USED} # <- This one deliberately not quoted.
+            "${DOXYGEN_LAYOUT_FILE}"
+            "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_header.html"
+            "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_footer.html"
+            "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_style.css"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     )
 
     add_dependencies(${TARGET} cppreference_data)
@@ -141,6 +144,6 @@ function(add_doxygen LIB_NAME)
     add_dependencies(docs ${TARGET})
 
     if (NOT "${d_NOINSTALL}")
-        install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen/ DESTINATION ${d_INSTALL_DESTINATION})
+        install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doxygen/" DESTINATION "${d_INSTALL_DESTINATION}")
     endif()
 endfunction()

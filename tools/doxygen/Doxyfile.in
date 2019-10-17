@@ -692,7 +692,7 @@ FILE_VERSION_FILTER    =
 # DoxygenLayout.xml, doxygen will parse it automatically even if the LAYOUT_FILE
 # tag is left empty.
 
-LAYOUT_FILE            = @DOXYGEN_LAYOUT_FILE@
+LAYOUT_FILE            = "@DOXYGEN_LAYOUT_FILE@"
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files containing
 # the reference definitions. This must be a list of .bib files. The .bib
@@ -2138,7 +2138,7 @@ TAGFILES               = @TAGFILES@
 # tag file that is based on the input files it reads. See section "Linking to
 # external documentation" for more information about the usage of tag files.
 
-GENERATE_TAGFILE       = @OUT_TAGFILE@
+GENERATE_TAGFILE       = "@OUT_TAGFILE@"
 
 # If the ALLEXTERNALS tag is set to YES, all external class will be listed in
 # the class index. If set to NO, only the inherited external classes will be
