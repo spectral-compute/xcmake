@@ -33,12 +33,18 @@ function(add_headers TARGET)
         set(OUTPUT_HDR_PATH "${DST_INCLUDE_DIR}/${SRC_HDR_FILE}")
 
         add_custom_command(OUTPUT "${OUTPUT_HDR_PATH}"
-            COMMAND ${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh "${FULL_HDR_PATH}" ${XCMAKE_SANITISE_TRADEMARKS}
-
-            # TODO: Insert partial preprocessing here...
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FULL_HDR_PATH}" "${OUTPUT_HDR_PATH}"
             COMMENT "Preparing ${SRC_HDR_FILE} for deployment..."
             DEPENDS "${FULL_HDR_PATH}"
+        )
+
+        if (NOT WIN32)
+            add_custom_command(OUTPUT "${OUTPUT_HDR_PATH}" APPEND
+                COMMAND ${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh "${FULL_HDR_PATH}" ${XCMAKE_SANITISE_TRADEMARKS}
+            )
+        endif()
+
+        add_custom_command(OUTPUT "${OUTPUT_HDR_PATH}" APPEND
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FULL_HDR_PATH}" "${OUTPUT_HDR_PATH}"
         )
         add_custom_target(${FILE_TGT}
             DEPENDS "${OUTPUT_HDR_PATH}"
