@@ -1,3 +1,6 @@
+# We can only package one thing at once. The top-level thing.
+subdirectory_guard(${CMAKE_PROJECT_NAME}_PACKAGING)
+
 default_cache_value(CPACK_VERBATIM_VARIABLES ON) # Would you like parse errors? No? Okay then.
 
 ##################
