@@ -29,8 +29,15 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
     string(REGEX REPLACE "/[a-zA-Z0-9_-]+" "../" DOTSLASHES "${IMM_DIR}")
     string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
 
+    set(INTERMEDIATE_FILE "${OUT_FILE}.tmp")
+
     add_custom_command(OUTPUT "${OUT_FILE}"
         COMMAND "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${MARKDOWN_FILE}" ${XCMAKE_SANITISE_TRADEMARKS}
+
+        # Fix URLs prior to conversion to HTML
+        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh" "${MARKDOWN_FILE}" "${INTERMEDIATE_FILE}"
+
+        # Convert the markdown to HTML.
         COMMAND pandoc
             --fail-if-warnings
             --from markdown
@@ -40,9 +47,15 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
             # (enabling per-document) is not supported by Pandoc.
             --toc
             --css "${DOTSLASHES}style.css"
-            --standalone "${MARKDOWN_FILE}" > "${OUT_FILE}"
+            --standalone "${INTERMEDIATE_FILE}" > "${OUT_FILE}"
+
+        # Tidy up the temporary file.
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${INTERMEDIATE_FILE}"
         COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
-        DEPENDS "${MARKDOWN_FILE}"
+        DEPENDS
+            "${MARKDOWN_FILE}"
+            "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh"
+            "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh"
         WORKING_DIRECTORY "${d_MANUAL_SRC}"
     )
 endfunction()
