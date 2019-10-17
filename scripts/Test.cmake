@@ -1,5 +1,3 @@
-option(XCMAKE_ENABLE_TESTS "Build unit tests for all projects" ON)
-
 # Do stuff common to all test targets.
 macro(configure_test_target TARGET)
     # Prefix all the install dirs with `./test`, except on Windows where the lack of RPATH
