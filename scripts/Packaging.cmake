@@ -12,11 +12,13 @@ default_value(XCMAKE_PACKAGE_ARCH x86_64) # TODO Slight laziness here. Should re
 
 # CPack configuration variables. All of these can be overridden by projects.
 default_value(CPACK_PACKAGE_VENDOR "${XCMAKE_COMPANY_NAME}")
-default_value(CPACK_PACKAGE_ICON "${XCMAKE_COMPANY_LOGO_PATH}")
+default_value(CPACK_PACKAGE_ICON "${XCMAKE_COMPANY_LOGO_PATH}.svg")
 default_value(CPACK_PACKAGE_DESCRIPTION "${CMAKE_PROJECT_DESCRIPTION}")
 
 default_value(CPACK_PACKAGE_INSTALL_DIRECTORY "${XCMAKE_COMPANY_PATH_NAME}")
 default_value(CPACK_PACKAGE_CHECKSUM "SHA512")
+
+default_value(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
 
 #########################
 # RPM Generator options #
@@ -56,7 +58,7 @@ set(CPACK_WIX_CMAKE_PACKAGE_REGISTRY "${PROJECT_NAME}")  # Allows discovery by `
 # Wix wants a GUID that it'll use later to detect when a new package is updating an old one.
 default_value(CPACK_WIX_UPGRADE_GUID ${XCMAKE_PROJECT_GUID})
 
-default_value(CPACK_WIX_PRODUCT_ICON "${XCMAKE_COMPANY_LOGO_PATH}")
+default_value(CPACK_WIX_PRODUCT_ICON "${XCMAKE_COMPANY_LOGO_PATH}.png")
 
 # Set default generator per-platform
 if (WIN32)

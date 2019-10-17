@@ -47,7 +47,7 @@ function(add_doxygen LIB_NAME)
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
     default_value(d_DOXYFILE_SUFFIX "Doxyfile.suffix")
-    default_value(d_LOGO "${XCMAKE_COMPANY_LOGO_PATH}")
+    default_value(d_LOGO "${XCMAKE_COMPANY_LOGO_PATH}.svg")
     configure_file("${d_DOXYFILE_SUFFIX}" "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX}" @ONLY)
     file(READ "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX}" DOXYFILE_SUFFIX_PAYLOAD)
 
