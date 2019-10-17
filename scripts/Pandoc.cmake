@@ -29,8 +29,8 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
     string(REGEX REPLACE "/[a-zA-Z0-9_-]+" "../" DOTSLASHES "${IMM_DIR}")
     string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
 
-    add_custom_command(OUTPUT ${OUT_FILE}
-        COMMAND ${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh ${MARKDOWN_FILE} ${XCMAKE_SANITISE_TRADEMARKS}
+    add_custom_command(OUTPUT "${OUT_FILE}"
+        COMMAND "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${MARKDOWN_FILE}" ${XCMAKE_SANITISE_TRADEMARKS}
         COMMAND pandoc
             --fail-if-warnings
             --from markdown
@@ -39,8 +39,8 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
             # Insert a pandoc metadata block at the start of your document to disable this. The opposite configuration
             # (enabling per-document) is not supported by Pandoc.
             --toc
-            --css ${DOTSLASHES}style.css
-            --standalone ${MARKDOWN_FILE} > ${OUT_FILE}
+            --css "${DOTSLASHES}style.css"
+            --standalone "${MARKDOWN_FILE}" > "${OUT_FILE}"
         COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
         DEPENDS "${MARKDOWN_FILE}"
         WORKING_DIRECTORY "${d_MANUAL_SRC}"
@@ -50,7 +50,7 @@ endfunction()
 function (add_dot_graph TARGET BASEDIR DOT_FILE)
     make_src_target("${TARGET}" "${BASEDIR}" "${DOT_FILE}" ".svg")
     add_custom_command(OUTPUT ${OUT_FILE}
-        COMMAND dot -Tsvg ${DOT_FILE} > ${OUT_FILE}
+        COMMAND dot -Tsvg "${DOT_FILE}" > "${OUT_FILE}"
         COMMENT "dot-compiling ${DOT_FILE}..."
         DEPENDS "${DOT_FILE}"
         WORKING_DIRECTORY "${d_MANUAL_SRC}"
