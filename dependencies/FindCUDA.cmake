@@ -31,7 +31,7 @@ if(NOT CUDA_TOOLKIT_ROOT_DIR AND NOT CMAKE_CROSSCOMPILING)
 
     if(NOT EXISTS ${CUDA_TOOLKIT_ROOT_DIR})
         if(CUDA_FIND_REQUIRED)
-            message(FATAL_ERROR "Specify CUDA_TOOLKIT_ROOT_DIR")
+            message(FATAL_ERROR "Couldn't find CUDA in the default search paths. Please install it (if you haven't already), or specify where it is with CUDA_TOOLKIT_ROOT_DIR")
         elseif(NOT CUDA_FIND_QUIETLY)
             message("CUDA_TOOLKIT_ROOT_DIR not found or specified")
         endif()
