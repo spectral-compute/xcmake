@@ -64,50 +64,6 @@ endif()
 # Include the common cmake file.
 include(${CMAKE_CURRENT_LIST_DIR}/fragments/common.cmake)
 
-set(TARGET_AMD_GPUS "")
-set(TARGET_CUDA_COMPUTE_CAPABILITIES "")
-
-# Desugar the GPU information into something sensible...
-foreach (_TGT IN LISTS XCMAKE_GPUS)
-    # Very scientifically detect NVIDIA targets as being ones that start with sm_
-    string(SUBSTRING "${_TGT}" 0 3 PREFIX)
-    if ("${PREFIX}" STREQUAL "sm_")
-        string(SUBSTRING "${_TGT}" 3 -1 CC)
-        list(APPEND TARGET_CUDA_COMPUTE_CAPABILITIES ${CC})
-        set(XCMAKE_GPU_TYPE "nvidia")
-    else()
-        list(APPEND TARGET_AMD_GPUS ${_TGT})
-        set(XCMAKE_GPU_TYPE "amd")
-    endif()
-endforeach()
-
-set(XCMAKE_INTEGRATED_GPU OFF CACHE BOOL "Does the GPU share the same memory as the host?")
-set(XCMAKE_GPUS "${XCMAKE_GPUS}" CACHE STRING "GPUs to build for")
-
-default_tc_value(XCMAKE_GPU_TYPE "OFF")  # No GPU
-
-# Make sure we don't have a mixture of GPU targets...
-list(LENGTH TARGET_AMD_GPUS AMD_GPU_LENGTH)
-list(LENGTH TARGET_CUDA_COMPUTE_CAPABILITIES NVIDIA_GPU_LENGTH)
-if (${AMD_GPU_LENGTH} GREATER 0 AND ${NVIDIA_GPU_LENGTH} GREATER 0)
-    message(FATAL_ERROR "You specified a mixture of AMD and NVIDIA GPU targets: ${XCMAKE_GPUS}")
-endif()
-
-# GPU type flags for the benefit of the preprocessor :D
-
-if (XCMAKE_GPU_TYPE STREQUAL "amd")
-    set(XCMAKE_AMD_GPU 1)
-elseif(XCMAKE_GPU_TYPE STREQUAL "nvidia")
-    set(XCMAKE_NVIDIA_GPU 1)
-endif()
-default_tc_value(XCMAKE_NVIDIA_GPU 0)
-default_tc_value(XCMAKE_AMD_GPU 0)
-
-# Set the global macro definition for integrated GPU targets.
-if (XCMAKE_INTEGRATED_GPU)
-    add_definitions(-DINTEGRATED_GPU)
-endif()
-
 # Provide default values for a bunch of cmake builtins that don't have it. This mostly exists to silence warnings
 default_tc_value(CMAKE_STATIC_LIBRARY_PREFIX "")
 default_tc_value(CMAKE_STATIC_LIBRARY_SUFFIX "")
