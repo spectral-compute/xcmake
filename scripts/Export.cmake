@@ -1,10 +1,10 @@
 include(CMakePackageConfigHelpers)
 
-function(export_project NAME)
+function(export_project)
     # The usual boilerplate to spit out and install the version and config file...
-    set(OUTPATH ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
+    set(OUTPATH ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
     write_basic_package_version_file(
-        ${OUTPATH}/${NAME}Version.cmake
+        ${OUTPATH}/${PROJECT_NAME}Version.cmake
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY AnyNewerVersion
     )
@@ -17,24 +17,24 @@ function(export_project NAME)
     )
     set(PACKAGE_INIT "@PACKAGE_INIT@")
     configure_file(
-        ${PROJECT_SOURCE_DIR}/${NAME}Config.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/${NAME}Config.cmake.tmp
+        ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake.tmp
         @ONLY
     )
 
     # Config file.
     configure_package_config_file(
-        ${CMAKE_CURRENT_BINARY_DIR}/${NAME}Config.cmake.tmp
-        ${OUTPATH}/${NAME}Config.cmake
-        INSTALL_DESTINATION lib/cmake/${NAME}
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake.tmp
+        ${OUTPATH}/${PROJECT_NAME}Config.cmake
+        INSTALL_DESTINATION lib/cmake/${PROJECT_NAME}
     )
 
     install(FILES
-        ${OUTPATH}/${NAME}Config.cmake
-        ${OUTPATH}/${NAME}Version.cmake
-        DESTINATION lib/cmake/${NAME}
+        ${OUTPATH}/${PROJECT_NAME}Config.cmake
+        ${OUTPATH}/${PROJECT_NAME}Version.cmake
+        DESTINATION lib/cmake/${PROJECT_NAME}
     )
 
-    export(EXPORT ${NAME} FILE "${CMAKE_CURRENT_BINARY_DIR}/generated/${NAME}Targets.cmake")
-    install(EXPORT ${NAME} FILE ${NAME}Targets.cmake DESTINATION lib/cmake/${NAME})
+    export(EXPORT ${PROJECT_NAME} FILE "${CMAKE_CURRENT_BINARY_DIR}/generated/${PROJECT_NAME}Targets.cmake")
+    install(EXPORT ${PROJECT_NAME} FILE ${PROJECT_NAME}Targets.cmake DESTINATION lib/cmake/${PROJECT_NAME})
 endfunction()
