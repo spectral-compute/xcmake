@@ -14,7 +14,9 @@ function(export_project NAME)
     # Allows us to inject extra macros and stuff into the config file. We'll likely find a use
     # for this if our dependency tree gets more exciting. Also, make sure we keep @PACKAGE_INIT@ for
     # configure_package_config_file().
-    set(EXTRA_CONFIG_MACROS)
+    set(EXTRA_CONFIG_MACROS
+        "include(CMakeFindDependencyMacro)\n"
+    )
     set(PACKAGE_INIT "@PACKAGE_INIT@")
     configure_file(
         ${PROJECT_SOURCE_DIR}/${NAME}Config.cmake.in
