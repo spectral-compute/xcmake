@@ -96,13 +96,13 @@ macro(initialise_cuda_variables)
 endmacro()
 
 macro(lazy_init_cuda)
-    if (NOT XCMAKE_INITIALISED_CUDA)
+    if (NOT TARGET XCMAKE_INITIALISED_CUDA)
         if (NOT XCMAKE_GPU_TYPE)
             initialise_cuda_variables()
         endif()
         populate_cuda_property()
 
-        set(XCMAKE_INITIALISED_CUDA "ON" CACHE INTERNAL "")
+        add_custom_target(XCMAKE_INITIALISED_CUDA)
     endif()
 endmacro()
 
