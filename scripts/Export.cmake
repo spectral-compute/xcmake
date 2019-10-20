@@ -4,7 +4,7 @@ function(export_project)
     # The usual boilerplate to spit out and install the version and config file...
     set(OUTPATH ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME})
     write_basic_package_version_file(
-        ${OUTPATH}/${PROJECT_NAME}Version.cmake
+        ${OUTPATH}/${PROJECT_NAME}ConfigVersion.cmake
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY AnyNewerVersion
     )
@@ -31,7 +31,7 @@ function(export_project)
 
     install(FILES
         ${OUTPATH}/${PROJECT_NAME}Config.cmake
-        ${OUTPATH}/${PROJECT_NAME}Version.cmake
+        ${OUTPATH}/${PROJECT_NAME}ConfigVersion.cmake
         DESTINATION lib/cmake/${PROJECT_NAME}
     )
 
