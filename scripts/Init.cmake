@@ -140,6 +140,11 @@ if (XCMAKE_PACKAGING)
     if (NOT XCMAKE_ENABLE_DOCS)
         message(BOLD_YELLOW "Warning: Packaging is enabled, but documentation generation is not. The produced package will have no documentation!")
     endif()
+
+    message(BOLD_RED "-----------------------------------------------------------------")
+    message(BOLD_RED "- PACKAGING MODE IS ENABLED. THIS WILL DISABLE MOST COMPILATION -")
+    message(BOLD_RED "-           Use -DXCMAKE_PACKAGING=OFF to disable               -")
+    message(BOLD_RED "-----------------------------------------------------------------")
 endif()
 
 # All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
