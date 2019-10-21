@@ -263,6 +263,7 @@ function(apply_default_standard_properties TARGET)
 
         # Fortunately, Doxygen shouts at us anyway, and clang's diagnostic is quite false-positive-ful.
         -Wno-documentation-unknown-command
+        -Wno-documentation  # https://gitlab.com/spectral-ai/engineering/cuda/platform/clang/issues/340
 
         # Make errors more readable in the presence of insane templates
         -fdiagnostics-show-template-tree
