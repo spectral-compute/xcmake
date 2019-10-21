@@ -82,6 +82,17 @@ elseif (NOT DEFINED CPACK_GENERATOR)
     message(BOLD_YELLOW "Warning: Packaging skipped because the target OS is not known.")
 endif()
 
+# Make sure WIX is installed.
+if ("WIX" IN_LIST CPACK_GENERATOR)
+    find_program(WIX_LIGHT_EXE light)
+    find_program(WIX_CANDLE_EXE candle)
+
+    if (WIX_LIGHT_EXE AND WIX_CANDLE_EXE)
+    else()
+        fatal_error("WIX is not installed, but WIX package generation was enabled.")
+    endif()
+endif()
+
 # Including CPack creates the package target, but we only actually want to do this if the build is one that's suitable
 # for packaging. Enabling tests typically hoovers up a lot of things we don't want to depend on, so:
 if (NOT XCMAKE_ENABLE_TESTS)
