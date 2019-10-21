@@ -59,6 +59,8 @@ set(CPACK_WIX_CMAKE_PACKAGE_REGISTRY "${PROJECT_NAME}")  # Allows discovery by `
 default_value(CPACK_WIX_UPGRADE_GUID ${XCMAKE_PROJECT_GUID})
 
 default_value(CPACK_WIX_PRODUCT_ICON "${XCMAKE_COMPANY_LOGO_PATH}.png")
+default_value(CPACK_WIX_UI_BANNER "${XCMAKE_WIX_INSTALLER_BRANDING}/banner.png")
+default_value(CPACK_WIX_UI_DIALOG "${XCMAKE_WIX_INSTALLER_BRANDING}/dialog.png")
 
 # Set default generator per-platform
 if (WIN32)
