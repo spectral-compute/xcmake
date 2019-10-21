@@ -229,6 +229,14 @@ TAB_SIZE               = 4
 ALIASES               += satisfy{3}="`\1` must satisfy <I>@ref \2 \"\2 \3\"</I>"
 ALIASES               += concepts="@par \"Named Requirements\""
 
+# Markdown isn't supported in aliases, so we use HTML. Note that Doxygen actually
+# decodes this HTML itself and converts into the right things for non-HTML output
+# formats.
+# This alias is intended for use in the common case where there's only one example
+# to do. If you want more examples, it's suggested that you don't use this alias,
+# instead inserting the "Examples" header manually along with accompanying writing.
+ALIASES               += example_code="<h3>Example</h3>^^@snippet"
+
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
 # will allow you to use the command class in the itcl::class meaning.
