@@ -53,6 +53,9 @@ default_cache_value(ExternalData_TIMEOUT_ABSOLUTE 0)
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-tree builds are not wise.")
 endif()
+if (NOT CMAKE_INSTALL_PREFIX)
+    message(FATAL_ERROR "Please specify a value for `CMAKE_INSTALL_PREFIX`.")
+endif()
 
 # Make sure externally fetched objects can be installed. Without this, ExternalData creates a relative symlink to a file
 # in the build directory. When this is installed, the relative symlink is broken. If ExternalData_OBJECT_STORES is used
