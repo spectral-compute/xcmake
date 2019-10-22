@@ -15,11 +15,18 @@ if (XCMAKE_PACKAGING)
     function (install_dir NAME)
         install(DIRECTORY ${NAME}/ COMPONENT ${PROJECT_NAME} DESTINATION ./${NAME})
     endfunction()
+    function (install_file NAME)
+        install(FILES ${NAME} COMPONENT ${PROJECT_NAME} DESTINATION ./)
+    endfunction()
 
     install_dir(scripts)
     install_dir(toolchain)
     install_dir(tools)
     install_dir(dependencies)
+
+    install_file(README.md) # TODO: Generate a proper manual...?
+    install_file(VendorConfig.cmake)
+    install_file(xcmake-config.cmake)
 
     cpack_add_component(${PROJECT_NAME} DESCRIPTION "${PROJECT_DESCRIPTION}")
 endif()
