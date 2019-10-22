@@ -1,7 +1,34 @@
 # Wrap `install()` to allow installation of IMPORTED targets with `install(TARGETS...)`
 function(install)
-    # Now we need to do a more thorough job of parsing the arguments, alas.
-    # install() actually has a bunch of argument groups, warranting the following rather elaborate two-level parsing:
+    set(COMPONENT_ARGS)
+    if (XCMAKE_PROJECTS_ARE_COMPONENTS)
+        set(COMPONENT_ARGS COMPONENT "${PROJECT_NAME}")
+    endif()
+
+    set(INSTALL_PREFIX)
+    if (XCMAKE_PROJECT_INSTALL_PREFIX)
+        set(INSTALL_PREFIX ${PROJECT_NAME})
+    endif()
+
+    # Find every "DESTINATION" keyword, and prepend the extra prefix to the argument following it.
+    list(LENGTH ARGN ITERATION_LIMIT)
+    math(EXPR ITERATION_LIMIT "${ITERATION_LIMIT} - 1") # Because the range iteration goes one step further than it should do...
+
+    foreach(I RANGE 0 ${ITERATION_LIMIT})
+        list(GET ARGN ${I} ARG)
+
+        if ("${ARG}" STREQUAL "DESTINATION")
+            # Fix the subsequent argument...
+            math(EXPR PATH_IDX "${I} + 1")
+
+            # Replace the destination path with a version that has the prefix prepended on.
+            list(GET ARGN ${PATH_IDX} THE_PATH)
+            set(THE_PATH "${INSTALL_PREFIX}/${THE_PATH}")
+            list(REMOVE_AT ARGN ${PATH_IDX})
+            list(INSERT ARGN ${PATH_IDX} "${THE_PATH}")
+        endif()
+    endforeach()
+
     set(installTypes
         ARCHIVE
         LIBRARY
@@ -12,7 +39,6 @@ function(install)
         PRIVATE_HEADER
         PUBLIC_HEADER
         RESOURCE
-        DIRECTORY
     )
 
     set(multiValueArgs
@@ -22,27 +48,20 @@ function(install)
     )
     cmake_parse_arguments("i" "EP_TARGET" "" "${multiValueArgs};${installTypes}" "${ARGN}")
 
-    set(COMPONENT_ARGS)
-    if (XCMAKE_PROJECTS_ARE_COMPONENTS)
-        set(COMPONENT_ARGS COMPONENT "${PROJECT_NAME}")
-    endif()
-
-    # Insane hack to inject the component arguments into install(DIRECTORY), which has a special rule no other install
-    # flavour has:
-    # > DIRECTORY does not allow "COMPONENT" after PATTERN or REGEX.
-    # So, we just scan the argment list to find `DESTINATION`, and slot our stuff in after the destination, which must
-    # come before PATTERN or REGEX, and keeps everything happy.
-    if (NOT "${i_DIRECTORY}" STREQUAL "")
-        list(FIND ARGN DESTINATION DST_POS)
-        math(EXPR AFTER_DST_DIR "${DST_POS} + 2")
-        list(INSERT ARGN ${AFTER_DST_DIR} ${COMPONENT_ARGS})
-        _install(${ARGN})
-        return()
+    # CODE and SCRIPT mode we must flee screaming from, since they lack a DESTINATION argument to fix.
+    list(GET ARGN 0 FIRST_MODE)
+    if ("${FIRST_MODE}" STREQUAL CODE OR "${FIRST_MODE}" STREQUAL SCRIPT)
+        _install(${ARGN}) # Leave me alone!
     endif()
 
     # If it isn't a TARGETS-mode install, delegate entirely.
     if ("${i_TARGETS}" STREQUAL "")
-        _install(${ARGN} ${COMPONENT_ARGS})
+        # Prepend the new prefix to the DESTINATION parameter of any non-TARGETS install. DESTINATION is mandatory for
+        # all of these, so this always works.
+        list(FIND ARGN DESTINATION DST_POS)
+        math(EXPR AFTER_DST_DIR "${DST_POS} + 2")
+        list(INSERT ARGN ${AFTER_DST_DIR} ${COMPONENT_ARGS})
+        _install(${ARGN})
         return()
     endif ()
 
@@ -58,18 +77,11 @@ function(install)
         endif()
     endforeach()
 
-    set(flags
-        EXCLUDE_FROM_ALL
-        OPTIONAL
-    )
-    set(oneValueArgs
-        DESTINATION
-        COMPONENT
-    )
-    set(multiValueArgs
-        PERMISSIONS
-        CONFIGURATIONS
-    )
+    # These define the options to `install(TARGETS)` that are also accepted by `install(FILES)`. We preseve them when
+    # installing imported projects using `install(FILES)`.
+    set(flags EXCLUDE_FROM_ALL OPTIONAL)
+    set(oneValueArgs DESTINATION COMPONENT)
+    set(multiValueArgs PERMISSIONS CONFIGURATIONS)
     set(PASSTHRU_FLAGS ${flags})
     set(PASSTHRU_ARGS ${oneValueArgs} ${multiValueArgs})
 

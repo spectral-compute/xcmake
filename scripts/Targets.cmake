@@ -471,7 +471,11 @@ function(add_library TARGET)
         if (NOT args_NOEXPORT)
             set(EXPORT_FLAGS EXPORT ${PROJECT_NAME})
         endif()
-        install(TARGETS ${TARGET} ${EXPORT_FLAGS})
+        install(TARGETS ${TARGET} ${EXPORT_FLAGS}
+            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        )
     endif()
 endfunction()
 
@@ -495,7 +499,7 @@ function(add_executable TARGET)
     fix_source_file_properties(${TARGET})
 
     if (NOT args_NOINSTALL)
-        install(TARGETS ${TARGET})
+        install(TARGETS ${TARGET} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
     endif()
 endfunction()
 
