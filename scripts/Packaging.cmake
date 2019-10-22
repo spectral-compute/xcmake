@@ -97,8 +97,7 @@ endif()
 
 # Including CPack creates the package target, but we only actually want to do this if the build is one that's suitable
 # for packaging. Enabling tests typically hoovers up a lot of things we don't want to depend on, so:
-if (NOT XCMAKE_ENABLE_TESTS)
+if (XCMAKE_PACKAGING)
     include(CPack)
-else()
-    message(BOLD_YELLOW "Warning: Packing is disabled because tests are enabled")
+    include(CPackComponent)
 endif()
