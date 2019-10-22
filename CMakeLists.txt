@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 include(scripts/Init.cmake)
 project(XCMake
     VERSION 0.1.2
-    DESCRIPTION "A library for building beter build systems."
+    DESCRIPTION "A library for building better build systems."
     HOMEPAGE_URL "https://spectral-compute.co.uk/xcmake"
 )
 include(XCMake)
