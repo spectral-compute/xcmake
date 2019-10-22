@@ -121,7 +121,7 @@ function(install)
             list(APPEND DEFAULT_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
 
             # Install any symlink folders
-            if(XCMAKE_IMPLIB_PLATFORM)
+            if(XCMAKE_IMPLIB_PLATFORM AND XCMAKE_INSTALL_DEPENDENT_DLLS)
                 get_target_property(EXE_DIR ${TGT} RUNTIME_OUTPUT_DIRECTORY)
                 _install(DIRECTORY "${EXE_DIR}/${TGT}_SYMLINKS/"
                     DESTINATION "${${KEY}_DESTINATION}"
