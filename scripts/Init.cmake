@@ -135,6 +135,7 @@ else()
     set(DEFAULT_INSTALL_DLLS ON)
 endif()
 option(XCMAKE_INSTALL_DEPENDENT_DLLS "Install copies of all the dlls that your installed targets depend on, if this is an IMPLIB project" ${DEFAULT_INSTALL_DLLS})
+option(XCMAKE_PROJECT_INSTALL_PREFIX "Install everything to `${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/...`. This adds a per-project suffix to the install prefix." ${XCMAKE_PACKAGING})
 
 if (XCMAKE_PACKAGING)
     if (XCMAKE_PRIVATE_DOCS)
