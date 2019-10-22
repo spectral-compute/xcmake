@@ -130,6 +130,13 @@ option(XCMAKE_PRIVATE_DOCS "Build 'private' documentation" ON)
 option(XCMAKE_PROJECTS_ARE_COMPONENTS "Assume a 1-1 mapping between projects and components. This simplifies some issues surrounding exports and installer generation." ON)
 
 if (XCMAKE_PACKAGING)
+    set(DEFAULT_INSTALL_DLLS OFF)
+else()
+    set(DEFAULT_INSTALL_DLLS ON)
+endif()
+option(XCMAKE_INSTALL_DEPENDENT_DLLS "Install copies of all the dlls that your installed targets depend on, if this is an IMPLIB project" ${DEFAULT_INSTALL_DLLS})
+
+if (XCMAKE_PACKAGING)
     if (XCMAKE_PRIVATE_DOCS)
         message(RED "Disabling XCMAKE_PRIVATE_DOCS because packaging is enabled")
         set(XCMAKE_PRIVATE_DOCS OFF CACHE INTERNAL "")
