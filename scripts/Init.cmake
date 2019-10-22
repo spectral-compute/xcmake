@@ -127,6 +127,7 @@ option(XCMAKE_SANITISE_TRADEMARKS "A list of trademarks to scan headers/document
 option(XCMAKE_ENABLE_TESTS "Build unit tests for all projects" ON)
 option(XCMAKE_ENABLE_DOCS "Generate documentation for all projects" ON)
 option(XCMAKE_PRIVATE_DOCS "Build 'private' documentation" ON)
+option(XCMAKE_PROJECTS_ARE_COMPONENTS "Assume a 1-1 mapping between projects and components. This simplifies some issues surrounding exports and installer generation." ON)
 
 if (XCMAKE_PACKAGING)
     if (XCMAKE_PRIVATE_DOCS)

@@ -12,6 +12,7 @@ function(install)
         PRIVATE_HEADER
         PUBLIC_HEADER
         RESOURCE
+        DIRECTORY
     )
 
     set(multiValueArgs
@@ -21,9 +22,27 @@ function(install)
     )
     cmake_parse_arguments("i" "EP_TARGET" "" "${multiValueArgs};${installTypes}" "${ARGN}")
 
+    set(COMPONENT_ARGS)
+    if (XCMAKE_PROJECTS_ARE_COMPONENTS)
+        set(COMPONENT_ARGS COMPONENT "${PROJECT_NAME}")
+    endif()
+
+    # Insane hack to inject the component arguments into install(DIRECTORY), which has a special rule no other install
+    # flavour has:
+    # > DIRECTORY does not allow "COMPONENT" after PATTERN or REGEX.
+    # So, we just scan the argment list to find `DESTINATION`, and slot our stuff in after the destination, which must
+    # come before PATTERN or REGEX, and keeps everything happy.
+    if (NOT "${i_DIRECTORY}" STREQUAL "")
+        list(FIND ARGN DESTINATION DST_POS)
+        math(EXPR AFTER_DST_DIR "${DST_POS} + 2")
+        list(INSERT ARGN ${AFTER_DST_DIR} ${COMPONENT_ARGS})
+        _install(${ARGN})
+        return()
+    endif()
+
     # If it isn't a TARGETS-mode install, delegate entirely.
     if ("${i_TARGETS}" STREQUAL "")
-        _install(${ARGN})
+        _install(${ARGN} ${COMPONENT_ARGS})
         return()
     endif ()
 
@@ -106,6 +125,7 @@ function(install)
                 get_target_property(EXE_DIR ${TGT} RUNTIME_OUTPUT_DIRECTORY)
                 _install(DIRECTORY "${EXE_DIR}/${TGT}_SYMLINKS/"
                     DESTINATION "${${KEY}_DESTINATION}"
+                    ${COMPONENT_ARGS}
                 )
             endif()
         endif()
@@ -113,7 +133,7 @@ function(install)
         # Delegate installation of non-IMPORTED targets
         get_target_property(IS_IMPORTED ${TGT} IMPORTED)
         if (NOT IS_IMPORTED)
-            _install(TARGETS ${TGT} ${DELEGATE_ARGS})
+            _install(TARGETS ${TGT} ${DELEGATE_ARGS} ${COMPONENT_ARGS})
             continue()
         endif()
 
