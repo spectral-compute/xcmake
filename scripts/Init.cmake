@@ -121,45 +121,6 @@ include(Summary)
 include(Doxygen)
 include(Pandoc)
 
-# XCmake-specific build options
-option(XCMAKE_PACKAGING "Enable installer generation. Disables lots of other things." OFF)
-option(XCMAKE_SANITISE_TRADEMARKS "A list of trademarks to scan headers/documentation for. The last symbol of the word shall be the appropriate special symbol. Formatted as a list of <word>:<I<owner> pairs" "" STRING)
-option(XCMAKE_ENABLE_TESTS "Build unit tests for all projects" ON)
-option(XCMAKE_ENABLE_DOCS "Generate documentation for all projects" ON)
-option(XCMAKE_PRIVATE_DOCS "Build 'private' documentation" ON)
-option(XCMAKE_PROJECTS_ARE_COMPONENTS "Assume a 1-1 mapping between projects and components. This simplifies some issues surrounding exports and installer generation." ON)
-
-if (XCMAKE_PACKAGING)
-    set(DEFAULT_INSTALL_DLLS OFF)
-else()
-    set(DEFAULT_INSTALL_DLLS ON)
-endif()
-option(XCMAKE_INSTALL_DEPENDENT_DLLS "Install copies of all the dlls that your installed targets depend on, if this is an IMPLIB project" ${DEFAULT_INSTALL_DLLS})
-option(XCMAKE_PROJECT_INSTALL_PREFIX "Install everything to `${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/...`. This adds a per-project suffix to the install prefix." ${XCMAKE_PACKAGING})
-
-if (XCMAKE_PACKAGING)
-    if (XCMAKE_PRIVATE_DOCS)
-        message(RED "Disabling XCMAKE_PRIVATE_DOCS because packaging is enabled")
-        set(XCMAKE_PRIVATE_DOCS OFF CACHE INTERNAL "")
-    endif()
-    if (XCMAKE_ENABLE_TESTS)
-        message(RED "Disabling XCMAKE_ENABLE_TESTS because packaging is enabled")
-        set(XCMAKE_ENABLE_TESTS OFF CACHE INTERNAL "")
-    endif()
-
-    if (NOT XCMAKE_SANITISE_TRADEMARKS)
-        message(BOLD_YELLOW "Warning: Packaging is enabled, but trademark sanitisation is not.")
-    endif()
-    if (NOT XCMAKE_ENABLE_DOCS)
-        message(BOLD_YELLOW "Warning: Packaging is enabled, but documentation generation is not. The produced package will have no documentation!")
-    endif()
-
-    message(BOLD_RED "-----------------------------------------------------------------")
-    message(BOLD_RED "- PACKAGING MODE IS ENABLED. THIS WILL DISABLE MOST COMPILATION -")
-    message(BOLD_RED "-           Use -DXCMAKE_PACKAGING=OFF to disable               -")
-    message(BOLD_RED "-----------------------------------------------------------------")
-endif()
-
 # All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
 # build others' libraries with that toolchain.
 default_value(CMAKE_CXX_VISIBILITY_PRESET "hidden")
