@@ -60,7 +60,7 @@ function(install)
         # all of these, so this always works.
         list(FIND ARGN DESTINATION DST_POS)
         math(EXPR AFTER_DST_DIR "${DST_POS} + 2")
-        list(INSERT ARGN ${AFTER_DST_DIR} ${COMPONENT_ARGS})
+        list(INSERT ARGN "${AFTER_DST_DIR}" "${COMPONENT_ARGS}")
         _install(${ARGN})
         return()
     endif ()
