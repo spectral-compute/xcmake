@@ -7,7 +7,7 @@ function(install)
 
     set(COMPONENT_PREFIX)
     if (XCMAKE_PROJECT_COMPONENT_PREFIX)
-        set(COMPONENT_PREFIX ${PROJECT_NAME})
+        set(COMPONENT_PREFIX ${PROJECT_NAME}/)
     endif()
 
     # Find every "DESTINATION" keyword, and prepend the extra prefix to the argument following it.
@@ -23,7 +23,7 @@ function(install)
 
             # Replace the destination path with a version that has the prefix prepended on.
             list(GET ARGN ${PATH_IDX} THE_PATH)
-            set(THE_PATH "${COMPONENT_PREFIX}/${THE_PATH}")
+            set(THE_PATH "${COMPONENT_PREFIX}${THE_PATH}")
             list(REMOVE_AT ARGN ${PATH_IDX})
             list(INSERT ARGN ${PATH_IDX} "${THE_PATH}")
         endif()
@@ -85,7 +85,10 @@ function(install)
     set(PASSTHRU_FLAGS ${flags})
     set(PASSTHRU_ARGS ${oneValueArgs} ${multiValueArgs})
 
-    # Parse each of the sub argment lists (to the extent that we care)
+    # Parse each of the sub argment lists and construct a list of arguments from each that are compatible with FILES
+    # mode. These will be passed along for each IMPORTED target being installed.
+    # This also parses out arguments like `PERMISSIONS` that we need to provide default values for when using FILES mode
+    # but which we want to pass along if the user specified them explicitly.
     foreach (ITYPE ${installTypes})
         default_value(I_${ITYPE} "")
         cmake_parse_arguments("${ITYPE}" "${flags}" "${oneValueArgs}" "${multiValueArgs}" "${I_${ITYPE}}")
@@ -98,6 +101,8 @@ function(install)
                 list(APPEND ${ITYPE}_FORWARD ${SUBARG} ${${ITYPE}_${SUBARG}})
             endif()
         endforeach()
+
+        # Flags need handling specially, since their value is just the identifier.
         foreach (SUBARG ${PASSTHRU_FLAGS})
             if (${${ITYPE}_${SUBARG}})
                 list(APPEND ${ITYPE}_FORWARD ${SUBARG})
@@ -105,21 +110,35 @@ function(install)
         endforeach ()
     endforeach()
 
-    # Set up default destinations to match cmake's normal semantics.
+    # Set up default destinations to match cmake's normal semantics for `install(TARGETS)`. A TARGETS install with no
+    # destination uses these by default. FILES-mode has no default, so if we're doing an IMPORTED target install we need
+    # to manually replicate that behaviour here.
     default_value(RUNTIME_DESTINATION "${CMAKE_INSTALL_BINDIR}")
     default_value(LIBRARY_DESTINATION "${CMAKE_INSTALL_LIBDIR}")
     default_value(ARCHIVE_DESTINATION "${CMAKE_INSTALL_LIBDIR}")
     default_value(PUBLIC_HEADER_DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
-    # Consider each target for special treatment, possibly delegating it to `install()`.
+    # We also need to synthesise a `PERMISSIONS` argument for `FILES`-mode to replicate the default behaviour of TARGETS
+    # mode, which sets the execute bit on executables. However, TARGETS-mode also does tak a PERMISSIONS argument, so
+    # this is only a _default_ value (since the above argument parsing will have already set a concrete value if one
+    # was specified by the caller).
+    default_value(RUNTIME_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    default_value(LIBRARY_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    set(DEFAULT_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
+
+    # Handle each target with a separate call to install. This lets us filter out the IMPORTED ones. The non-imported
+    # ones just get passed to `_install()` with the rest of the argument list.
     foreach (TGT ${i_TARGETS})
         if (NOT TARGET ${TGT})
+            # `_install(TARGETS)` has a nice error for this, but our proxying means we need to reimplement it otherwise
+            # you instead get a crazy confusing error from the logic below.
             message(FATAL_ERROR "Tried to install nonexistent target: ${TGT}")
         endif()
 
         get_target_property(TGT_TYPE ${TGT} TYPE)
 
-        # Set appropriate name for destination and argument forwarding
+        # Determine the "key" used for this target. This will be one of the keywords from target-mode install, listed
+        # above in `installTypes`.
         if ("${TGT_TYPE}" STREQUAL SHARED_LIBRARY)
             if(XCMAKE_IMPLIB_PLATFORM) # On DLL platforms, we need to set the key to RUNTIME for shared libraries
                 set(KEY RUNTIME)
@@ -130,7 +149,6 @@ function(install)
             set(KEY ARCHIVE)
         elseif("${TGT_TYPE}" STREQUAL EXECUTABLE)
             set(KEY RUNTIME)
-            list(APPEND DEFAULT_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
 
             # Install any symlink folders
             if(XCMAKE_IMPLIB_PLATFORM AND XCMAKE_INSTALL_DEPENDENT_DLLS)
@@ -155,20 +173,17 @@ function(install)
         get_target_property(FILE_PATH ${TGT} IMPORTED_LOCATION)
         handle_ep(${FILE_PATH})
 
-        # Define standard permission sets
-        set(PERMS "${${KEY}_PERMISSIONS}")
-        set(DEFAULT_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
-        default_value(PERMS "${DEFAULT_PERMISSIONS}")
+        default_value(${KEY}_PERMISSIONS "${DEFAULT_PERMISSIONS}")
 
-        # Install the imported target as a proper file.
+        # Install the imported target's main file.
         install(FILES "${FILE_PATH}" ${OPT_FLAG}
-            PERMISSIONS "${PERMS}"
+            PERMISSIONS ${${KEY}_PERMISSIONS}
             DESTINATION "${${KEY}_DESTINATION}"
             ${${KEY}_FORWARD}
         )
 
-        # Handle implib installation if present
-        if(XCMAKE_IMPLIB_PLATFORM AND "${TGT_TYPE}" STREQUAL "SHARED_LIBRARY")
+        # Install the imported target's IMPLIB, if it has one.
+        if (XCMAKE_IMPLIB_PLATFORM AND "${TGT_TYPE}" STREQUAL "SHARED_LIBRARY")
             get_target_property(IMPLIB_FILE_PATH ${TGT} IMPORTED_IMPLIB)
             if(NOT IMPLIB_FILE_PATH)
                 message(FATAL_ERROR "IMPORTED_IMPLIB not populated for shared library ${TGT}.")
@@ -177,7 +192,7 @@ function(install)
             handle_ep(${IMPLIB_FILE_PATH})
 
             install(FILES "${IMPLIB_FILE_PATH}" ${OPT_FLAG}
-                PERMISSIONS "${PERMS}"
+                PERMISSIONS "${${KEY}_PERMISSIONS}"
                 DESTINATION "${ARCHIVE_DESTINATION}"
                 ${ARCHIVE_FORWARD}
             )
