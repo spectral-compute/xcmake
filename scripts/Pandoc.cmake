@@ -35,7 +35,7 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
         COMMAND "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${MARKDOWN_FILE}" ${XCMAKE_SANITISE_TRADEMARKS}
 
         # Fix URLs prior to conversion to HTML
-        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh" "${MARKDOWN_FILE}" "${INTERMEDIATE_FILE}"
+        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh" "${MARKDOWN_FILE}" "${INTERMEDIATE_FILE}" ${DOTSLASHES}../../ "${${PROJECT_NAME}_DOC_REPLACEMENTS}"
 
         # Convert the markdown to HTML.
         COMMAND pandoc
@@ -98,7 +98,7 @@ function (add_manual LIB_NAME)
     # Set up pandoc-ification of the *.md files in the given directory.
     file(GLOB_RECURSE SOURCE_MARKDOWN "${d_MANUAL_SRC}/*.md")
 
-    # Create a doxygen-processing target for each file, so we can munch them all in parallel.
+    # Create a pandoc-processing target for each file, so we can munch them all in parallel.
     foreach (MARKDOWN_FILE ${SOURCE_MARKDOWN})
         add_pandoc_markdown("${TARGET}" "${d_MANUAL_SRC}" "${MARKDOWN_FILE}")
     endforeach()
