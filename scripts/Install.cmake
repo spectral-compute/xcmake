@@ -122,8 +122,8 @@ function(install)
     # mode, which sets the execute bit on executables. However, TARGETS-mode also does tak a PERMISSIONS argument, so
     # this is only a _default_ value (since the above argument parsing will have already set a concrete value if one
     # was specified by the caller).
-    default_value(RUNTIME_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
-    default_value(LIBRARY_PERMISSIONS OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    default_value(RUNTIME_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
+    default_value(LIBRARY_PERMISSIONS ${RUNTIME_PERMISSIONS})
     set(DEFAULT_PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 
     # Handle each target with a separate call to install. This lets us filter out the IMPORTED ones. The non-imported
