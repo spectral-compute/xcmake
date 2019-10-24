@@ -5,9 +5,9 @@ macro(default_ifempty NAME VALUE)
     endif()
 endmacro()
 
-macro(default_value NAME VALUE)
+macro(default_value NAME)
     if (NOT DEFINED ${NAME})
-        set(${NAME} ${VALUE})
+        set(${NAME} ${ARGN})
     endif()
 endmacro()
 
