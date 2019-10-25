@@ -22,16 +22,6 @@ macro (make_src_target TARGET BASEDIR SRCFILE OUT_EXT)
     add_dependencies(${TARGET} ${SRC_TGT})
 endmacro()
 
-# Convert a directory path like `a/b/c` to the right number of `../` to undo it, like `../../../`
-function (path_to_slashes PATH OUTVAR)
-    string(REGEX REPLACE "[^/]+/" "../" DOTSLASHES "${PATH}")
-    string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
-    string(REGEX REPLACE "/[^/]+" "/../" DOTSLASHES "${DOTSLASHES}")
-    string(REGEX REPLACE "/\\./" "/" DOTSLASHES "${DOTSLASHES}")
-    string(REGEX REPLACE "//" "/" DOTSLASHES "${DOTSLASHES}")
-    set(${OUTVAR} ${DOTSLASHES} PARENT_SCOPE)
-endfunction()
-
 function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
     make_src_target("${TARGET}" "${BASEDIR}" "${MARKDOWN_FILE}" ".html")
 
