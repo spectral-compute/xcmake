@@ -22,12 +22,27 @@ macro (make_src_target TARGET BASEDIR SRCFILE OUT_EXT)
     add_dependencies(${TARGET} ${SRC_TGT})
 endmacro()
 
-function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
+# Convert a directory path like `a/b/c` to the right number of `../` to undo it, like `../../../`
+function (path_to_slashes PATH OUTVAR)
+    string(REGEX REPLACE "[^/]+/" "../" DOTSLASHES "${PATH}")
+    string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
+    string(REGEX REPLACE "/[^/]+" "/../" DOTSLASHES "${DOTSLASHES}")
+    set(${OUTVAR} ${DOTSLASHES} PARENT_SCOPE)
+endfunction()
+
+function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
     make_src_target("${TARGET}" "${BASEDIR}" "${MARKDOWN_FILE}" ".html")
 
-    # Build an appropriate sequence of "../" to refer to the stylesheet.
-    string(REGEX REPLACE "/[a-zA-Z0-9_-]+" "../" DOTSLASHES "${IMM_DIR}")
-    string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
+    # Build an appropriate sequence of "../" to get us to the top of the documentation tree we're in.
+    path_to_slashes("${IMM_DIR}" DOTSLASHES)
+
+    # And again to get us to the root of the install tree.
+    path_to_slashes("${INSTALL_DESTINATION}" DEST_DOTSLASHES)
+
+    # And once more, if we're using component prefixing.
+    if (XCMAKE_PROJECT_INSTALL_PREFIX)
+        set(DEST_DOTSLASHES "${DEST_DOTSLASHES}../")
+    endif()
 
     set(INTERMEDIATE_FILE "${OUT_FILE}.tmp")
 
@@ -35,7 +50,7 @@ function (add_pandoc_markdown TARGET BASEDIR DOT_FILE)
         COMMAND "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${MARKDOWN_FILE}" ${XCMAKE_SANITISE_TRADEMARKS}
 
         # Fix URLs prior to conversion to HTML
-        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh" "${MARKDOWN_FILE}" "${INTERMEDIATE_FILE}" ${DOTSLASHES}../../ "${${PROJECT_NAME}_DOC_REPLACEMENTS}"
+        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh" "${MARKDOWN_FILE}" "${INTERMEDIATE_FILE}" ${DOTSLASHES}${DEST_DOTSLASHES} "${${PROJECT_NAME}_DOC_REPLACEMENTS}"
 
         # Convert the markdown to HTML.
         COMMAND pandoc
@@ -100,7 +115,7 @@ function (add_manual LIB_NAME)
 
     # Create a pandoc-processing target for each file, so we can munch them all in parallel.
     foreach (MARKDOWN_FILE ${SOURCE_MARKDOWN})
-        add_pandoc_markdown("${TARGET}" "${d_MANUAL_SRC}" "${MARKDOWN_FILE}")
+        add_pandoc_markdown("${TARGET}" "${d_MANUAL_SRC}" "${MARKDOWN_FILE}" "${d_INSTALL_DESTINATION}")
     endforeach()
 
     # Compile any dot-graphs found.

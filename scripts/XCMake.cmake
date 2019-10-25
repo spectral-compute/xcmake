@@ -43,7 +43,7 @@ endfunction()
 set_project_guid()
 
 if (XCMAKE_PACKAGING)
-    set(COMPONENT_INSTALL_ROOT "./${PROJECT_NAME}")
+    set(COMPONENT_INSTALL_ROOT "${PROJECT_NAME}/")
 
     if (XCMAKE_PRIVATE_DOCS)
         message(RED "Disabling XCMAKE_PRIVATE_DOCS because packaging is enabled")
@@ -68,5 +68,5 @@ if (XCMAKE_PACKAGING)
 
     include(Packaging)
 else()
-    set(COMPONENT_INSTALL_ROOT "./")
+    set(COMPONENT_INSTALL_ROOT)
 endif()

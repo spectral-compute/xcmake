@@ -6,7 +6,7 @@ function(install)
     endif()
 
     set(COMPONENT_PREFIX)
-    if (XCMAKE_PROJECT_COMPONENT_PREFIX)
+    if (XCMAKE_PROJECT_INSTALL_PREFIX)
         set(COMPONENT_PREFIX ${PROJECT_NAME}/)
     endif()
 
