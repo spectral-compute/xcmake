@@ -51,7 +51,7 @@ function(add_doxygen TARGET)
 
     # Oh, the argparse boilerplate
     set(flags NOINSTALL CUDA)
-    set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX LOGO)
+    set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX LOGO SUBJECT)
     set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -63,6 +63,7 @@ function(add_doxygen TARGET)
     # This variable affects a configure_file call later on, effectively including the suffix file at the end of the
     # Doxyfile.in template shipped with XCMake.
     file(READ "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX}" DOXYFILE_SUFFIX_PAYLOAD)
+    string(TOLOWER "${d_SUBJECT}" LOWER_LIB_NAME)
 
     # Extract the list of input paths from the list of given header targets, and build a list of all the header files
     # Doxygen is about to process, so we can add them as dependencies.
