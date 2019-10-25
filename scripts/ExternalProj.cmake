@@ -34,7 +34,6 @@ function(add_external_project TARGET)
 
         # Delete
         BINARY_DIR
-        SOURCE_DIR
         INSTALL_DIR
         EXCLUDE_FROM_ALL
     )
