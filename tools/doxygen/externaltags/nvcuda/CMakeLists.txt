@@ -24,22 +24,22 @@ add_custom_target(libnvcuda_intermediate_header
 
 
 # Firstly, we run doxygen on the NVIDIA CUDA headers to generate a Doxygen tagfile (full of broken URLs)...
-add_doxygen(nvcuda
-    INPUT_HEADERS
-        "${INTERMEDIATE_HEADER}"
+add_doxygen(nvcuda_doxygen
+    INPUT_HEADERS "${INTERMEDIATE_HEADER}"
     NOINSTALL
 )
+get_target_property(OBFUSCATED_TAGFILE nvcuda_doxygen DOXYGEN_TAGFILE)
 
 # ... and then we run the broken tagfile through an insane regex to fix the links, so we can plug it into our
 # doxygen targets.
-set(INPUT_TAG_FILE "${CMAKE_BINARY_DIR}/docs/tagfiles/nvcuda.tag")
+set(OBFUSCATED_TAGFILE "${OBFUSCATED_TAGFILE}")
 set(OUTPUT_TAG_FILE "${CMAKE_BINARY_DIR}/docs/tagfiles/libnvcuda.tag")
 
 add_custom_command(
     OUTPUT "${OUTPUT_TAG_FILE}"
-    COMMAND "${CMAKE_CURRENT_LIST_DIR}/deobfuscate.sh" "${INPUT_TAG_FILE}" "${OUTPUT_TAG_FILE}"
+    COMMAND "${CMAKE_CURRENT_LIST_DIR}/deobfuscate.sh" "${OBFUSCATED_TAGFILE}" "${OUTPUT_TAG_FILE}"
     COMMENT "Deobfuscating NVIDIA doxygen tag references..."
-    DEPENDS "${INPUT_TAG_FILE}"
+    DEPENDS "${OBFUSCATED_TAGFILE}"
     DEPENDS "${CMAKE_CURRENT_LIST_DIR}/deobfuscate.sh"
     WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
 )

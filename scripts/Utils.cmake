@@ -30,3 +30,13 @@ macro(dynamic_call FN_NAME)
     # Including a file makes cmake consider it a buildsystem dependency. So we mustn't delete it, or the cmake build
     # system is always considered dirty, and cmake is always rerun.
 endmacro()
+
+# Convert a directory path like `a/b/c` to the right number of `../` to undo it, like `../../../`
+function (path_to_slashes PATH OUTVAR)
+    string(REGEX REPLACE "[^/]+/" "../" DOTSLASHES "${PATH}")
+    string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
+    string(REGEX REPLACE "/[^/]+" "/../" DOTSLASHES "${DOTSLASHES}")
+    string(REGEX REPLACE "/\\./" "/" DOTSLASHES "${DOTSLASHES}")
+    string(REGEX REPLACE "//" "/" DOTSLASHES "${DOTSLASHES}")
+    set(${OUTVAR} ${DOTSLASHES} PARENT_SCOPE)
+endfunction()
