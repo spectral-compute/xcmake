@@ -1,6 +1,7 @@
 find_package(CUDA 8.0 REQUIRED)
 list(GET CUDA_INCLUDE_DIRS 0 CUDA_INCLUDE_DIR)
 add_custom_target(nvcuda)
+set(COMPONENT_INSTALL_ROOT)
 
 # We want to be able to cross-reference NVIDIA's CUDA documentation (which _is_ doxygen). Unfortunately, they
 # obfuscated their tag URLs, so we have to get a bit creative to make it work.
