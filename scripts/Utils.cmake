@@ -25,10 +25,12 @@ macro(dynamic_call FN_NAME)
     string(RANDOM SNAME)
     set(SCRIPT_PATH "${XCMAKE_TMP_SCRIPT_DIR}/${SNAME}.cmake")
 
-    file(WRITE ${SCRIPT_PATH} "${FN_NAME}(${ARGN})")
+    file(WRITE ${SCRIPT_PATH} "macro(do_the_thing)\n${FN_NAME}(${ARGN})\nendmacro()")
     include(${SCRIPT_PATH})
     # Including a file makes cmake consider it a buildsystem dependency. So we mustn't delete it, or the cmake build
     # system is always considered dirty, and cmake is always rerun.
+
+    do_the_thing()
 endmacro()
 
 # Convert a directory path like `a/b/c` to the right number of `../` to undo it, like `../../../`
