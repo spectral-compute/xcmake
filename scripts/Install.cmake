@@ -5,9 +5,9 @@ function(install)
         set(COMPONENT_ARGS COMPONENT "${PROJECT_NAME}")
     endif()
 
-    set(COMPONENT_PREFIX)
+    set(COMPONENT_INSTALL_ROOT)
     if (XCMAKE_PROJECT_INSTALL_PREFIX)
-        set(COMPONENT_PREFIX ${PROJECT_NAME}/)
+        set(COMPONENT_INSTALL_ROOT ${PROJECT_NAME}/)
     endif()
 
     # Find every "DESTINATION" keyword, and prepend the extra prefix to the argument following it.
@@ -23,7 +23,7 @@ function(install)
 
             # Replace the destination path with a version that has the prefix prepended on.
             list(GET ARGN ${PATH_IDX} THE_PATH)
-            set(THE_PATH "${COMPONENT_PREFIX}${THE_PATH}")
+            set(THE_PATH "${COMPONENT_INSTALL_ROOT}${THE_PATH}")
             list(REMOVE_AT ARGN ${PATH_IDX})
             list(INSERT ARGN ${PATH_IDX} "${THE_PATH}")
         endif()

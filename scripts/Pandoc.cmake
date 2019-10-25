@@ -27,6 +27,8 @@ function (path_to_slashes PATH OUTVAR)
     string(REGEX REPLACE "[^/]+/" "../" DOTSLASHES "${PATH}")
     string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
     string(REGEX REPLACE "/[^/]+" "/../" DOTSLASHES "${DOTSLASHES}")
+    string(REGEX REPLACE "/\\./" "/" DOTSLASHES "${DOTSLASHES}")
+    string(REGEX REPLACE "//" "/" DOTSLASHES "${DOTSLASHES}")
     set(${OUTVAR} ${DOTSLASHES} PARENT_SCOPE)
 endfunction()
 
@@ -37,12 +39,7 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
     path_to_slashes("${IMM_DIR}" DOTSLASHES)
 
     # And again to get us to the root of the install tree.
-    path_to_slashes("${INSTALL_DESTINATION}" DEST_DOTSLASHES)
-
-    # And once more, if we're using component prefixing.
-    if (XCMAKE_PROJECT_INSTALL_PREFIX)
-        set(DEST_DOTSLASHES "${DEST_DOTSLASHES}../")
-    endif()
+    path_to_slashes("${COMPONENT_INSTALL_ROOT}${INSTALL_DESTINATION}" DEST_DOTSLASHES)
 
     set(INTERMEDIATE_FILE "${OUT_FILE}.tmp")
 
