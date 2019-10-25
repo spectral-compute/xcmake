@@ -34,10 +34,8 @@ function(add_doxygen LIB_NAME)
         return()
     endif()
 
-    string(TOLOWER ${LIB_NAME} LOWER_LIB_NAME)
-
     # Name of the custom target to use
-    set(TARGET ${LOWER_LIB_NAME}_doxygen)
+    set(TARGET ${LIB_NAME}_doxygen)
 
     # Oh, the argparse boilerplate
     set(flags NOINSTALL)
