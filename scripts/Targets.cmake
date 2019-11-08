@@ -252,6 +252,7 @@ function(apply_default_standard_properties TARGET)
         # Warnings that appear to be broken.
         -Wno-weak-template-vtables           # Incorrectly warns about explicit instantiations in .cpp.
         -Wno-weak-vtables
+        -Wno-assume                          # Incorrectly reports on the existence of side effects.
 
         # We *really* like warnings.
         -Werror
