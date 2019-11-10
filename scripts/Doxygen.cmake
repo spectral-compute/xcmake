@@ -165,10 +165,10 @@ function(add_doxygen TARGET)
 
     add_dependencies(${TARGET} cppreference_data)
 
-    # Make the new thing get built by `make docs`
-    add_dependencies(docs ${TARGET})
-
     if (NOT "${d_NOINSTALL}")
+        # Make the new thing get built by `make docs`
+        add_dependencies(docs ${TARGET})
+
         install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doxygen/" DESTINATION "${d_INSTALL_DESTINATION}")
     endif()
 endfunction()
