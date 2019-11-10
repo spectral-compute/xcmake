@@ -65,6 +65,12 @@ function(add_doxygen TARGET)
     file(READ "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX}" DOXYFILE_SUFFIX_PAYLOAD)
     string(TOLOWER "${d_SUBJECT}" LOWER_LIB_NAME)
 
+    # The EXAMPLES_PATH parameter for the Doxyfile.
+    set(EXAMPLE_PATH "")
+    if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/test")
+        set(EXAMPLE_PATH "${CMAKE_CURRENT_LIST_DIR}/test")
+    endif()
+
     # Extract the list of input paths from the list of given header targets, and build a list of all the header files
     # Doxygen is about to process, so we can add them as dependencies.
     set(DOXYGEN_INPUTS "")
