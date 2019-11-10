@@ -105,11 +105,9 @@ function(add_doxygen TARGET)
     set(OUT_TAGFILE "${CMAKE_BINARY_DIR}/docs/tagfiles/${TARGET}.tag")
     file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/docs/tagfiles")
 
-    # A stamp file is used to track the dependency, since Doxygen emits zillions of files.
-    set(STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.stamp")
-
     add_custom_target(${TARGET}
-        DEPENDS "${STAMP_FILE}"
+        # The tagfile is a convenient output file to use for dependency tracking.
+        DEPENDS "${OUT_TAGFILE}"
     )
     set_target_properties(${TARGET} PROPERTIES
         DOXYGEN_INSTALL_DESTINATION "${COMPONENT_INSTALL_ROOT}${d_INSTALL_DESTINATION}"
@@ -152,13 +150,11 @@ function(add_doxygen TARGET)
 
     # Command to actually run doxygen, depending on every header file and the doxyfile template.
     add_custom_command(
-        OUTPUT "${STAMP_FILE}" "${OUT_TAGFILE}"
+        OUTPUT "${OUT_TAGFILE}"
         COMMAND doxygen
-        COMMAND "${CMAKE_COMMAND}" -E touch "${STAMP_FILE}"
         COMMENT "Doxygenation of ${TARGET}..."
         DEPENDS
-            "${DOXYFILE}"
-            "${d_DOXYFILE_SUFFIX}"
+            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
             ${HEADERS_USED} # <- This one deliberately not quoted.
             "${DOXYGEN_LAYOUT_FILE}"
             "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_header.html"
