@@ -72,7 +72,7 @@ macro(initialise_cuda_variables)
 
     set(XCMAKE_GPUS "${XCMAKE_GPUS}" CACHE STRING "GPUs to build for")
     set(XCMAKE_GPU_TYPE "${XCMAKE_GPU_TYPE}" CACHE STRING "The target GPU vendor")
-    set(TARGET_CUDA_COMPUTE_CAPABILITIES "${TARGET_CUDA_COMPUTE_CAPABILITIES}" CACHE STRING "Targert NVIDIA GPU architectures")
+    set(TARGET_CUDA_COMPUTE_CAPABILITIES "${TARGET_CUDA_COMPUTE_CAPABILITIES}" CACHE STRING "Target NVIDIA GPU architectures")
     set(TARGET_AMD_GPUS "${TARGET_AMD_GPUS}" CACHE STRING "Targert AMD GPU architectures")
 
     # Make sure we don't have a mixture of GPU targets...
