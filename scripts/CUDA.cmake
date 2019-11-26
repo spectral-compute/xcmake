@@ -10,7 +10,7 @@ endif()
 
 macro(initialise_cuda_variables)
     if (NOT XCMAKE_GPUS)
-        message(BOLD_YELLOW "Warning: Attempting to auto-detect GPU. Specify GPU targets explicitly with `-DXCMAKE_GPUS`")
+        message(BOLD_YELLOW "Warning: Attempting to auto-detect GPUs. Specify GPU targets explicitly with `-DXCMAKE_GPUS`")
 
         # Try, ridiculously, to figure out what GPU the user has installed.
         set(AUTODETECT_BINDIR "${CMAKE_BINARY_DIR}/gpu_autodetect")
@@ -38,17 +38,23 @@ macro(initialise_cuda_variables)
             fatal_error("${RUN_OUTPUT}")
         endif()
 
-        # Parse out the number of GPUs.
-        string(SUBSTRING "${RUN_OUTPUT}" 0 1 NUM_GPUS)
-        string(SUBSTRING "${RUN_OUTPUT}" 1 -1 GPU_ARCH)
-
+        # The output format is an integer representing the GPU count, a semicolon, and then a semicolon-separated list of
+        # GPU target identifiers such a `sm_61`. This allows us to treat it as a list in cmake.
+        list(GET RUN_OUTPUT 0 NUM_GPUS)
         if (${NUM_GPUS} STREQUAL 0)
             fatal_error("There is no GPU in this computer, and you did not specify any GPU targets with -DXCMAKE_GPUS. Either specify a target GPU architecture explicitly, or disable CUDA for your project.")
         endif()
+        if (${NUM_GPUS} GREATER 1)
+            message(BOLD_YELLOW "Warning: Autodetected ${NUM_GPUS} GPUs. Targeting all of them. If you only want to target one, your builds will be much faster if you explicitly specfify `XCMAKE_GPUS`.")
+        else()
+            message(BOLD_YELLOW "Warning: Autodetected ${NUM_GPUS} GPUs. Targeting it. If you want to target a different GPU, specify `XCMAKE_GPUS` explicitly.")
+        endif()
 
-        set(XCMAKE_GPUS "${GPU_ARCH}")
-        message(BOLD_YELLOW "Warning: Autodetected ${NUM_GPUS} GPUs. Targeting the 0th...")
-        message(BOLD_YELLOW "Warning: Autodetected GPU architecture: ${XCMAKE_GPUS}")
+        list(SUBLIST RUN_OUTPUT 1 ${NUM_GPUS} XCMAKE_GPUS)
+
+        foreach (_TGT IN LISTS XCMAKE_GPUS)
+            message(BOLD_YELLOW "Target GPU architecture: ${_TGT}")
+        endforeach()
     endif()
 
     set(TARGET_AMD_GPUS "")
