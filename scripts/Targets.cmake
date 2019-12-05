@@ -583,11 +583,13 @@ endfunction()
 function(propogate_dll_paths KEYWORD TARGET LINKED)
     set(LINKED_PATHS_CONTENT "")
 
-    # If we're linking against an IMPORTED target, use its `IMPORTED_LOCATION` as `INTERFACE_DLL_SEARCH_PATHS`
+    # Use IMPORTED_LOCATION as INTERFACE_DLL_SEARCH_PATHS for non-INTERFACE, IMPORTED targets
     if (TARGET ${LINKED})
         get_target_property(LINKED_IMPORTED ${LINKED} IMPORTED)
+        get_target_property(TARGET_TYPE ${LINKED} TYPE)
 
-        if (LINKED_IMPORTED)
+        # IMPORTED_LOCATION is not on the INTERFACE property whitelist
+        if (LINKED_IMPORTED AND NOT ${TARGET_TYPE} STREQUAL "INTERFACE_LIBRARY")
             get_target_property(LINKED_LOCATION ${LINKED} IMPORTED_LOCATION)
             get_filename_component(LINKED_PATHS_CONTENT "${LINKED_LOCATION}" DIRECTORY)
         endif()
