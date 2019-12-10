@@ -297,6 +297,7 @@ cuda_find_library(cufft)
 cuda_find_library(cublas)
 cuda_find_library(cusparse)
 cuda_find_library(curand)
+cuda_find_library(cuda)
 
 # The tools extension library is an optional package, so some users may be building software which doesn't require it
 # Therefore, allow xcmake to silently fail-to-find when told it's allowed to (-DXCMAKE_NVTOOLSEXT_REQUIRED=FALSE)

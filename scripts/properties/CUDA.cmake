@@ -41,6 +41,7 @@ macro (populate_cuda_property)
         message(BOLD_RED "${TARGET}: Found support for CUDA on AMD in ${SCALE_AMD_TOOLKIT_ROOT_DIR}")
     elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
         find_package(CUDA 8.0 REQUIRED)
+        target_link_libraries(CUDA_EFFECTS INTERFACE cuda)
         target_link_libraries(CUDA_EFFECTS INTERFACE cudart)
 
         # Warn about CUDA 9
