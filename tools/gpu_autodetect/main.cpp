@@ -4,7 +4,7 @@
 #define HANDLE_CUDA_ERROR(E) {\
     cudaError_t error = (E); \
     if (error != cudaSuccess) { \
-        printf("Error %i trying to autodetect GPU architecture.\n", error); \
+        printf("CUDA runtime error encountered trying to autodetect GPU architecture:\n    %s: %s\n", cudaGetErrorName(e), cudaGetErrorString(e)); \
         return error; \
     } \
 }
