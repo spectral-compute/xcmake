@@ -47,6 +47,7 @@ function(PrintConfig)
     message(BOLD_YELLOW "\n\n======== CONFIGURATION SUMMARY =======\n")
 
     message(CYAN "Default target options (use -DXCMAKE_*=... to change):")
+    message(BOLD_BLUE "TRIBBLE: ${BOLD}${XCMAKE_TRIBBLE}${BOLD_OFF}")
     foreach (_P ${XCMAKE_TGT_PROPERTIES})
         message(BOLD_BLUE "${_P}: ${BOLD}${XCMAKE_${_P}}${BOLD_OFF}")
     endforeach ()
