@@ -3,7 +3,6 @@
 include("${CMAKE_TOOLCHAIN_FILE}")
 
 ## Include the rest of xcmake, for convenience.
-include(GTest)
 include(Doxygen)
 include(Properties)
 include(Documentation)
