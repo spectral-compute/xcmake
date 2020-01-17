@@ -63,10 +63,12 @@ function(OPT_LEVEL_EFFECTS TARGET)
     # There are also CUDA translation unit specific flags, predicated on the
     # OPT_LEVEL target property, defined in CUDA.cmake
 
-    # CMake unhelpfully adds inline configruation flags that differ between Release and
+    # CMake unhelpfully adds inline configuration flags that differ between Release and
     # RelWithDebInfo, so we take back control here.
     if (MSVC)
-        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE /Ob2)
+        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
+            $<$<COMPILE_LANGUAGE:CXX>:/Ob2>  # ... But only do this when compiling C++, not CUDA.
+        )
     else()
         target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE -finline-functions)
     endif()
