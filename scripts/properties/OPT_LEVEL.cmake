@@ -23,44 +23,42 @@ function(OPT_LEVEL_EFFECTS TARGET)
     add_library(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE)
 
     target_compile_options(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE
-        -O0
+            $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O0>                   # NVCC
+            $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/Od>                      # MSVC
+            $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-O0>          # Clang
     )
     target_optional_compile_options(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE
         -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
     )
 
     target_compile_options(${TARGET}_size_OPT_LEVEL_EFFECTS INTERFACE
-        -Oz
-        # Can probably do more here if you care enough to bother.
+        $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O2>                   # NVCC
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O1>                      # O1 is "optimise for size" on MSVC...
+        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Oz>          # Clang
+        # Can probably do more here if you care enough to bother...
     )
 
-    if (XCMAKE_USE_NVCC)
-        target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
-            -O1
-        )
-    else()
-        target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
-            -Og
-        )
-    endif()
+    target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
+        $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O1>                   # NVCC
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/Od>                      # MSVC
+        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Og>          # Clang
+    )
 
     target_optional_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
         -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
     )
 
     target_compile_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE
-        -O3
+        $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O2>                   # NVCC
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2>                      # MSVC
+        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-O3>          # Clang
     )
 
-    if (XCMAKE_USE_NVCC)
-        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
-            -O3
-        )
-    else()
-        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
-            -Ofast
-        )
-    endif()
+    target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
+        $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O2>                   # NVCC
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2>                      # MSVC
+        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Ofast>       # Clang
+    )
 
     # There are also CUDA translation unit specific flags, predicated on the
     # OPT_LEVEL target property, defined in CUDA.cmake
