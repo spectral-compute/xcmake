@@ -58,9 +58,9 @@ function(PrintConfig)
 endfunction()
 
 function(PrintCompiler)
-    execute_process(COMMAND "${CMAKE_C_COMPILER}" "--version" OUTPUT_VARIABLE C_VERSION)
-    execute_process(COMMAND "${CMAKE_CXX_COMPILER}" "--version" OUTPUT_VARIABLE CXX_VERSION)
-    execute_process(COMMAND "${CMAKE_LINKER}" "--version" OUTPUT_VARIABLE LINKER_VERSION)
+    execute_process(COMMAND "${CMAKE_C_COMPILER}" "--version" OUTPUT_VARIABLE C_VERSION ERROR_QUIET OUTPUT_QUIET)
+    execute_process(COMMAND "${CMAKE_CXX_COMPILER}" "--version" OUTPUT_VARIABLE CXX_VERSION ERROR_QUIET OUTPUT_QUIET)
+    execute_process(COMMAND "${CMAKE_LINKER}" "--version" OUTPUT_VARIABLE LINKER_VERSION ERROR_QUIET OUTPUT_QUIET)
     string(REGEX REPLACE "\n.*" "" C_VERSION "${C_VERSION}")
     string(REGEX REPLACE "\n.*" "" CXX_VERSION "${CXX_VERSION}")
 
