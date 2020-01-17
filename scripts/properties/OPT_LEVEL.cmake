@@ -34,9 +34,16 @@ function(OPT_LEVEL_EFFECTS TARGET)
         # Can probably do more here if you care enough to bother.
     )
 
-    target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
-        -Og
-    )
+    if (XCMAKE_USE_NVCC)
+        target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
+            -O1
+        )
+    else()
+        target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
+            -Og
+        )
+    endif()
+
     target_optional_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
         -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
     )
@@ -44,16 +51,19 @@ function(OPT_LEVEL_EFFECTS TARGET)
     target_compile_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE
         -O3
     )
-    target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
-        -Ofast
 
-        # A no-op, usually. CMake unhelpfully adds inline configruation flags that differ between Release and
-        # RelWithDebInfo, so we take back control here.
-        -finline-functions
+    if (XCMAKE_USE_NVCC)
+        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
+            -O3
+        )
+    else()
+        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
+            -Ofast
+        )
+    endif()
 
-        # There are also CUDA translation unit specific flags, predicated on the
-        # OPT_LEVEL target property, defined in CUDA.cmake
-    )
+    # There are also CUDA translation unit specific flags, predicated on the
+    # OPT_LEVEL target property, defined in CUDA.cmake
 
     # CMake unhelpfully adds inline configruation flags that differ between Release and
     # RelWithDebInfo, so we take back control here.

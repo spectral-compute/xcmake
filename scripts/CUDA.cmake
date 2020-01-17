@@ -9,6 +9,11 @@ endif()
 
 
 macro(initialise_cuda_variables)
+    if (XCMAKE_USE_NVCC)
+        # NVCC is accessed via cmake's native CUDA support.
+        enable_language(CUDA)
+    endif()
+
     if (NOT XCMAKE_GPUS)
         message(BOLD_YELLOW "Warning: Attempting to auto-detect GPUs. Specify GPU targets explicitly with `-DXCMAKE_GPUS`")
 
@@ -91,6 +96,9 @@ macro(initialise_cuda_variables)
     # GPU type flags for the benefit of the preprocessor :D
 
     if (XCMAKE_GPU_TYPE STREQUAL "amd")
+        if (XCMAKE_USE_NVCC)
+            fatal_error("NVCC cannot compile for AMD. Use Spectral LLVM or select an NVIDIA target.")
+        endif()
         set(XCMAKE_AMD_GPU 1)
     elseif(XCMAKE_GPU_TYPE STREQUAL "nvidia")
         set(XCMAKE_NVIDIA_GPU 1)
