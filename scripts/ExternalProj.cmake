@@ -42,6 +42,7 @@ function(add_external_project TARGET)
         LIBRARIES
         SHARED_LIBRARIES
         STATIC_LIBRARIES
+        HEADER_LIBRARIES
         EXECUTABLES
 
         # Built-in
@@ -151,6 +152,12 @@ function(add_external_project TARGET)
 
         target_include_directories(${_LIB} INTERFACE ${EP_INSTALL_DIR}/include)
     endforeach ()
+
+    foreach (_HL ${ep_HEADER_LIBRARIES})
+        add_library(${_HL} INTERFACE IMPORTED GLOBAL)
+        add_dependencies(${_HL} ${TARGET})
+        target_include_directories(${_HL} INTERFACE ${EP_INSTALL_DIR}/include)
+    endforeach()
 
     foreach (_EXE ${ep_EXECUTABLES})
         add_executable(${_EXE} STATIC IMPORTED GLOBAL)
