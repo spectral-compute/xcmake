@@ -12,11 +12,14 @@ set(XCMAKE_EP_CXX_FLAGS "")
 set(XCMAKE_EP_C_FLAGS "")
 
 if(WIN32)
-    # EPs will likely expect clang to be behaving as it normally does on Windows.
-    # If the EP's own build system turns this off, that'll take precedence anyway, so this should be the
-    # arrangement that's least likely to explode.
-    list(APPEND XCMAKE_EP_CXX_FLAGS "-fms-compatibility")
-    list(APPEND XCMAKE_EP_C_FLAGS "-fms-compatibility")
+    if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    else()
+        # EPs will likely expect clang to be behaving as it normally does on Windows.
+        # If the EP's own build system turns this off, that'll take precedence anyway, so this should be the
+        # arrangement that's least likely to explode.
+        list(APPEND XCMAKE_EP_CXX_FLAGS "-fms-compatibility")
+        list(APPEND XCMAKE_EP_C_FLAGS "-fms-compatibility")
+    endif()
 endif()
 
 function(add_external_project TARGET)
