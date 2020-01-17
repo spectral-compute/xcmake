@@ -1,7 +1,5 @@
 include(GenerateExportHeader)
 
-set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
-
 # Find all the source files for enabled languages according to the given pattern.
 function(find_sources OUT)
     # Build the glob pattern using the list of enabled languages.
