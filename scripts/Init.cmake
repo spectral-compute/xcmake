@@ -83,6 +83,11 @@ else()
     message(FATAL_ERROR "Unsupported build type: ${CMAKE_BUILD_TYPE}")
 endif()
 
+# Sensible defaults for Cmake's built-in CUDA support (which is only used if nvcc is chosen, which it shouldn't be ;))
+default_cache_value(CMAKE_CUDA_STANDARD 14)
+default_cache_value(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
+default_cache_value(CMAKE_CUDA_FLAGS "--expt-relaxed-constexpr")
+
 # Target properties to track DLL search paths.
 define_property(TARGET PROPERTY DLL_SEARCH_PATHS
     BRIEF_DOCS "List of paths where dependent DLLs are found"

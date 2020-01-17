@@ -56,6 +56,11 @@ endfunction()
 # This accepts the same argument sas `target_compile_options`, except that you may only use one keyword at a time.
 # Use multiple calls if you want to use multiple different keywords (or make the argument parsing more clever...)
 function(target_optional_compile_options TARGET)
+    if (XCMAKE_USE_NVCC)
+        # You may not have nice things
+        return()
+    endif()
+
     cmake_parse_arguments("d" "BEFORE" "" "" ${ARGN})
     if (d_BEFORE)
         set(MAYBE_BEFORE BEFORE)
@@ -414,7 +419,7 @@ function(add_export_header TARGET)
 endfunction()
 
 function(fix_source_file_properties TARGET)
-    # Never, ever tell cmake that anything is CUDA. We do it our own way.
+    # Never, ever tell cmake that anything is CUDA. We do it our own way, unless nvcc is enabled.
     get_target_property(SOURCE_FILES ${TARGET} SOURCES)
 
     # This probably isn't fast.
@@ -422,26 +427,28 @@ function(fix_source_file_properties TARGET)
         get_source_file_property(CUR_LANG "${_F}" LANGUAGE)
         get_filename_component(FILE_EXT "${_F}" EXT)
 
-        if ((${CUR_LANG} STREQUAL "CUDA") OR ("${FILE_EXT}" STREQUAL ".cu") OR ("${FILE_EXT}" STREQUAL ".cuh"))
-            # This disables cmake's built-in CUDA support, which only does NVCC. This stops
-            # cmake doing automatic things that derail our attempts to do this properly...
-            get_target_property(CUDA_TU_FLAGS CUDA_FLAGS INTERFACE_COMPILE_OPTIONS)
-            set_source_files_properties(${_F} PROPERTIES
-                LANGUAGE CXX
-                COMPILE_OPTIONS "$<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},CUDA>>,${CUDA_TU_FLAGS},>"
-            )
-        else()
-            if (DEFINED ENV{CLION_IDE})
-                # Clion needs to be told what language header files are.
-                if ("${FILE_EXT}" STREQUAL ".hpp")
-                    set_source_files_properties(${_F} PROPERTIES
-                        LANGUAGE CXX
-                    )
-                elseif("${FILE_EXT}" STREQUAL ".h")
-                    set_source_files_properties(${_F} PROPERTIES
-                        LANGUAGE C
-                    )
-                endif()
+        if (DEFINED ENV{CLION_IDE})
+            # Clion needs to be told what language header files are.
+            if ("${FILE_EXT}" STREQUAL ".hpp")
+                set_source_files_properties(${_F} PROPERTIES
+                    LANGUAGE CXX
+                )
+            elseif("${FILE_EXT}" STREQUAL ".h")
+                set_source_files_properties(${_F} PROPERTIES
+                    LANGUAGE C
+                )
+            endif()
+        endif()
+
+        if (NOT XCMAKE_USE_NVCC)
+            if ((${CUR_LANG} STREQUAL "CUDA") OR ("${FILE_EXT}" STREQUAL ".cu") OR ("${FILE_EXT}" STREQUAL ".cuh"))
+                # This disables cmake's built-in CUDA support, which only does NVCC. This stops
+                # cmake doing automatic things that derail our attempts to do this properly...
+                get_target_property(CUDA_TU_FLAGS CUDA_FLAGS INTERFACE_COMPILE_OPTIONS)
+                set_source_files_properties(${_F} PROPERTIES
+                    LANGUAGE CXX
+                    COMPILE_OPTIONS "$<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},CUDA>>,${CUDA_TU_FLAGS},>"
+                )
             endif()
         endif()
     endforeach()
