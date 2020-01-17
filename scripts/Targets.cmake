@@ -323,15 +323,15 @@ function(apply_default_standard_properties TARGET)
     if (MSVC)
         target_compile_options(${TARGET} PRIVATE
             # We use clang-cl on Windows instead of clang++, so we need a few clang-cl flags
-            /EHs # CL error handling mode (s == synchronous)
+            $<$<COMPILE_LANGUAGE:CXX>:/EHs> # CL error handling mode (s == synchronous)
 
             # Suppress buffer overrun detection, except in assert builds.
-            $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,/GS->
+            $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,$<$<COMPILE_LANGUAGE:CXX>:/GS->>
 
             # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
             # This is _technically_ defaulted to by... something somewhere... However, we're leaving it here so there's a
             # reminder about it if we ever get /MD vs /MT clashes again
-            /MD
+            $<$<COMPILE_LANGUAGE:CXX>:/MD>
         )
     endif ()
 endfunction()
