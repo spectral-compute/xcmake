@@ -249,6 +249,9 @@ function(apply_default_standard_properties TARGET)
         -Wshorten-64-to-32                   # No implicit conversion from longer ints to shorter ones.
         -Wstring-conversion                  # No implicit string literal to bool conversion.
 
+        # We do actually want to use OpenMP sometimes...
+        -Wno-source-uses-openmp
+
         # Warnings that appear to be broken.
         -Wno-weak-template-vtables           # Incorrectly warns about explicit instantiations in .cpp.
         -Wno-weak-vtables
