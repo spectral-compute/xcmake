@@ -55,7 +55,7 @@ function(OPT_LEVEL_EFFECTS TARGET)
     )
 
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
-        $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O2>                   # NVCC
+        # NVCC does nothing, since O2 is the default, and it doesn't accept it twice!
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2>                      # MSVC
         $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Ofast>       # Clang
     )
@@ -70,14 +70,16 @@ function(OPT_LEVEL_EFFECTS TARGET)
             $<$<COMPILE_LANGUAGE:CXX>:/Ob2>  # ... But only do this when compiling C++, not CUDA.
         )
     else()
-        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE -finline-functions)
+        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
+            $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-finline-functions>
+        )
     endif()
 
     # Filter on Windows until Clang issue #270 is properly resolved
     if (NOT WIN32)
         target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
             # An experimental but years-old optimisation.
-            -fstrict-vtable-pointers
+            $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-fstrict-vtable-pointers>
         )
     endif()
 
