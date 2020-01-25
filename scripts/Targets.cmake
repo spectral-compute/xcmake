@@ -638,6 +638,8 @@ function(handle_symlinks TARGET)
         return()
     endif()
 
+    include(FindThreads)
+
     # Get the path to the executable's eventual directory
     get_output_dir(EXE_DIR ${TARGET})
     get_output_name(EXE_NAME ${TARGET})
