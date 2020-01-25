@@ -297,7 +297,6 @@ function(apply_default_standard_properties TARGET)
 
         if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         else()
-            message(${CMAKE_CXX_COMPILER_ID})
             target_compile_options(${TARGET} PRIVATE
                 # No, LLVM, we don't want you to attempt to emulate bugs in the Microsoft compiler.
                 -fno-ms-compatibility
