@@ -308,21 +308,19 @@ function(apply_default_standard_properties TARGET)
         endif()
 
         if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-            target_compile_definitions(${TARGET} PRIVATE
-                -DWIN32_LEAN_AND_MEAN
-                -D_CONTAINER_DEBUG_LEVEL=2
-                -D_ITERATOR_DEBUG_LEVEL=2
-            )
+            set(DEBUG_LEVEL_VAL 2)
         else()
-            target_compile_definitions(${TARGET} PRIVATE
-                # Stop Windows including more headers than needed
-                -DWIN32_LEAN_AND_MEAN
-                # No bounds checks on STL containers, since they don't compile in device binaries.
-                # This seems to be a quirk of the MSVC STL.
-                -D_CONTAINER_DEBUG_LEVEL=0
-                -D_ITERATOR_DEBUG_LEVEL=0
-            )
+            # No bounds checks on STL containers, since they don't compile in device binaries.
+            # This seems to be a quirk of the MSVC STL.
+            set(DEBUG_LEVEL_VAL 0)
         endif()
+
+        target_compile_definitions(${TARGET} PRIVATE
+            # Stop Windows including more headers than needed
+            -DWIN32_LEAN_AND_MEAN
+            -D_CONTAINER_DEBUG_LEVEL=${DEBUG_LEVEL_VAL}
+            -D_ITERATOR_DEBUG_LEVEL=${DEBUG_LEVEL_VAL}
+        )
     endif()
 
     # If the compiler accepts an MSVC-like command-line...
