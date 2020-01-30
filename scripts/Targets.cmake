@@ -586,9 +586,9 @@ function(target_link_libraries TARGET)
             remove_argument(FLAG ARGN RAW)
         else()
             if("${CURRENT_KEYWORD}" STREQUAL "")
-                message(FATAL_ERROR "Keywordless target_link_libraries() is not allowed.")
+                message(AUTHOR_WARNING "Keywordless target_link_libraries() is not allowed.")
             elseif(NOT TARGET "${_ARG}" AND NOT "${ALLOW_RAW}")
-                message(FATAL_ERROR
+                message(AUTHOR_WARNING
                     "Tried to link to nonexistent target \"${_ARG}\".\n"
                     "Did you typo your target name?\n"
                     "If you are trying to add linker flags, cmake now has `target_link_options()` for doing that.\n"
