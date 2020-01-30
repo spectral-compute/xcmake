@@ -203,85 +203,89 @@ function(apply_default_standard_properties TARGET)
 
     set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
 
-    # Diagnostic flags to be applied globally.
-    target_optional_compile_options(${TARGET} BEFORE PRIVATE
-        -Weverything # We like warnings.
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        target_optional_compile_options(${TARGET} BEFORE PRIVATE 
+            /W4
+        )
+    else()
+        # Diagnostic flags to be applied globally.
+        target_optional_compile_options(${TARGET} BEFORE PRIVATE
+            -Weverything # We like warnings.
 
-        # Don't warn for using cool things.
-        -Wno-c++98-c++11-c++14-c++17-compat-pedantic
-        -Wno-c++98-compat-pedantic
-        -Wno-c++11-compat-pedantic
-        -Wno-c++14-compat-pedantic
-        -Wno-c99-compat
-        -Wno-spectral-extensions
+            # Don't warn for using cool things.
+            -Wno-c++98-c++11-c++14-c++17-compat-pedantic
+            -Wno-c++98-compat-pedantic
+            -Wno-c++11-compat-pedantic
+            -Wno-c++14-compat-pedantic
+            -Wno-c99-compat
+            -Wno-spectral-extensions
 
-        -Wno-error-pass-failed
-        -Wno-unknown-warning-option          # Don't crash old compilers. Unless they're so old they don't have this.
+            -Wno-error-pass-failed
+            -Wno-unknown-warning-option          # Don't crash old compilers. Unless they're so old they don't have this.
 
-        -Wno-old-style-cast                  # It's sometimes nice to do C-style casts...
-        -Wno-reserved-id-macro               # This isn't really relevant any more.
-        -Wno-exit-time-destructors           # We *use* these!
-        -Wno-padded
-        -Wno-shadow-field
-        -Wno-shadow-field-in-constructor     # Sorry Nick, I like doing this. :D
-        -Wshadow-field-in-constructor-modified # The above turns this off, but we want it back on.
-        -Wno-global-constructors             # We also use these
-        -Wno-missing-prototypes
-        -Wno-switch-enum                     # This is stupid.
-        -Wno-unused-template                 # ... We're writing a template library...
-        -Wno-float-equal                     # This isn't always wrong...
-        -Wno-undefined-func-template         # Sometimes we like to link templates together, because we're mad.
-        -Wno-sign-conversion                 # Just too irritating. Can't use int to access std::vectors...
-        -Wno-comma                           # Half of our code is "misuse of the comma operator"
-        -Wno-conversion                      # Can't do literal arrays of templated type due to implicit conversions.
-        -Wno-trigraphs                       # Regexes often contain trigraphs, and we do indeed want to ignore them :D
-        -Wno-format-nonliteral               # Being warned that a format parmaeter is nonliteral isn't helpful.
-        -Wno-ctad-maybe-unsupported          # Don't forbid implicit class template argument deduction guides...
+            -Wno-old-style-cast                  # It's sometimes nice to do C-style casts...
+            -Wno-reserved-id-macro               # This isn't really relevant any more.
+            -Wno-exit-time-destructors           # We *use* these!
+            -Wno-padded
+            -Wno-shadow-field
+            -Wno-shadow-field-in-constructor     # Sorry Nick, I like doing this. :D
+            -Wshadow-field-in-constructor-modified # The above turns this off, but we want it back on.
+            -Wno-global-constructors             # We also use these
+            -Wno-missing-prototypes
+            -Wno-switch-enum                     # This is stupid.
+            -Wno-unused-template                 # ... We're writing a template library...
+            -Wno-float-equal                     # This isn't always wrong...
+            -Wno-undefined-func-template         # Sometimes we like to link templates together, because we're mad.
+            -Wno-sign-conversion                 # Just too irritating. Can't use int to access std::vectors...
+            -Wno-comma                           # Half of our code is "misuse of the comma operator"
+            -Wno-conversion                      # Can't do literal arrays of templated type due to implicit conversions.
+            -Wno-trigraphs                       # Regexes often contain trigraphs, and we do indeed want to ignore them :D
+            -Wno-format-nonliteral               # Being warned that a format parmaeter is nonliteral isn't helpful.
+            -Wno-ctad-maybe-unsupported          # Don't forbid implicit class template argument deduction guides...
 
-        # Re-enable parts of `-Wconversion` that we can cope with.
-        -Wdouble-promotion                   # Warn about implicit double promotion: a common performance problem.
-        -Wbitfield-enum-conversion           # Conversion from enum to a too-short bitfield.
-        -Wbool-conversion                    # Initialising a pointer from a bool. Wat.
-        -Wconstant-conversion
-        -Wenum-conversion                    # No implicit conversion between enums.
-        -Wfloat-conversion                   # No implicit float->int conversions.
-        -Wint-conversion                     # No implicit integer<->pointer conversions.
-        -Wliteral-conversion                 # No implicit value-changing literal conversions.
-        -Wnon-literal-null-conversion        # No implicit zero-literal-to-nullptr conversions.
-        -Wnull-conversion                    # No implicit nullptr-to-zero-literal conversions.
-        -Wshorten-64-to-32                   # No implicit conversion from longer ints to shorter ones.
-        -Wstring-conversion                  # No implicit string literal to bool conversion.
+            # Re-enable parts of `-Wconversion` that we can cope with.
+            -Wdouble-promotion                   # Warn about implicit double promotion: a common performance problem.
+            -Wbitfield-enum-conversion           # Conversion from enum to a too-short bitfield.
+            -Wbool-conversion                    # Initialising a pointer from a bool. Wat.
+            -Wconstant-conversion
+            -Wenum-conversion                    # No implicit conversion between enums.
+            -Wfloat-conversion                   # No implicit float->int conversions.
+            -Wint-conversion                     # No implicit integer<->pointer conversions.
+            -Wliteral-conversion                 # No implicit value-changing literal conversions.
+            -Wnon-literal-null-conversion        # No implicit zero-literal-to-nullptr conversions.
+            -Wnull-conversion                    # No implicit nullptr-to-zero-literal conversions.
+            -Wshorten-64-to-32                   # No implicit conversion from longer ints to shorter ones.
+            -Wstring-conversion                  # No implicit string literal to bool conversion.
 
-        # We do actually want to use OpenMP sometimes...
-        -Wno-source-uses-openmp
+            # We do actually want to use OpenMP sometimes...
+            -Wno-source-uses-openmp
 
-        # Warnings that appear to be broken.
-        -Wno-weak-template-vtables           # Incorrectly warns about explicit instantiations in .cpp.
-        -Wno-weak-vtables
-        -Wno-assume                          # Incorrectly reports on the existence of side effects.
+            # Warnings that appear to be broken.
+            -Wno-weak-template-vtables           # Incorrectly warns about explicit instantiations in .cpp.
+            -Wno-weak-vtables
+            -Wno-assume                          # Incorrectly reports on the existence of side effects.
 
-        # We *really* like warnings.
-        -Werror
+            -ftemplate-backtrace-limit=256       # We have some insane templates.
+            -fconstexpr-backtrace-limit=256      # We have some insane constexpr functions, too.
+            -fconstexpr-depth=65535              # Maximum constexpr call depth. We have a regex compiler, soo...
+            -fconstexpr-steps=268435456          # Lots, but infinite loops still get diagnosed within a sensible amount of time.
 
-        -ftemplate-backtrace-limit=256       # We have some insane templates.
-        -fconstexpr-backtrace-limit=256      # We have some insane constexpr functions, too.
-        -fconstexpr-depth=65535              # Maximum constexpr call depth. We have a regex compiler, soo...
-        -fconstexpr-steps=268435456          # Lots, but infinite loops still get diagnosed within a sensible amount of time.
+            # Fortunately, Doxygen shouts at us anyway, and clang's diagnostic is quite false-positive-ful.
+            -Wno-documentation-unknown-command
+            -Wno-documentation  # https://gitlab.com/spectral-ai/engineering/cuda/platform/clang/issues/340
 
-        # Fortunately, Doxygen shouts at us anyway, and clang's diagnostic is quite false-positive-ful.
-        -Wno-documentation-unknown-command
-        -Wno-documentation  # https://gitlab.com/spectral-ai/engineering/cuda/platform/clang/issues/340
+            # Make errors more readable in the presence of insane templates
+            -fdiagnostics-show-template-tree
+            -fdiagnostics-show-option
+            -fdiagnostics-show-category=name
 
-        # Make errors more readable in the presence of insane templates
-        -fdiagnostics-show-template-tree
-        -fdiagnostics-show-option
-        -fdiagnostics-show-category=name
+            # Emit an error if we accidentally code-gen jumbo-sized objects (even if these would be removed by optimization,
+            # it's better not to generate them in the first place).
+            -fmax-data-global-size=67108864
+            -fmax-data-local-size=1048576
+        )
+    endif()
 
-        # Emit an error if we accidentally code-gen jumbo-sized objects (even if these would be removed by optimization,
-        # it's better not to generate them in the first place).
-        -fmax-data-global-size=67108864
-        -fmax-data-local-size=1048576
-    )
 
     # Work around a bug in Ninja that prevents coloured diagnostics by default, which they refuse to fix:
     # https://github.com/ninja-build/ninja/issues/174
