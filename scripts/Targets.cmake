@@ -206,6 +206,7 @@ function(apply_default_standard_properties TARGET)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_optional_compile_options(${TARGET} BEFORE PRIVATE 
             /W4
+            /Wall
         )
     else()
         # Diagnostic flags to be applied globally.
