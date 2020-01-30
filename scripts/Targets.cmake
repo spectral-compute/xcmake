@@ -306,14 +306,19 @@ function(apply_default_standard_properties TARGET)
             )
         endif()
 
+        if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+            set(DEBUG_LEVEL_VAL 2)
+        else()
+            # No bounds checks on STL containers, since they don't compile in device binaries.
+            # This seems to be a quirk of the MSVC STL.
+            set(DEBUG_LEVEL_VAL 0)
+        endif()
+
         target_compile_definitions(${TARGET} PRIVATE
             # Stop Windows including more headers than needed
             -DWIN32_LEAN_AND_MEAN
-
-            # No bounds checks on STL containers, since they don't compile in device binaries.
-            # This seems to be a quirk of the MSVC STL.
-            -D_CONTAINER_DEBUG_LEVEL=0
-            -D_ITERATOR_DEBUG_LEVEL=0
+            -D_CONTAINER_DEBUG_LEVEL=${DEBUG_LEVEL_VAL}
+            -D_ITERATOR_DEBUG_LEVEL=${DEBUG_LEVEL_VAL}
         )
     endif()
 
@@ -326,11 +331,12 @@ function(apply_default_standard_properties TARGET)
 
             # Suppress buffer overrun detection, except in assert builds.
             $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,$<$<COMPILE_LANGUAGE:CXX>:/GS->>
-
-            # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
-            # This is _technically_ defaulted to by... something somewhere... However, we're leaving it here so there's a
-            # reminder about it if we ever get /MD vs /MT clashes again
-            $<$<COMPILE_LANGUAGE:CXX>:/MD>
+        )
+        # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
+        # This is _technically_ defaulted to by /MT
+        set_target_properties(${TARGET}
+            PROPERTIES 
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
         )
     endif ()
 endfunction()

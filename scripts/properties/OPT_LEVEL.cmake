@@ -39,7 +39,7 @@ function(OPT_LEVEL_EFFECTS TARGET)
     )
 
     target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
-        $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O1>                   # NVCC
+        $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O0>                   # NVCC
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/Od>                      # MSVC
         $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Og>          # Clang
     )

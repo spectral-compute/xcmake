@@ -26,21 +26,27 @@ macro(initialise_cuda_variables)
             gpu_autodetect
             OUTPUT_VARIABLE BUILD_OUTPUT
         )
-        execute_process(
-            COMMAND "${AUTODETECT_BINDIR}/gpu_autodetect"
-            WORKING_DIRECTORY "${AUTODETECT_BINDIR}"
-            RESULT_VARIABLE RUN_SUCCESS
-            OUTPUT_VARIABLE RUN_OUTPUT
-        )
-
         if (NOT COMPILE_SUCCESS)
             message(BOLD_RED "Error compiling GPU autodetection program. Is CUDA installed?")
             fatal_error("${BUILD_OUTPUT}")
         endif()
 
+        if (${CMAKE_GENERATOR} MATCHES "Visual Studio") 
+            set(BINARY_PATH "${AUTODETECT_BINDIR}/Debug")
+        else()
+            set(BINARY_PATH "${AUTODETECT_BINDIR}")
+        endif()
+
+        execute_process(
+            COMMAND "${BINARY_PATH}/gpu_autodetect"
+            WORKING_DIRECTORY "${BINARY_PATH}"
+            RESULT_VARIABLE RUN_SUCCESS
+            OUTPUT_VARIABLE RUN_OUTPUT
+        )
+
         if (NOT RUN_SUCCESS STREQUAL "0")
             message(BOLD_RED "Error running GPU autodetection program. Is CUDA installed?")
-            fatal_error("${RUN_OUTPUT}")
+            fatal_error("GPU autodetection with output code '${RUN_SUCCESS}' had output:\n${RUN_OUTPUT}")
         endif()
 
         # The output format is an integer representing the GPU count, a semicolon, and then a semicolon-separated list of
