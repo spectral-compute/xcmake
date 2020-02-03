@@ -31,7 +31,7 @@ macro(initialise_cuda_variables)
             fatal_error("${BUILD_OUTPUT}")
         endif()
 
-        if (${CMAKE_GENERATOR} MATCHES "Visual Studio") 
+        if (${CMAKE_GENERATOR} MATCHES "Visual Studio")
             set(BINARY_PATH "${AUTODETECT_BINDIR}/Debug")
         else()
             set(BINARY_PATH "${AUTODETECT_BINDIR}")
