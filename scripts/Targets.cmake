@@ -204,7 +204,7 @@ function(apply_default_standard_properties TARGET)
     set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
 
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        target_optional_compile_options(${TARGET} BEFORE PRIVATE 
+        target_optional_compile_options(${TARGET} BEFORE PRIVATE
             /W4
             /Wall
         )
@@ -340,7 +340,7 @@ function(apply_default_standard_properties TARGET)
         # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
         # This is _technically_ defaulted to by /MT
         set_target_properties(${TARGET}
-            PROPERTIES 
+            PROPERTIES
             MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
         )
     endif ()
