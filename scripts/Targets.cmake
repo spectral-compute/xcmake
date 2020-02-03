@@ -201,15 +201,21 @@ function(apply_default_standard_properties TARGET)
         CXX_STANDARD_REQUIRED ON
     )
 
+    # A sane default for RPATH which allows dynamic libraries installed as part of this build to be found by executables
+    # also installed by this build.
     set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
 
+    # Configure aggressive defaults for compiler warnings...
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         target_optional_compile_options(${TARGET} BEFORE PRIVATE
             /W4
             /Wall
         )
     else()
-        # Diagnostic flags to be applied globally.
+        # Aggressive warnings on clang are tricky: the classical `-Wall -Wextra -Wpedantic` flags actually just emaulate
+        # gcc, leaving many of the most useful things turned off. You *can* run around enabling things one by one, but
+        # there's far too many for this to be realistic (and you have to keep doing it as more get added).
+        # Instead, we use `-Weverything`, and switch off the (many) contradictions that ensue.
         target_optional_compile_options(${TARGET} BEFORE PRIVATE
             -Weverything # We like warnings.
 
@@ -219,9 +225,10 @@ function(apply_default_standard_properties TARGET)
             -Wno-c++11-compat-pedantic
             -Wno-c++14-compat-pedantic
             -Wno-c99-compat
+
             -Wno-spectral-extensions
 
-            -Wno-error-pass-failed
+            -Wno-error-pass-failed               # Diagnostics due to suboptimal optimisation should never be -Werror.
             -Wno-unknown-warning-option          # Don't crash old compilers. Unless they're so old they don't have this.
 
             -Wno-old-style-cast                  # It's sometimes nice to do C-style casts...
@@ -248,7 +255,7 @@ function(apply_default_standard_properties TARGET)
             -Wdouble-promotion                   # Warn about implicit double promotion: a common performance problem.
             -Wbitfield-enum-conversion           # Conversion from enum to a too-short bitfield.
             -Wbool-conversion                    # Initialising a pointer from a bool. Wat.
-            -Wconstant-conversion
+            -Wconstant-conversion                # Implicit conversion of constants that loses precision.
             -Wenum-conversion                    # No implicit conversion between enums.
             -Wfloat-conversion                   # No implicit float->int conversions.
             -Wint-conversion                     # No implicit integer<->pointer conversions.
