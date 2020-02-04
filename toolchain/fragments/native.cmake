@@ -8,7 +8,7 @@ set(XCMAKE_GENERIC_TRIBBLE "native")
 # Sadly, ARM/AArch64 and x86/x86_64 differ here.
 string(REGEX MATCH "^(aarch64|arm).*" _use_mcpu "${XCMAKE_CONVENTIONAL_TRIPLE}")
 if (_use_mcpu)
-#    list(APPEND XCMAKE_COMPILER_FLAGS -mcpu=${XCMAKE_MICROARCH})
+    list(APPEND XCMAKE_COMPILER_FLAGS -mcpu=${XCMAKE_MICROARCH})
 else()
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     else()
