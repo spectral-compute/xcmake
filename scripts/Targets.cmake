@@ -49,7 +49,9 @@ endfunction()
 #
 # The downside is that this function is quite slow, so if you use it a lot your cmake configure time will get
 # rather long. Note, however, that the overhead is linear in the number of unique flags ever passed to this
-# function, not in the number of targets multiplied by the number of flags.
+# function, not in the number of targets multiplied by the number of flags. This downside can be avoided by setting
+# XCMAKE_SKIP_COMPILE_FLAG_CHECKS at cmake configuration time. This flag skips the tests, and assumes the compiler
+# supports every optional flag. This is especially useful when debugging the build system.
 #
 # This accepts the same arguments as `target_compile_options`, except that you may only use one keyword at a time.
 # Use multiple calls if you want to use multiple different keywords (or make the argument parsing more clever...)
@@ -72,7 +74,11 @@ function(target_optional_compile_options TARGET)
 
     foreach (_F ${d_UNPARSED_ARGUMENTS})
         string(MAKE_C_IDENTIFIER ${_F} CACHE_VAR)
-        check_cxx_compiler_flag(${_F} ${CACHE_VAR})
+        if (XCMAKE_SKIP_COMPILE_FLAG_CHECKS)
+            set(${CACHE_VAR} 1)
+        else ()
+            check_cxx_compiler_flag(${_F} ${CACHE_VAR})
+        endif ()
 
         if (${CACHE_VAR})
             target_compile_options(${TARGET} ${MAYBE_BEFORE} ${KEYWORD} ${_F})
