@@ -51,7 +51,7 @@ endfunction()
 # rather long. Note, however, that the overhead is linear in the number of unique flags ever passed to this
 # function, not in the number of targets multiplied by the number of flags.
 #
-# This accepts the same argument sas `target_compile_options`, except that you may only use one keyword at a time.
+# This accepts the same arguments as `target_compile_options`, except that you may only use one keyword at a time.
 # Use multiple calls if you want to use multiple different keywords (or make the argument parsing more clever...)
 function(target_optional_compile_options TARGET)
     if (XCMAKE_USE_NVCC)
