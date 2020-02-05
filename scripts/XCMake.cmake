@@ -15,7 +15,6 @@ option(XCMAKE_USE_NVCC "Use NVIDIA's compiler for CUDA translation units" OFF)
 option(XCMAKE_ENABLE_DOCS "Generate documentation for all projects" ON)
 option(XCMAKE_PRIVATE_DOCS "Build 'private' documentation" ON)
 option(XCMAKE_PROJECTS_ARE_COMPONENTS "Assume a 1-1 mapping between projects and components. This simplifies some issues surrounding exports and installer generation." ON)
-option(XCMAKE_PRINT_SUMMARY "Print the colour-ascii-art build summary after configuration" ON)
 
 if (XCMAKE_PACKAGING)
     set(DEFAULT_INSTALL_DLLS OFF)
