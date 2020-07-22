@@ -256,6 +256,7 @@ function(apply_default_standard_properties TARGET)
             -Wno-trigraphs                       # Regexes often contain trigraphs, and we do indeed want to ignore them :D
             -Wno-format-nonliteral               # Being warned that a format parmaeter is nonliteral isn't helpful.
             -Wno-ctad-maybe-unsupported          # Don't forbid implicit class template argument deduction guides...
+            -Wno-overloaded-shift-op-parentheses # It would be nice for __int not to trigger this where int wouldn't.
 
             # Re-enable parts of `-Wconversion` that we can cope with.
             -Wdouble-promotion                   # Warn about implicit double promotion: a common performance problem.
