@@ -203,7 +203,7 @@ function(apply_default_standard_properties TARGET)
     # C++17, always.
     set_target_properties(${TARGET} PROPERTIES
         CXX_EXTENSIONS OFF
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
     )
 
@@ -231,6 +231,7 @@ function(apply_default_standard_properties TARGET)
             -Wno-c++11-compat-pedantic
             -Wno-c++14-compat-pedantic
             -Wno-c++17-compat-pedantic
+            -Wno-c++20-compat-pedantic
             -Wno-c99-compat
 
             -Wno-spectral-extensions
