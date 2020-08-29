@@ -242,6 +242,7 @@ function(apply_default_standard_properties TARGET)
             -Wno-old-style-cast                  # It's sometimes nice to do C-style casts...
             -Wno-reserved-id-macro               # This isn't really relevant any more.
             -Wno-exit-time-destructors           # We *use* these!
+            -Wno-suggest-destructor-override
             -Wno-padded
             -Wno-shadow-field
             -Wno-shadow-field-in-constructor     # Sorry Nick, I like doing this. :D
