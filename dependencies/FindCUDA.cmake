@@ -261,8 +261,68 @@ endfunction()
 
 cuda_find_library(cudart STATICNAME cudart_static)
 
-if(NOT CUDA_VERSION VERSION_LESS "5.0")
+# Search for additional CUDA toolkit libraries.
+cuda_find_library(cufft)
+cuda_find_library(cublas)
+cuda_find_library(cusparse)
+cuda_find_library(curand)
+cuda_find_library(cuda)
+
+# The tools extension library is an optional package, so some users may be building software which doesn't require it
+# Therefore, allow xcmake to silently fail-to-find when told it's allowed to (-DXCMAKE_NVTOOLSEXT_REQUIRED=FALSE)
+default_value(XCMAKE_NVTOOLSEXT_REQUIRED TRUE)
+cuda_find_library(nvToolsExt EXTRANAMES nvToolsExt64_1 FATAL ${XCMAKE_NVTOOLSEXT_REQUIRED})
+
+if(CUDA_VERSION VERSION_GREATER_EQUAL "9.0")
+    # In CUDA 9.0 `nppi` was further split into a group of libraries
+    cuda_find_library(nppc)
+    cuda_find_library(nppial)
+    cuda_find_library(nppicc)
+    cuda_find_library(nppidei)
+    cuda_find_library(nppif)
+    cuda_find_library(nppig)
+    cuda_find_library(nppim)
+    cuda_find_library(nppist)
+    cuda_find_library(nppisu)
+    cuda_find_library(nppitc)
+    cuda_find_library(npps)
+elseif(CUDA_VERSION VERSION_GREATER "5.0")
+    # In CUDA 5.5 `npp` was split into 3 separate libraries.
+    cuda_find_library(nppc)
+    cuda_find_library(nppi)
+    cuda_find_library(npps)
+elseif(NOT CUDA_VERSION VERSION_LESS "4.0")
+    cuda_find_library(npp)
+endif()
+
+if(WIN32 AND XCMAKE_USE_CUDA_VIDEO)
+    cuda_find_library(nvcuvenc)
+    cuda_find_library(nvcuvid)
+endif()
+
+# `nppicom` was introduced in the CUDA 9.0 `nppi` split and deprecated in CUDA 11.0
+if(CUDA_VERSION VERSION_GREATER_EQUAL "9.0" AND CUDA_VERSION VERSION_LESS "11.0")
+    cuda_find_library(nppicom)
+endif()
+
+# `cusolver` was introduced in CUDA 7.0
+if(CUDA_VERSION VERSION_GREATER_EQUAL "7.0")
+    cuda_find_library(cusolver)
+endif()
+
+# `cublas_device` was deprecated in CUDA 9.2
+if(CUDA_VERSION VERSION_GREATER "5.0" AND CUDA_VERSION VERSION_LESS "9.2")
+    cuda_find_library(cublas_device)
+endif()
+
+if(CUDA_VERSION VERSION_GREATER_EQUAL "5.0")
     cuda_find_library(cudadevrt)
+endif()
+
+# NVidia conveniently changed the location of the tool extension headers packaged with the rest of CUDA in 10.0
+# Prior versions they are in the same place as the other headers, so get added in create_cuda_library
+if(TARGET nvToolsExt AND (CUDA_VERSION STREQUAL "10.0" OR CUDA_VERSION VERSION_GREATER "10.0"))
+    target_include_directories(nvToolsExt INTERFACE "${CUDA_TOOLKIT_INCLUDE}/nvtx3")
 endif()
 
 # Special treatments for cudart when using the static version
@@ -290,62 +350,6 @@ if(TARGET cudart)
             target_link_options(cudart INTERFACE -Wl,-rpath,/usr/local/cuda/lib)
         endif()
     endif()
-endif()
-
-# Search for additional CUDA toolkit libraries.
-cuda_find_library(cufft)
-cuda_find_library(cublas)
-cuda_find_library(cusparse)
-cuda_find_library(curand)
-cuda_find_library(cuda)
-
-# The tools extension library is an optional package, so some users may be building software which doesn't require it
-# Therefore, allow xcmake to silently fail-to-find when told it's allowed to (-DXCMAKE_NVTOOLSEXT_REQUIRED=FALSE)
-default_value(XCMAKE_NVTOOLSEXT_REQUIRED TRUE)
-cuda_find_library(nvToolsExt EXTRANAMES nvToolsExt64_1 FATAL ${XCMAKE_NVTOOLSEXT_REQUIRED})
-
-# NVidia conveniently changed the location of the tool extension headers packaged with the rest of CUDA in 10.0
-# Prior versions they are in the same place as the other headers, so get added in create_cuda_library
-if(TARGET nvToolsExt AND (CUDA_VERSION STREQUAL "10.0" OR CUDA_VERSION VERSION_GREATER "10.0"))
-    target_include_directories(nvToolsExt INTERFACE "${CUDA_TOOLKIT_INCLUDE}/nvtx3")
-endif()
-
-if(WIN32 AND XCMAKE_USE_CUDA_VIDEO)
-    cuda_find_library(nvcuvenc)
-    cuda_find_library(nvcuvid)
-endif()
-
-if(CUDA_VERSION VERSION_GREATER "5.0" AND CUDA_VERSION VERSION_LESS "9.2")
-    # In CUDA 9.2 cublas_device was deprecated
-    cuda_find_library(cublas_device)
-endif()
-
-if(NOT CUDA_VERSION VERSION_LESS "9.0")
-    # In CUDA 9.0 NPP was nppi was removed
-    cuda_find_library(nppc)
-    cuda_find_library(nppial)
-    cuda_find_library(nppicc)
-    cuda_find_library(nppicom)
-    cuda_find_library(nppidei)
-    cuda_find_library(nppif)
-    cuda_find_library(nppig)
-    cuda_find_library(nppim)
-    cuda_find_library(nppist)
-    cuda_find_library(nppisu)
-    cuda_find_library(nppitc)
-    cuda_find_library(npps)
-elseif(CUDA_VERSION VERSION_GREATER "5.0")
-    # In CUDA 5.5 NPP was split into 3 separate libraries.
-    cuda_find_library(nppc)
-    cuda_find_library(nppi)
-    cuda_find_library(npps)
-elseif(NOT CUDA_VERSION VERSION_LESS "4.0")
-    cuda_find_library(npp)
-endif()
-
-if(NOT CUDA_VERSION VERSION_LESS "7.0")
-    # cusolver showed up in version 7.0
-    cuda_find_library(cusolver)
 endif()
 
 #############################
