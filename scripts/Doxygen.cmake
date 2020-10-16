@@ -52,7 +52,7 @@ function(add_doxygen TARGET)
     # Oh, the argparse boilerplate
     set(flags NOINSTALL CUDA)
     set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX LOGO SUBJECT)
-    set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS)
+    set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS EXTRA_EXAMPLE_PATHS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
@@ -68,8 +68,12 @@ function(add_doxygen TARGET)
     # The EXAMPLES_PATH parameter for the Doxyfile.
     set(EXAMPLE_PATH "")
     if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/test")
-        set(EXAMPLE_PATH "${CMAKE_CURRENT_LIST_DIR}/test")
+        set(EXAMPLE_PATH "\"${CMAKE_CURRENT_LIST_DIR}/test\"")
     endif()
+
+    foreach (P ${d_EXTRA_EXAMPLE_PATHS})
+        set(EXAMPLE_PATH "${EXAMPLE_PATH} \"${CMAKE_CURRENT_LIST_DIR}/${P}\"")
+    endforeach ()
 
     # Extract the list of input paths from the list of given header targets, and build a list of all the header files
     # Doxygen is about to process, so we can add them as dependencies.
