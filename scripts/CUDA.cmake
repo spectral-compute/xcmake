@@ -7,7 +7,6 @@ if (XCMAKE_INTEGRATED_GPU)
     add_definitions(-DINTEGRATED_GPU)
 endif()
 
-
 macro(initialise_cuda_variables)
     if (XCMAKE_USE_NVCC)
         # NVCC is accessed via cmake's native CUDA support.
@@ -27,7 +26,7 @@ macro(initialise_cuda_variables)
             OUTPUT_VARIABLE BUILD_OUTPUT
         )
         if (NOT COMPILE_SUCCESS)
-            message(BOLD_RED "Error compiling GPU autodetection program. Is CUDA installed?")
+            message(BOLD_RED "Error compiling GPU auto-detection program. Is CUDA installed?")
             fatal_error("${BUILD_OUTPUT}")
         endif()
 
@@ -45,8 +44,8 @@ macro(initialise_cuda_variables)
         )
 
         if (NOT RUN_SUCCESS STREQUAL "0")
-            message(BOLD_RED "Error running GPU autodetection program. Is CUDA installed?")
-            fatal_error("GPU autodetection with output code '${RUN_SUCCESS}' had output:\n${RUN_OUTPUT}")
+            message(BOLD_RED "Error running GPU auto-detection program. Is CUDA installed?")
+            fatal_error("GPU auto-detection with output code '${RUN_SUCCESS}' had output:\n${RUN_OUTPUT}")
         endif()
 
         # The output format is an integer representing the GPU count, a semicolon, and then a semicolon-separated list of
@@ -56,7 +55,7 @@ macro(initialise_cuda_variables)
             fatal_error("There is no GPU in this computer, and you did not specify any GPU targets with -DXCMAKE_GPUS. Either specify a target GPU architecture explicitly, or disable CUDA for your project.")
         endif()
         if (${NUM_GPUS} GREATER 1)
-            message(BOLD_YELLOW "Warning: Autodetected ${NUM_GPUS} GPUs. Targeting all of them. If you only want to target one, your builds will be much faster if you explicitly specfify `XCMAKE_GPUS`.")
+            message(BOLD_YELLOW "Warning: Autodetected ${NUM_GPUS} GPUs. Targeting all of them. If you only want to target one, your builds will be much faster if you explicitly specify `XCMAKE_GPUS`.")
         else()
             message(BOLD_YELLOW "Warning: Autodetected ${NUM_GPUS} GPUs. Targeting it. If you want to target a different GPU, specify `XCMAKE_GPUS` explicitly.")
         endif()
@@ -90,7 +89,7 @@ macro(initialise_cuda_variables)
     set(XCMAKE_GPUS "${XCMAKE_GPUS}" CACHE STRING "GPUs to build for")
     set(XCMAKE_GPU_TYPE "${XCMAKE_GPU_TYPE}" CACHE STRING "The target GPU vendor")
     set(TARGET_CUDA_COMPUTE_CAPABILITIES "${TARGET_CUDA_COMPUTE_CAPABILITIES}" CACHE STRING "Target NVIDIA GPU architectures")
-    set(TARGET_AMD_GPUS "${TARGET_AMD_GPUS}" CACHE STRING "Targert AMD GPU architectures")
+    set(TARGET_AMD_GPUS "${TARGET_AMD_GPUS}" CACHE STRING "Target AMD GPU architectures")
 
     # Make sure we don't have a mixture of GPU targets...
     list(LENGTH TARGET_AMD_GPUS AMD_GPU_LENGTH)
