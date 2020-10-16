@@ -43,7 +43,7 @@ function(add_test_shell_script TARGET FILE)
     add_shell_script(${TARGET} ${FILE} ${ARGN} NOINSTALL)
 
     if (NOT args_NOINSTALL)
-        # Install the thing.
+        # Install the thing
         install(PROGRAMS ${FILE} DESTINATION test/bin)
     endif ()
 endfunction()

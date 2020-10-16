@@ -4,7 +4,7 @@ define_xcmake_target_property(
     CUDA FLAG
     BRIEF_DOCS "Enable CUDA support"
     FULL_DOCS
-        "Enable CUDA support. This should be enabled only when necesary, since it has a few side effects: slower compilation "
+        "Enable CUDA support. This should be enabled only when necessary, since it has a few side effects: slower compilation "
         "(even if there's no CUDA code), no LTO, hindered linker optimisation on Windows, and no incremental linking on Windows"
     DEFAULT OFF
 )
