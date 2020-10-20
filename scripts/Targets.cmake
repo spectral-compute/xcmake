@@ -330,6 +330,9 @@ function(apply_default_standard_properties TARGET)
 
                 # TODO: Refactor to using new functions where we can, and turning off the warning locally instead
                 -Wno-deprecated
+
+                # TODO: CMake appears to be adding /TP to all the invocations, even though it shouldn't for cpp files.
+                -Wno-unused-command-line-argument
             )
         endif()
 
