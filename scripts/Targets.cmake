@@ -42,6 +42,8 @@ function(find_sources OUT)
     set(${OUT} ${FOUND_SOURCES} PARENT_SCOPE)
 endfunction()
 
+option(XCMAKE_CHECK_COMPILE_FLAGS "Check compiler flag compatibility at CMAKE configure time" ON)
+
 # Try to add some compile options, but - for each one - only do so if the compiler accepts them.
 # This is useful for things like warning or optimisation flags that aren't strictly required, but are
 # preferred. It means your cmake script can work with lots of different compiler versions without the need
@@ -50,7 +52,7 @@ endfunction()
 # The downside is that this function is quite slow, so if you use it a lot your cmake configure time will get
 # rather long. Note, however, that the overhead is linear in the number of unique flags ever passed to this
 # function, not in the number of targets multiplied by the number of flags. This downside can be avoided by setting
-# XCMAKE_SKIP_COMPILE_FLAG_CHECKS at cmake configuration time. This flag skips the tests, and assumes the compiler
+# XCMAKE_CHECK_COMPILE_FLAGS=OFF at cmake configuration time. This will skip the tests and assume the compiler
 # supports every optional flag. This is especially useful when debugging the build system.
 #
 # This accepts the same arguments as `target_compile_options`, except that you may only use one keyword at a time.
@@ -74,10 +76,10 @@ function(target_optional_compile_options TARGET)
 
     foreach (_F ${d_UNPARSED_ARGUMENTS})
         string(MAKE_C_IDENTIFIER ${_F} CACHE_VAR)
-        if (XCMAKE_SKIP_COMPILE_FLAG_CHECKS)
-            set(${CACHE_VAR} 1)
-        else ()
+        if (XCMAKE_CHECK_COMPILE_FLAGS)
             check_cxx_compiler_flag(${_F} ${CACHE_VAR})
+        else ()
+            set(${CACHE_VAR} 1)
         endif ()
 
         if (${CACHE_VAR})
