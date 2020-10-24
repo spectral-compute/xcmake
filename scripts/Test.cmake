@@ -1,18 +1,18 @@
 # Do stuff common to all test targets.
-macro(configure_test_target TARGET)
-    # Prefix all the install dirs with `./test`, except on Windows where the lack of RPATH
-    # makes doing so an inconvenience.
-    if (WIN32)
-        set(OUTPUT_PREFIX "")
-    else()
-        set(OUTPUT_PREFIX "test/")
-    endif()
 
+# On Windows, the lack of any RPATH functionality requires executables and DLLs to be in the same path or the DLL can't be found
+if (WIN32)
+    default_cache_value(XCMAKE_TEST_INSTALL_PREFIX "./")
+else ()
+    default_cache_value(XCMAKE_TEST_INSTALL_PREFIX "test/")
+endif()
+
+macro(configure_test_target TARGET)
     install(
         TARGETS ${TARGET}
-        RUNTIME DESTINATION ${OUTPUT_PREFIX}${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION ${OUTPUT_PREFIX}${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${OUTPUT_PREFIX}${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${XCMAKE_TEST_INSTALL_PREFIX}${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${XCMAKE_TEST_INSTALL_PREFIX}${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${XCMAKE_TEST_INSTALL_PREFIX}${CMAKE_INSTALL_LIBDIR}
     )
 
     # Tune the warnings that nobody cares about in test code down a wee bit.
@@ -44,6 +44,6 @@ function(add_test_shell_script TARGET FILE)
 
     if (NOT args_NOINSTALL)
         # Install the thing
-        install(PROGRAMS ${FILE} DESTINATION test/bin)
+        install(PROGRAMS ${FILE} DESTINATION ${XCMAKE_TEST_INSTALL_PREFIX}${CMAKE_INSTALL_BINDIR})
     endif ()
 endfunction()
