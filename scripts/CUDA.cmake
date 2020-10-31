@@ -13,7 +13,9 @@ macro(initialise_cuda_variables)
         enable_language(CUDA)
     endif()
 
-    if (NOT XCMAKE_GPUS)
+    default_value(XCMAKE_GPUS "") # Automatically search
+
+    if ("${XCMAKE_GPUS}" STREQUAL "")
         message(BOLD_YELLOW "Warning: Attempting to auto-detect GPUs. Specify GPU targets explicitly with `-DXCMAKE_GPUS`")
 
         # Try, ridiculously, to figure out what GPU the user has installed.
@@ -65,6 +67,9 @@ macro(initialise_cuda_variables)
         foreach (_TGT IN LISTS XCMAKE_GPUS)
             message(BOLD_YELLOW "Target GPU architecture: ${_TGT}")
         endforeach()
+    elseif(NOT XCMAKE_GPUS)
+        message(BOLD_YELLOW "Building without GPU support")
+        set(XCMAKE_GPUS "") # Blank the value so the loop below does not add "OFF" to the AMD list
     endif()
 
     set(TARGET_AMD_GPUS "")
