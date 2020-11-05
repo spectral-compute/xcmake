@@ -135,6 +135,14 @@ function(install)
             message(FATAL_ERROR "Tried to install nonexistent target: ${TGT}")
         endif()
 
+        # Add the `COMPONENT_INSTALL_ROOT` to the `INTERFACE_INCLUDE_DIRECTORIES` property of targets so that anything which links to them
+        # is able to find things once installed
+        get_target_property(TGT_INTERFACE_INCLUDES ${TGT} INTERFACE_INCLUDE_DIRECTORIES)
+        if (TGT_INTERFACE_INCLUDES)
+            string(REGEX REPLACE "\\\$<INSTALL_INTERFACE:(.*)>" "$<INSTALL_INTERFACE:${COMPONENT_INSTALL_ROOT}\\1>" TGT_INST_INT ${TGT_INTERFACE_INCLUDES})
+            set_target_properties(${TGT} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${TGT_INST_INT})
+        endif ()
+
         get_target_property(TGT_TYPE ${TGT} TYPE)
 
         # Determine the "key" used for this target. This will be one of the keywords from target-mode install, listed
