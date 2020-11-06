@@ -60,6 +60,7 @@ option(XCMAKE_CHECK_COMPILE_FLAGS "Check compiler flag compatibility at CMAKE co
 function(target_optional_compile_options TARGET)
     if (XCMAKE_USE_NVCC)
         # You may not have nice things
+        message(WARNING "Optional compiler options not allowed with NVCC")
         return()
     endif()
 
