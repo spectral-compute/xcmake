@@ -33,11 +33,18 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
 
     set(INTERMEDIATE_FILE "${OUT_FILE}.tmp")
 
+    # This uses Python.
+    find_package (Python3 REQUIRED COMPONENTS Interpreter)
+
     add_custom_command(OUTPUT "${OUT_FILE}"
         COMMAND "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${MARKDOWN_FILE}" ${XCMAKE_SANITISE_TRADEMARKS}
 
+        # Preprocess the markdown.
+        COMMAND "${Python3_EXECUTABLE}" "${XCMAKE_TOOLS_DIR}/pandoc/preprocessor.py"
+                "${MARKDOWN_FILE}" "${INTERMEDIATE_FILE}.1" ${ARGN}
+
         # Fix URLs prior to conversion to HTML
-        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh" "${MARKDOWN_FILE}" "${INTERMEDIATE_FILE}" ${DOTSLASHES}${DEST_DOTSLASHES} "${${PROJECT_NAME}_DOC_REPLACEMENTS}"
+        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh" "${INTERMEDIATE_FILE}.1" "${INTERMEDIATE_FILE}.2" ${DOTSLASHES}${DEST_DOTSLASHES} "${${PROJECT_NAME}_DOC_REPLACEMENTS}"
 
         # Convert the markdown to HTML.
         COMMAND pandoc
@@ -49,13 +56,14 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
             # (enabling per-document) is not supported by Pandoc.
             --toc
             --css "${DOTSLASHES}style.css"
-            --standalone "${INTERMEDIATE_FILE}" > "${OUT_FILE}"
+            --standalone "${INTERMEDIATE_FILE}.2" > "${OUT_FILE}"
 
         # Tidy up the temporary file.
-        COMMAND ${CMAKE_COMMAND} -E remove -f "${INTERMEDIATE_FILE}"
+        COMMAND ${CMAKE_COMMAND} -E remove -f "${INTERMEDIATE_FILE}.1" "${INTERMEDIATE_FILE}.2"
         COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
         DEPENDS
             "${MARKDOWN_FILE}"
+            "${XCMAKE_TOOLS_DIR}/pandoc/preprocessor.py"
             "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh"
             "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh"
         WORKING_DIRECTORY "${d_MANUAL_SRC}"
@@ -92,7 +100,7 @@ function (add_manual LIB_NAME)
 
     set(flags)
     set(oneValueArgs INSTALL_DESTINATION MANUAL_SRC PAGE_TITLE)
-    set(multiValueArgs FILTER_EXCLUDE_REGEX)
+    set(multiValueArgs PREPROCESSOR_FLAG_NAMES FILTER_EXCLUDE_REGEX)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(_${LIB_NAME}_d_MANUAL_SRC ${d_MANUAL_SRC} CACHE INTERNAL "")
@@ -106,7 +114,8 @@ function (add_manual LIB_NAME)
 
     # Create a pandoc-processing target for each file, so we can munch them all in parallel.
     foreach (MARKDOWN_FILE ${SOURCE_MARKDOWN})
-        add_pandoc_markdown("${TARGET}" "${d_MANUAL_SRC}" "${d_MANUAL_SRC}/${MARKDOWN_FILE}" "${d_INSTALL_DESTINATION})"
+        add_pandoc_markdown("${TARGET}" "${d_MANUAL_SRC}" "${d_MANUAL_SRC}/${MARKDOWN_FILE}" "${d_INSTALL_DESTINATION}"
+                            ${d_PREPROCESSOR_FLAG_NAMES})
     endforeach()
 
     # Compile any dot-graphs found.
