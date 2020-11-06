@@ -92,17 +92,21 @@ function (add_manual LIB_NAME)
 
     set(flags)
     set(oneValueArgs INSTALL_DESTINATION MANUAL_SRC PAGE_TITLE)
-    set(multiValueArgs)
+    set(multiValueArgs FILTER_EXCLUDE_REGEX)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(_${LIB_NAME}_d_MANUAL_SRC ${d_MANUAL_SRC} CACHE INTERNAL "")
 
     # Set up pandoc-ification of the *.md files in the given directory.
-    file(GLOB_RECURSE SOURCE_MARKDOWN "${d_MANUAL_SRC}/*.md")
+    file(GLOB_RECURSE SOURCE_MARKDOWN RELATIVE "${d_MANUAL_SRC}" "${d_MANUAL_SRC}/*.md")
+    foreach (REGEX ${d_FILTER_EXCLUDE_REGEX})
+        list(FILTER SOURCE_MARKDOWN EXCLUDE REGEX "${REGEX}")
+        list(APPEND INSTALL_EXCLUDE REGEX "${REGEX}" EXCLUDE)
+    endforeach()
 
     # Create a pandoc-processing target for each file, so we can munch them all in parallel.
     foreach (MARKDOWN_FILE ${SOURCE_MARKDOWN})
-        add_pandoc_markdown("${TARGET}" "${d_MANUAL_SRC}" "${MARKDOWN_FILE}" "${d_INSTALL_DESTINATION}")
+        add_pandoc_markdown("${TARGET}" "${d_MANUAL_SRC}" "${d_MANUAL_SRC}/${MARKDOWN_FILE}" "${d_INSTALL_DESTINATION})"
     endforeach()
 
     # Compile any dot-graphs found.
@@ -122,6 +126,7 @@ function (add_manual LIB_NAME)
         DESTINATION ${d_INSTALL_DESTINATION}
         PATTERN *.md EXCLUDE
         PATTERN *.dot EXCLUDE
+        ${INSTALL_EXCLUDE}
     )
 
     # Install all processed files.
