@@ -104,6 +104,7 @@ function (add_manual LIB_NAME)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(_${LIB_NAME}_d_MANUAL_SRC ${d_MANUAL_SRC} CACHE INTERNAL "")
+    set(INSTALL_EXCLUDE)
 
     # Set up pandoc-ification of the *.md files in the given directory.
     file(GLOB_RECURSE SOURCE_MARKDOWN RELATIVE "${d_MANUAL_SRC}" "${d_MANUAL_SRC}/*.md")
