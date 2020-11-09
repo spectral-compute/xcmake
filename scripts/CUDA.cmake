@@ -77,10 +77,10 @@ macro(initialise_cuda_variables)
 
     # Desugar the GPU information into something sensible...
     foreach (_TGT IN LISTS XCMAKE_GPUS)
-        # Very scientifically detect NVIDIA targets as being ones that start with sm_
-        string(SUBSTRING "${_TGT}" 0 3 PREFIX)
-        if ("${PREFIX}" STREQUAL "sm_")
-            string(SUBSTRING "${_TGT}" 3 -1 CC)
+        # Very scientifically detect NVIDIA targets by their architecture code form
+        string(REGEX MATCH "^[Ss][Mm]_?[0-9][0-9]" ISNVIDIA ${_TGT}) # CMAKE regex does not support {n} quantifiers
+        if (ISNVIDIA)
+            string(SUBSTRING "${_TGT}" 3 -1 CC) # Get the digits at the end
             list(APPEND TARGET_CUDA_COMPUTE_CAPABILITIES ${CC})
             set(XCMAKE_GPU_TYPE "nvidia")
         else()
