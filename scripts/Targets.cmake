@@ -13,12 +13,6 @@ function(find_sources OUT)
             # cmake's CUDA support conflicts with our own, so we have to carefully work around it.
             # We teach cmake that *.cu is C++, not CUDA.
             list(APPEND SOURCE_EXTENSIONS "cu")
-
-            # For improved IDE support, include header files as source in IDEs, causing complete
-            # indexing :D
-            if (DEFINED ENV{CLION_IDE})
-                list(APPEND SOURCE_EXTENSIONS "h" "hpp" "cuh")
-            endif ()
         endif()
 
         # Construct the glob expression from the source extensions.
@@ -465,19 +459,6 @@ function(fix_source_file_properties TARGET)
     foreach(_F in ${SOURCE_FILES})
         get_source_file_property(CUR_LANG "${_F}" LANGUAGE)
         get_filename_component(FILE_EXT "${_F}" EXT)
-
-        if (DEFINED ENV{CLION_IDE})
-            # Clion needs to be told what language header files are.
-            if ("${FILE_EXT}" STREQUAL ".hpp")
-                set_source_files_properties(${_F} PROPERTIES
-                    LANGUAGE CXX
-                )
-            elseif("${FILE_EXT}" STREQUAL ".h")
-                set_source_files_properties(${_F} PROPERTIES
-                    LANGUAGE C
-                )
-            endif()
-        endif()
 
         if (NOT XCMAKE_USE_NVCC)
             if ((${CUR_LANG} STREQUAL "CUDA") OR ("${FILE_EXT}" STREQUAL ".cu") OR ("${FILE_EXT}" STREQUAL ".cuh"))

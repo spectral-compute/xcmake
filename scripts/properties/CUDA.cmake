@@ -1,5 +1,6 @@
 include_guard(GLOBAL)
 
+# This creates the `CUDA_EFFECTS` library target
 define_xcmake_target_property(
     CUDA FLAG
     BRIEF_DOCS "Enable CUDA support"
@@ -8,6 +9,10 @@ define_xcmake_target_property(
         "(even if there's no CUDA code), no LTO, hindered linker optimisation on Windows, and no incremental linking on Windows"
     DEFAULT OFF
 )
+
+if (DEFINED ENV{CLION_IDE})
+    target_compile_options(CUDA_EFFECTS INTERFACE -x cuda)
+endif ()
 
 # Handy target to hold the CUDA flags. Not actually interface-linked, however, since these flags are only applied to
 # cuda translation units (not to whole targets).
