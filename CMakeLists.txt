@@ -1,5 +1,5 @@
 # Yo dawg, I heard you liked xcmake.
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.19)
 include(scripts/Init.cmake)
 project(XCMake
     VERSION 0.1.2
