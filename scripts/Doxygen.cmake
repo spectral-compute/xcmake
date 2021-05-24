@@ -57,7 +57,6 @@ function(add_doxygen TARGET)
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
     default_value(d_DOXYFILE_SUFFIX "Doxyfile.suffix")
-    default_value(d_LOGO "${XCMAKE_COMPANY_LOGO_PATH}.svg")
     configure_file("${d_DOXYFILE_SUFFIX}" "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}${d_DOXYFILE_SUFFIX}" @ONLY)
 
     # This variable affects a configure_file call later on, effectively including the suffix file at the end of the
