@@ -257,6 +257,8 @@ function(apply_default_standard_properties TARGET)
             -Wno-format-nonliteral               # Being warned that a format parmaeter is nonliteral isn't helpful.
             -Wno-ctad-maybe-unsupported          # Don't forbid implicit class template argument deduction guides...
             -Wno-overloaded-shift-op-parentheses # It would be nice for __int not to trigger this where int wouldn't.
+            -Wno-reserved-identifier             # We create some of these reserved identifiers.
+            -Wno-reserved-macro-identifier       # We create some of these reserved identifiers too.
 
             # Re-enable parts of `-Wconversion` that we can cope with.
             -Wdouble-promotion                   # Warn about implicit double promotion: a common performance problem.
