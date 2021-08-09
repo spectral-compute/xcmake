@@ -79,7 +79,7 @@ function(OPT_LEVEL_EFFECTS TARGET)
     if (NOT WIN32)
         target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
             # An experimental but years-old optimisation.
-            $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-fstrict-vtable-pointers>
+            -fstrict-vtable-pointers
         )
     endif()
 
