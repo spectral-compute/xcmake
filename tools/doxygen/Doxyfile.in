@@ -2214,6 +2214,8 @@ INCLUDE_FILE_PATTERNS  = *.h \
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = IS_DOXYGEN \
+                         __SPECTRAL__ \
+                         __SCALE_ADDRSPACES__ \
                          __attribute__(x)= \
                          __declspec(x)= \
                          __launch_bounds__= \
