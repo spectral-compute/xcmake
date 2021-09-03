@@ -290,7 +290,7 @@ function(apply_default_standard_properties TARGET)
 
             # Increase limits from their default.
             -fconstexpr-depth=65535              # Maximum constexpr call depth. We have a regex compiler, soo...
-            -fconstexpr-steps=268435456          # Lots, but infinite loops still get diagnosed within a sensible amount of time.
+            -fconstexpr-steps=536870912          # Lots, but infinite loops still get diagnosed within a sensible amount of time.
             -fbracket-depth=65536                # Allow big fold expressions.
 
             # Fortunately, Doxygen shouts at us anyway, and clang's diagnostic is quite false-positive-ful.
