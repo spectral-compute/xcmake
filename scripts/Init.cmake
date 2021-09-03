@@ -18,7 +18,6 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR
 set(XCMAKE_DIR ${CMAKE_CURRENT_LIST_DIR}/../)
 set(XCMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(XCMAKE_TOOLS_DIR ${CMAKE_CURRENT_LIST_DIR}/../tools)
-set(XCMAKE_RESOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../res)
 
 include(Utils) # Utility functions for list manipulation and so on.
 include(Log)   # Logging utils.
@@ -28,6 +27,7 @@ default_cache_value(BUILD_SHARED_LIBS ON)
 
 # Load the vendor configuration.
 default_cache_value(XCMAKE_VENDOR_CONFIG "${XCMAKE_SCRIPT_DIR}/../VendorConfig.cmake")
+default_cache_value(XCMAKE_RESOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../res")
 include("${XCMAKE_VENDOR_CONFIG}")
 
 # Default to a canonical output directory structure.
