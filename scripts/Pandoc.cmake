@@ -44,7 +44,12 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
                 "${MARKDOWN_FILE}" "${INTERMEDIATE_FILE}.1" ${ARGN}
 
         # Fix URLs prior to conversion to HTML
-        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh" "${INTERMEDIATE_FILE}.1" "${INTERMEDIATE_FILE}.2" ${DOTSLASHES}${DEST_DOTSLASHES} "${${PROJECT_NAME}_DOC_REPLACEMENTS}"
+        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh"
+                "${INTERMEDIATE_FILE}.1"
+                "${INTERMEDIATE_FILE}.2"
+                "${COMPONENT_INSTALL_ROOT}${INSTALL_DESTINATION}"
+                ${DOTSLASHES}${DEST_DOTSLASHES}
+                "${${PROJECT_NAME}_DOC_REPLACEMENTS}"
 
         # Convert the markdown to HTML.
         COMMAND pandoc
