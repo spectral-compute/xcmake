@@ -52,7 +52,7 @@ function(add_doxygen TARGET)
     # Oh, the argparse boilerplate
     set(flags NOINSTALL CUDA)
     set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX LOGO SUBJECT)
-    set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS EXTRA_EXAMPLE_PATHS)
+    set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS EXTRA_EXAMPLE_PATHS ENABLED_SECTIONS)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
