@@ -45,6 +45,11 @@ add_custom_command(
     WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
 )
 
-add_custom_target(libnvcuda_tag_file
+add_custom_target(nvcuda_tagfile
     DEPENDS "${OUTPUT_TAG_FILE}"
+)
+
+set_target_properties(nvcuda_tagfile PROPERTIES
+    DOXYGEN_TAGFILE "${CMAKE_BINARY_DIR}/docs/tagfiles/libnvcuda.tag"
+    DOXYGEN_URL "https://docs.nvidia.com/cuda/cuda-runtime-api/"
 )

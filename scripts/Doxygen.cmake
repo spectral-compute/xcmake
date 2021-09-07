@@ -1,23 +1,22 @@
 include(IncludeGuard)
 include_guard()
 
-function(add_cppreference_tagfile TARGET)
-    if (TARGET cppreference_data)
+function(add_cppreference_tagfile)
+    if (TARGET cppreference_tagfile)
         return()
-    endif ()
-
+    endif()
     add_subdirectory("${XCMAKE_TOOLS_DIR}/doxygen/externaltags/cppreference" "${CMAKE_BINARY_DIR}/tagfiles/cppreference")
-    add_dependencies(${TARGET} cppreference_data)
 endfunction()
 
-function(add_nvcuda_tagfile TARGET)
-    if (TARGET nvcuda_doxygen)
+function(add_nvcuda_tagfile)
+    if (TARGET nvcuda_tagfile)
         return()
-    endif ()
+    endif()
 
     add_subdirectory("${XCMAKE_TOOLS_DIR}/doxygen/externaltags/nvcuda" "${CMAKE_BINARY_DIR}/tagfiles/nvcuda")
-    add_dependencies(libnvcuda_tag_file cppreference_data)
-    add_dependencies(${TARGET} libnvcuda_tag_file)
+
+    add_cppreference_tagfile()
+    add_dependencies(nvcuda_tagfile cppreference_tagfile)
 endfunction()
 
 define_property(TARGET
@@ -120,24 +119,36 @@ function(add_doxygen TARGET)
     )
 
     # The cppreference tagfile.
-    add_cppreference_tagfile(${TARGET})
-    set(TAGFILES "\"${STL_TAG_FILE}=http://en.cppreference.com/w/\"")
+    add_cppreference_tagfile()
+    set(DEPENDS "${d_DEPENDS}" cppreference_tagfile)
 
     # If we're doxygenating a CUDA target, make sure the NVCUDA crossreference target is registered.
     if (d_CUDA)
-        add_nvcuda_tagfile(${TARGET})
-        set(TAGFILES "${TAGFILES} \"${CMAKE_BINARY_DIR}/docs/tagfiles/libnvcuda.tag=https://docs.nvidia.com/cuda/cuda-runtime-api/\"")
+        add_nvcuda_tagfile()
+        set(DEPENDS "${DEPENDS}" nvcuda_tagfile)
     endif ()
 
     # Collect up the tagfiles for the other doxygen targets we depend on.
-    foreach (DT ${d_DEPENDS})
+    set(TAGFILES)
+    foreach (DT ${DEPENDS})
         add_dependencies(${TARGET} ${DT})
 
-        get_target_property(DEPENDEE_INSTALL_DEST ${DT} DOXYGEN_INSTALL_DESTINATION)
-        path_to_slashes("${DEPENDEE_INSTALL_DEST}" DEST_DOTSLASHES)
+        get_target_property(DEPENDEE_TAGFILE ${DT} DOXYGEN_TAGFILE)
+        get_target_property(DEPENDEE_INSTALL_DESTINATION ${DT} DOXYGEN_INSTALL_DESTINATION)
+        get_target_property(DEPENDEE_URL ${DT} DOXYGEN_URL)
 
-        # An extra `../` is added to cancel out the `./html` directory inserted by Doxygen.
-        set(TAGFILES "${TAGFILES} \"${CMAKE_BINARY_DIR}/docs/tagfiles/${DT}.tag=${DEST_DOTSLASHES}../${DEPENDEE_INSTALL_DEST}/html\"")
+        if (NOT "${DEPENDEE_INSTALL_DESTINATION}" STREQUAL "DEPENDEE_INSTALL_DESTINATION-NOTFOUND")
+            path_to_slashes("${DEPENDEE_INSTALL_DESTINATION}" DEST_DOTSLASHES)
+
+            # An extra `../` is added to cancel out the `./html` directory inserted by Doxygen.
+            set(TD_TAGFILE "${DEPENDEE_TAGFILE}=${DEST_DOTSLASHES}../${DEPENDEE_INSTALL_DESTINATION}/html")
+        elseif (NOT "${DEPENDEE_URL}" STREQUAL "${DEPENDEE_URL}-NOTFOUND")
+            set(TD_TAGFILE "${DEPENDEE_TAGFILE}=${DEPENDEE_URL}")
+        else()
+            message(FATAL_ERROR "Dependency documentation ${DT} of ${TARGET} has no generated or published location!")
+        endif()
+
+        set(TAGFILES "${TAGFILES} \"${TD_TAGFILE}\"")
     endforeach()
 
     set(DOXYGEN_LAYOUT_FILE "${XCMAKE_TOOLS_DIR}/doxygen/DoxygenLayout.xml")
@@ -166,8 +177,6 @@ function(add_doxygen TARGET)
             "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_style.css"
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     )
-
-    add_dependencies(${TARGET} cppreference_data)
 
     if (NOT "${d_NOINSTALL}")
         # Make the new thing get built by `make docs`
