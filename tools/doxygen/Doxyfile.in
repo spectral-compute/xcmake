@@ -2190,7 +2190,8 @@ PREDEFINED             = IS_DOXYGEN \
                          __attribute__(x)= \
                          __declspec(x)= \
                          __launch_bounds__= \
-                         _hd_=
+                         _hd_= \
+                         @d_PREDEFINED@
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
