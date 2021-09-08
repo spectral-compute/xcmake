@@ -166,7 +166,7 @@ endfunction()
 #
 # LIB_NAME The same as the LIB_NAME given to add_manual().
 # SCRIPT A path to the script call relative to the MANUAL_SRC directory given to add_manual(). It will be called twice:
-#        once at congigure time with the argument "LIST", and once with "WRITE" and the directory where the script
+#        once at configure time with the argument "LIST", and once with "WRITE" and the directory where the script
 #        should write its output at build time. When called with "LIST", the script should list all the files it
 #        produces as a semicolon separated list with no newline at the end. This script will be run from the directory
 #        that contains it.
