@@ -41,7 +41,7 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
 
         # Preprocess the markdown.
         COMMAND "${Python3_EXECUTABLE}" "${XCMAKE_TOOLS_DIR}/pandoc/preprocessor.py"
-                "${MARKDOWN_FILE}" "${INTERMEDIATE_FILE}.1" ${ARGN}
+                -i "${MARKDOWN_FILE}" -o "${INTERMEDIATE_FILE}.1" ${ARGN}
 
         # Fix URLs prior to conversion to HTML
         COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh"
@@ -118,10 +118,16 @@ function (add_manual LIB_NAME)
         list(APPEND INSTALL_EXCLUDE REGEX "${REGEX}" EXCLUDE)
     endforeach()
 
+    # Figure out the preprocessor arguments.
+    set(PREPROCESSOR_ARGS)
+    foreach (FLAG ${d_PREPROCESSOR_FLAG_NAMES})
+        set(PREPROCESSOR_ARGS "${PREPROCESSOR_ARGS}" -f "${FLAG}")
+    endforeach()
+
     # Create a pandoc-processing target for each file, so we can munch them all in parallel.
     foreach (MARKDOWN_FILE ${SOURCE_MARKDOWN})
         add_pandoc_markdown("${TARGET}" "${d_MANUAL_SRC}" "${d_MANUAL_SRC}/${MARKDOWN_FILE}" "${d_INSTALL_DESTINATION}"
-                            ${d_PREPROCESSOR_FLAG_NAMES})
+                            ${PREPROCESSOR_ARGS})
     endforeach()
 
     # Compile any dot-graphs found.
