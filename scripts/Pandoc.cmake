@@ -23,6 +23,10 @@ macro (make_src_target TARGET BASEDIR SRCFILE OUT_EXT)
 endmacro()
 
 function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
+    if (NOT TARGET ${TARGET}_PREREQS)
+        add_custom_target(${TARGET}_PREREQS)
+    endif()
+
     make_src_target("${TARGET}" "${BASEDIR}" "${MARKDOWN_FILE}" ".html")
 
     # Build an appropriate sequence of "../" to get us to the top of the documentation tree we're in.
@@ -41,7 +45,8 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
 
         # Preprocess the markdown.
         COMMAND "${Python3_EXECUTABLE}" "${XCMAKE_TOOLS_DIR}/pandoc/preprocessor.py"
-                -i "${MARKDOWN_FILE}" -o "${INTERMEDIATE_FILE}.1" ${ARGN}
+                -i "${MARKDOWN_FILE}" -o "${INTERMEDIATE_FILE}.1" -t "${COMPONENT_INSTALL_ROOT}${INSTALL_DESTINATION}"
+                ${ARGN}
 
         # Fix URLs prior to conversion to HTML
         COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh"
@@ -67,6 +72,7 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
         COMMAND ${CMAKE_COMMAND} -E remove -f "${INTERMEDIATE_FILE}.1" "${INTERMEDIATE_FILE}.2"
         COMMENT "Pandoc-compiling ${MARKDOWN_FILE}..."
         DEPENDS
+            "${TARGET}_PREREQS"
             "${MARKDOWN_FILE}"
             "${XCMAKE_TOOLS_DIR}/pandoc/preprocessor.py"
             "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh"
@@ -100,12 +106,13 @@ function (add_manual LIB_NAME)
     string(TOLOWER ${LIB_NAME} LOWER_LIB_NAME)
     set(TARGET ${LOWER_LIB_NAME}_manual)
     add_custom_target(${TARGET})
+    add_custom_target(${TARGET}_PREREQS)
 
     set(OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/docs/${LOWER_LIB_NAME}")
 
     set(flags)
     set(oneValueArgs INSTALL_DESTINATION MANUAL_SRC PAGE_TITLE)
-    set(multiValueArgs PREPROCESSOR_FLAG_NAMES FILTER_EXCLUDE_REGEX)
+    set(multiValueArgs PREPROCESSOR_FLAG_NAMES DOXYGEN FILTER_EXCLUDE_REGEX)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(_${LIB_NAME}_d_MANUAL_SRC ${d_MANUAL_SRC} CACHE INTERNAL "")
@@ -122,6 +129,23 @@ function (add_manual LIB_NAME)
     set(PREPROCESSOR_ARGS)
     foreach (FLAG ${d_PREPROCESSOR_FLAG_NAMES})
         set(PREPROCESSOR_ARGS "${PREPROCESSOR_ARGS}" -f "${FLAG}")
+    endforeach()
+
+    foreach (DT ${d_DOXYGEN})
+        get_target_property(DEPENDEE_TAGFILE ${DT} DOXYGEN_TAGFILE)
+        get_target_property(DEPENDEE_INSTALL_DESTINATION ${DT} DOXYGEN_INSTALL_DESTINATION)
+        get_target_property(DEPENDEE_URL ${DT} DOXYGEN_URL)
+
+        if (NOT "${DEPENDEE_INSTALL_DESTINATION}" STREQUAL "DEPENDEE_INSTALL_DESTINATION-NOTFOUND")
+            set(PREPROCESSOR_ARGS "${PREPROCESSOR_ARGS}"
+                -d "${DEPENDEE_TAGFILE}" "${DEPENDEE_INSTALL_DESTINATION}/html")
+        elseif (NOT "${DEPENDEE_URL}" STREQUAL "${DEPENDEE_URL}-NOTFOUND")
+            set(PREPROCESSOR_ARGS "${PREPROCESSOR_ARGS}" -D "${DEPENDEE_TAGFILE}" "${DEPENDEE_URL}")
+        else()
+            message(FATAL_ERROR "Dependency documentation ${DT} of ${TARGET} has no generated or published location!")
+        endif()
+
+        add_dependencies(${TARGET}_PREREQS ${DT})
     endforeach()
 
     # Create a pandoc-processing target for each file, so we can munch them all in parallel.
