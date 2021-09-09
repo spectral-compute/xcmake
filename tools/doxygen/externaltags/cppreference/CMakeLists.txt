@@ -7,7 +7,7 @@ externaldata_expand_arguments(cppreference_html_book CPPREFERENCE_HTML_BOOK
         "DATA{${XCMAKE_TOOLS_DIR}/doxygen/externaltags/cppreference/html_book_20190607.tar.xz}")
 externaldata_add_target(cppreference_html_book)
 
-# Extract the tag file from the downloaded file.
+# Extract the tag file from the downloaded file (and slightly process it).
 set(OUTPUT_TAG_FILE "${CMAKE_BINARY_DIR}/docs/tagfiles/cppreference.tag")
 add_custom_command(
     OUTPUT "${OUTPUT_TAG_FILE}"
