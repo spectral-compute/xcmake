@@ -51,7 +51,7 @@ function(add_doxygen TARGET)
     # Oh, the argparse boilerplate
     set(flags NOINSTALL CUDA)
     set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX LOGO SUBJECT)
-    set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS EXTRA_EXAMPLE_PATHS ENABLED_SECTIONS PREDEFINED)
+    set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS EXTRA_EXAMPLE_PATHS ENABLED_SECTIONS PREDEFINED FILTER)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
@@ -151,6 +151,17 @@ function(add_doxygen TARGET)
         set(TAGFILES "${TAGFILES} \"${TD_TAGFILE}\"")
     endforeach()
 
+    # Build the filter. The FILTER arguments are passed verbatim to input_filter.py. See that script for its arguments.
+    # The input path given to the script is absolute.
+    find_package(Python3 3.8 REQUIRED COMPONENTS Interpreter)
+    set(DOXYGEN_INPUT_FILTER
+        "\\\"${Python3_EXECUTABLE}\\\" \\\"${XCMAKE_TOOLS_DIR}/doxygen/input_filter.py\\\" \\\"-c\\\" \\\"${CMAKE_CXX_COMPILER}\\\"")
+
+    foreach (A IN LISTS d_FILTER)
+        set(DOXYGEN_INPUT_FILTER "${DOXYGEN_INPUT_FILTER} \\\"${A}\\\"")
+    endforeach()
+
+    # More configuration variables.
     set(DOXYGEN_LAYOUT_FILE "${XCMAKE_TOOLS_DIR}/doxygen/DoxygenLayout.xml")
     set(DOXYGEN_HTML_HEADER_FILE "${XCMAKE_TOOLS_DIR}/doxygen/spectral_doc_header.html")
     set(DOXYGEN_HTML_FOOTER_FILE "${XCMAKE_TOOLS_DIR}/doxygen/spectral_doc_footer.html")
