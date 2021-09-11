@@ -2200,15 +2200,7 @@ PREDEFINED             = IS_DOXYGEN \
 # definition found in the source code.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-EXPAND_AS_DEFINED      = __JETBRAINS_IDE__ \
-                         UNARY_TENSOR_OP \
-                         BINARY_TENSOR_OP \
-                         TRINARY_TENSOR_OP \
-                         AS_UNARY_FUNCTOR \
-                         AS_BINARY_FUNCTOR \
-                         FMT_FUNC \
-                         FG_COLOUR \
-                         BG_COLOUR
+EXPAND_AS_DEFINED      = __JETBRAINS_IDE__
 
 # If the SKIP_FUNCTION_MACROS tag is set to YES then doxygen's preprocessor will
 # remove all references to function-like macros that are alone on a line, have
