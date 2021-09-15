@@ -155,11 +155,15 @@ def processTextWithTag(text, tag, withBackTick):
     if tag.kind == 'function':
         pattern += '(?:\\(\\))?'
 
+    # Escape the link
+    link = tag.link
+    link = link.replace('\\', '\\\\')
+
     # The match must be on a word boundary at each side or backtick each side.
     pattern = ('`%s`' % pattern) if withBackTick else ('\\b(?:^|(?<=[^`:]))%s(?:$|(?=[^`:]))\\b' % pattern)
 
     # Do the replacement.
-    return re.sub(pattern, f'[`\\1`]({tag.link})', text)
+    return re.sub(pattern, f'[`\\1`]({link})', text)
 
 def processTextWithTags(text, tags):
     for tag in tags:
