@@ -65,6 +65,9 @@ set(AUTHOR_WARNINGColour BOLD_YELLOW)
 set(SEND_ERRORColour BOLD_RED)
 set(FATAL_ERRORColour BOLD_RED)
 set(DEPRECATIONColour BOLD_BLUE)
+set(CHECK_STARTColour BLUE)
+set(CHECK_PASSColour GREEN)
+set(CHECK_FAILColour YELLOW)
 
 # Implementation detail.
 function(contextual_format OUT MSG)
@@ -185,10 +188,10 @@ function(warning BACKTRACE MSG)
         message(BOLD_YELLOW "Warning${RST}: ${MSG}")
     endif()
 
-    if ("${XCMAKE_ACCUMULATED_WARNINGS}" STREQUAL "")
-        set(XCMAKE_ACCUMULATED_WARNINGS "${MSG}" CACHE INTERNAL "")
-    else()
+    if (XCMAKE_ACCUMULATED_WARNINGS)
         set(XCMAKE_ACCUMULATED_WARNINGS "${XCMAKE_ACCUMULATED_WARNINGS}" "${MSG}" CACHE INTERNAL "")
+    else()
+        set(XCMAKE_ACCUMULATED_WARNINGS "${MSG}" CACHE INTERNAL "")
     endif()
 endfunction()
 
