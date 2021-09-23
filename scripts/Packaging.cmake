@@ -72,7 +72,7 @@ endif()
 if (WIN32)
     default_value(CPACK_GENERATOR "WIX")
 elseif(APPLE)
-    message(BoldYellow "Packaging skipped because nobody configured it for MacOS yet.")
+    warning(Off "Packaging skipped because nobody configured it for MacOS yet.")
 elseif(UNIX)
     set(DEFAULT_UNIX_GENERATORS "TGZ")
 
@@ -82,12 +82,12 @@ elseif(UNIX)
     if (RPM_BUILD_EXE)
         list(APPEND DEFAULT_UNIX_GENERATORS "RPM")
     else()
-        message(BOLD_YELLOW "Warning: RPM packaging skipped because `rpmbuild` is not installed.")
+        warning(Off "RPM packaging skipped because `rpmbuild` is not installed.")
     endif()
 
     default_value(CPACK_GENERATOR "${DEFAULT_UNIX_GENERATORS}")
 elseif (NOT DEFINED CPACK_GENERATOR)
-    message(BOLD_YELLOW "Warning: Packaging skipped because the target OS is not known.")
+    warning(On "Packaging skipped because the target OS is not known.")
 endif()
 
 # Make sure WIX is installed.

@@ -16,7 +16,7 @@ macro(initialise_cuda_variables)
     default_value(XCMAKE_GPUS "") # Automatically search
 
     if ("${XCMAKE_GPUS}" STREQUAL "")
-        message(BOLD_YELLOW "Warning: Attempting to auto-detect GPUs. Specify GPU targets explicitly with `-DXCMAKE_GPUS`")
+        warning(Off "Attempting to auto-detect GPUs. Specify GPU targets explicitly with `-DXCMAKE_GPUS`")
 
         # Try, ridiculously, to figure out what GPU the user has installed.
         set(AUTODETECT_BINDIR "${CMAKE_BINARY_DIR}/gpu_autodetect")
@@ -57,9 +57,9 @@ macro(initialise_cuda_variables)
             fatal_error("There is no GPU in this computer, and you did not specify any GPU targets with -DXCMAKE_GPUS. Either specify a target GPU architecture explicitly, or disable CUDA for your project.")
         endif()
         if (${NUM_GPUS} GREATER 1)
-            message(BOLD_YELLOW "Warning: Autodetected ${NUM_GPUS} GPUs. Targeting all of them. If you only want to target one, your builds will be much faster if you explicitly specify `XCMAKE_GPUS`.")
+            warning(Off "Autodetected ${NUM_GPUS} GPUs. Targeting all of them. If you only want to target one, your builds will be much faster if you explicitly specify `XCMAKE_GPUS`.")
         else()
-            message(BOLD_YELLOW "Warning: Autodetected ${NUM_GPUS} GPUs. Targeting it. If you want to target a different GPU, specify `XCMAKE_GPUS` explicitly.")
+            warning(Off "Autodetected ${NUM_GPUS} GPUs. Targeting it. If you want to target a different GPU, specify `XCMAKE_GPUS` explicitly.")
         endif()
 
         list(SUBLIST RUN_OUTPUT 1 ${NUM_GPUS} XCMAKE_GPUS)
