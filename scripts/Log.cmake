@@ -124,10 +124,6 @@ endfunction()
 # Log at particular levels, with optional colour.
 # The COLOUR argument is always optional, with a sensible default being chosen. If only one argument is given, it is
 # assumed not to be a colour, naturally.
-function(warn COLOUR)
-    colour_log_impl(WARNING ${COLOUR} ${ARGN})
-endfunction()
-
 function(deprecated COLOUR)
     colour_log_impl(DEPRECATION ${COLOUR} ${ARGN})
 endfunction()
