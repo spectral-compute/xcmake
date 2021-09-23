@@ -326,8 +326,9 @@ Both file-scope and target-scope include guard mechanisms are provided.
 ## [Coloured Logging](./scripts/Log.cmake)
 
 `message()` is overridden in a backwards-compatible way, allowing you to optionally specify a colour and/or
-log-level in the first two arguments. There are also convenient functions such as `warn()`, `error()` for printing
-at certain log-levels, each of which takes an optional colour as the first argument, and uses a nice default otherwise.
+log-level in the first two arguments. There are also convenient functions such as `warning()`, `error()` for printing
+at certain log-levels, each of which takes an optional colour as the first argument, and uses a nice default otherwise
+(except for `warning()`, which takes an `On`/`Off` backtrace argument instead).
 
 ```cmake
 # These two are equivalent.
