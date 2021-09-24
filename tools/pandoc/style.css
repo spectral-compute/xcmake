@@ -423,7 +423,7 @@ body blockquote>:last-child {
 body table {
   display: block;
   width: 100%;
-  overflow: auto;
+  overflow: visible;
   word-break: normal;
   word-break: keep-all;
 }
