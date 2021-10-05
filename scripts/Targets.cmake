@@ -197,7 +197,6 @@ endfunction()
 
 # Apply standard CMake properties that we set to specific values.
 function(apply_default_standard_properties TARGET)
-    # C++17, always.
     set_target_properties(${TARGET} PROPERTIES
         CXX_EXTENSIONS OFF
         CXX_STANDARD 20
