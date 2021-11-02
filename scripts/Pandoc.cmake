@@ -62,6 +62,8 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
             --from markdown
             --to html
 
+            --filter pandoc-include-code
+
             # Insert a pandoc metadata block at the start of your document to disable this. The opposite configuration
             # (enabling per-document) is not supported by Pandoc.
             --toc
