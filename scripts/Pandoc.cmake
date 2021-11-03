@@ -56,6 +56,11 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
                 ${DOTSLASHES}${DEST_DOTSLASHES}
                 "${${PROJECT_NAME}_DOC_REPLACEMENTS}"
 
+        # Find code files that are dependencies of this markdown file
+        # and save them to a dependency file used in DEPFILE directive
+        COMMAND "${Python3_EXECUTABLE}" "${XCMAKE_TOOLS_DIR}/pandoc/dependencies.py"
+                -d "${OUT_FILE}" -i "${INTERMEDIATE_FILE}.2" -o "${OUT_FILE}.d"
+
         # Convert the markdown to HTML.
         COMMAND pandoc
             --fail-if-warnings
@@ -78,7 +83,9 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
             "${MARKDOWN_FILE}"
             "${XCMAKE_TOOLS_DIR}/pandoc/preprocessor.py"
             "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh"
+            "${XCMAKE_TOOLS_DIR}/pandoc/dependencies.py"
             "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh"
+        DEPFILE "${OUT_FILE}.d"
         WORKING_DIRECTORY "${d_MANUAL_SRC}"
     )
 endfunction()
