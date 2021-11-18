@@ -80,13 +80,14 @@ function(add_doxygen TARGET)
     set(HEADERS_USED "")
     foreach (T ${d_HEADER_TARGETS})
         # Pick up the ORIGINAL_SOURCES property from the custom target that add_headers() creates.
-        get_target_property(NEW_PATHS ${T}_ALL ORIGINAL_SOURCES)
-        foreach (NEW_PATH ${NEW_PATHS})
-            set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} \"${NEW_PATH}\"")
-            set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} \"${NEW_PATH}\"")
+        get_target_property(NEW_HEADERS ${T}_ALL ORIGINAL_SOURCES)
 
-            file(GLOB_RECURSE NEW_HEADERS "${NEW_PATH}/*.h" "${NEW_PATH}/*.hpp" "${NEW_PATH}/*.cuh")
-            list(APPEND HEADERS_USED ${NEW_HEADERS})
+        foreach(NEW_HEADER ${NEW_HEADERS})
+            get_filename_component(NEW_DIR ${NEW_HEADER} DIRECTORY)
+            set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} \"${NEW_HEADER}\"")
+            set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} \"${NEW_DIR}\"")
+
+            list(APPEND HEADERS_USED ${NEW_HEADER})
         endforeach()
     endforeach ()
 
@@ -174,6 +175,7 @@ function(add_doxygen TARGET)
     configure_file(${DOXYGEN_HTML_FOOTER_FILE} "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_footer.html" @ONLY)
     configure_file(${DOXYGEN_HTML_STYLE_FILE} "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_style.css" @ONLY)
 
+    # Add a target for the tagfile, the main target ${TARGET} will depend on it.
     # Command to actually run doxygen, depending on every header file and the doxyfile template.
     add_custom_command(
         OUTPUT "${OUT_TAGFILE}"
