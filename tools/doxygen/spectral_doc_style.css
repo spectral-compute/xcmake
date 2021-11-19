@@ -122,10 +122,6 @@ a {
 	text-decoration: none;
 }
 
-.contents a:visited {
-	color: #171718;
-}
-
 a:hover {
 	text-decoration: underline;
 }
@@ -141,9 +137,21 @@ a.qindexHL {
 	border: 1px double #48484B;
 }
 
+/* @group Link Styling in the content block  */
+
+.contents a {
+	color: #404080;
+}
+
+.contents a:visited {
+	color: #604080;
+}
+
 .contents a.qindexHL:visited {
         color: #ffffff;
 }
+
+/* @end */
 
 a.el {
 	font-weight: bold;
@@ -293,9 +301,9 @@ body {
 }
 
 div.contents {
+    max-width: 100em;
+    margin: auto;
 	margin-top: 10px;
-	margin-left: 12px;
-	margin-right: 8px;
 }
 
 td.indexkey {
