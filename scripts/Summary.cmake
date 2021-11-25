@@ -74,7 +74,7 @@ function(PrintCompiler)
 endfunction()
 
 function(PrintWarnings)
-    if ("${XCMAKE_ACCUMULATED_WARNINGS}" STREQUAL "")
+    if (NOT XCMAKE_ACCUMULATED_WARNINGS)
         return()
     endif()
 
