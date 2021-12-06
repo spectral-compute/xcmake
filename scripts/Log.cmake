@@ -1,15 +1,24 @@
 # The ANSI format code escape symbol.
 string(ASCII 27 ESC)
 
+# Clion doesn't do coloured cmake output, alas.
+if (DEFINED ENV{CLION_IDE})
+    set(DEFAULT_COLOURS OFF)
+else()
+    set(DEFAULT_COLOURS ON)
+endif()
+
+option(XCMAKE_COLOUR "Enable coloured output from the buildsystem" ${DEFAULT_COLOURS})
+
 set(ALL_COLOURS "")
 
 # Macro for defining a formatting code. Sets it to empty-string if colour isn't supported
 macro(define_format_code NAME VALUE)
     # Clion doesn't do coloured cmake output, alas.
-    if (DEFINED ENV{CLION_IDE})
-        set(${NAME} "")
-    else()
+    if (XCMAKE_COLOUR)
         set(${NAME} ${VALUE})
+    else()
+        set(${NAME} "")
     endif()
 
     list(APPEND ALL_COLOURS ${NAME})
