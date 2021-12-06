@@ -33,6 +33,17 @@ target_optional_compile_options(CUDA_FLAGS INTERFACE
 )
 
 macro (populate_cuda_property)
+    # Prevent use of vanilla-clang is CUDA is enabled. That specific combination gives a very confusing error if you
+    # do it by accident.
+    if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+        # Must be spectral-clang
+
+        check_symbol_exists(__SPECTRAL__ "stdio.h" IS_SPECTRAL)
+        if (NOT IS_SPECTRAL)
+            fatal_error("XCMake's cuda support does not support vanilla LLVM. Either use the Spectral LLVM compiler, or use CMake's built-in CUDA support with NVCC and whatever host compiler you prefer.")
+        endif()
+    endif()
+
     if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
         find_package(Scale REQUIRED)
 
