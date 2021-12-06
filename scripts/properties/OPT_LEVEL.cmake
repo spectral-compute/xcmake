@@ -1,16 +1,14 @@
 include_guard(GLOBAL)
 
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    set(DEFAULT_OPT "debug")
-else()
-    set(DEFAULT_OPT "unsafe")
-endif ()
+default_value(XCMAKE_OPT_LEVEL_Debug none)
+default_value(XCMAKE_OPT_LEVEL_Release unsafe)
+default_value(XCMAKE_OPT_LEVEL_RelWithDebInfo unsafe)
 
 define_xcmake_target_property(
     OPT_LEVEL
     BRIEF_DOCS "Optimisation level to use"
     FULL_DOCS "Valid values are: none, debug, size, safe, and unsafe. Does more than just setting -Ofoo!"
-    DEFAULT ${DEFAULT_OPT}
+    DEFAULT ${XCMAKE_OPT_LEVEL_${CMAKE_BUILD_TYPE}}
     VALID_VALUES none debug size safe unsafe
 )
 
