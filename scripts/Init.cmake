@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.22)
 if (XCMAKE_INCLUDED)
     return()
 endif ()
