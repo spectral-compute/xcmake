@@ -1,3 +1,5 @@
+include(CheckSymbolExists)
+
 set(XCMAKE_INTEGRATED_GPU OFF CACHE BOOL "Does the GPU share the same memory as the host?")
 
 option(XCMAKE_CUDA_SYMBOL_HASHING "Hash CUDA symbol names. This slightly reduces launch latency and makes certain NVIDIA development tools not crash if you have very long kernel names, but can be annoying if you want to look at profiler output" ON)
