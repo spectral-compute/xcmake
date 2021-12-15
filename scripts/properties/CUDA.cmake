@@ -30,6 +30,7 @@ endif()
 
 target_optional_compile_options(CUDA_FLAGS INTERFACE
     -fcuda-short-ptr
+    -fno-gpu-rdc
 )
 
 macro (populate_cuda_property)
