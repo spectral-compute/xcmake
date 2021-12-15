@@ -300,6 +300,8 @@ function(apply_default_standard_properties TARGET)
             -fdiagnostics-show-template-tree
             -fdiagnostics-show-option
             -fdiagnostics-show-category=name
+
+            -fscale-addrspaces
         )
 
 
@@ -309,7 +311,7 @@ function(apply_default_standard_properties TARGET)
                 # Emit an error if we accidentally code-gen jumbo-sized objects (even if these would be removed by optimization,
                 # it's better not to generate them in the first place).
                 -fmax-data-global-size=67108864
-                -fmax-data-local-size=1048576
+                -fmax-data-local-size=2097152
             )
         endif()
     endif()
@@ -321,7 +323,6 @@ function(apply_default_standard_properties TARGET)
         target_optional_compile_options(${TARGET} BEFORE PRIVATE -fdiagnostics-color=always)
     endif()
 
-    # If building for Windows...
     if (WIN32)
         target_link_options(${TARGET} PRIVATE
             /OPT:NOREF
