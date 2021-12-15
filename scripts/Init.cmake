@@ -4,7 +4,6 @@ if (XCMAKE_INCLUDED)
 endif ()
 set(XCMAKE_INCLUDED ON)
 
-
 # This script is included before project(), and can do initial envrionment configuration.
 cmake_policy(VERSION 3.13)
 
@@ -22,6 +21,13 @@ set(XCMAKE_TOOLS_DIR ${CMAKE_CURRENT_LIST_DIR}/../tools)
 
 include(Utils) # Utility functions for list manipulation and so on.
 include(Log)   # Logging utils.
+
+# A "make all the documentation" target. The scripts that make documentation targets attach their targets to this.
+add_custom_target(docs ALL)
+
+# A "make all the IDE support" target. IDE support stuff attaches itself as a dependency to this, when it can't be done
+# at confiugre-time (which, sadly, is sometimes the case).
+add_custom_target(ide ALL)
 
 # Default to building shared libraries
 default_cache_value(BUILD_SHARED_LIBS ON)
@@ -126,14 +132,12 @@ include(OnExit)
 include(Summary)
 include(Pandoc)
 include(Dependencies)
+include(CompilationDB)
 
 # All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
 # build others' libraries with that toolchain.
 default_value(CMAKE_CXX_VISIBILITY_PRESET "hidden")
 default_value(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
-
-# A "make all the documentation" target. The scripts that make documentation targets attach their targets to this.
-add_custom_target(docs ALL)
 
 # Exclude effect targets from the output of cmake GraphViz graphs.
 file(WRITE ${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake
