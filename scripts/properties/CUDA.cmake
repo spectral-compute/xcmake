@@ -40,7 +40,7 @@ macro (populate_cuda_property)
 
         check_symbol_exists(__SPECTRAL__ "stdio.h" IS_SPECTRAL)
         if (NOT IS_SPECTRAL)
-            fatal_error("XCMake's cuda support does not support vanilla LLVM. Either use the Spectral LLVM compiler, or use CMake's built-in CUDA support with NVCC and whatever host compiler you prefer.")
+            fatal_error("XCMake's cuda support does not support vanilla LLVM. Either use the Spectral LLVM compiler, or use CMake's built-in CUDA support with NVCC and whatever host compiler you prefer. You'll have to delete your cmake build directory and re-configure to clear this error, after fixing the problem.")
         endif()
     endif()
 
