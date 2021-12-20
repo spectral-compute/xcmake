@@ -1,8 +1,8 @@
 # Wrap `install()` to allow installation of IMPORTED targets with `install(TARGETS...)`
 function(install)
-    set(COMPONENT_ARGS)
-    if (XCMAKE_PROJECTS_ARE_COMPONENTS)
-        set(COMPONENT_ARGS COMPONENT "${PROJECT_NAME}")
+    if (XCMAKE_PROJECTS_ARE_COMPONENTS AND ((NOT CMAKE_INSTALL_DEFAULT_COMPONENT_NAME) OR
+                                            (CMAKE_INSTALL_DEFAULT_COMPONENT_NAME STREQUAL "Unspecified")))
+        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "${PROJECT_NAME}")
     endif()
 
     set(COMPONENT_INSTALL_ROOT)
@@ -56,11 +56,6 @@ function(install)
 
     # If it isn't a TARGETS-mode install, delegate entirely.
     if ("${i_TARGETS}" STREQUAL "")
-        # Prepend the new prefix to the DESTINATION parameter of any non-TARGETS install. DESTINATION is mandatory for
-        # all of these, so this always works.
-        list(FIND ARGN DESTINATION DST_POS)
-        math(EXPR AFTER_DST_DIR "${DST_POS} + 2")
-        list(INSERT ARGN "${AFTER_DST_DIR}" "${COMPONENT_ARGS}")
         _install(${ARGN})
         return()
     endif ()
@@ -163,7 +158,6 @@ function(install)
                 get_target_property(EXE_DIR ${TGT} RUNTIME_OUTPUT_DIRECTORY)
                 install(DIRECTORY "${EXE_DIR}/${TGT}_SYMLINKS/"
                     DESTINATION "${${KEY}_DESTINATION}"
-                    ${COMPONENT_ARGS}
                 )
             endif()
         endif()
@@ -171,7 +165,7 @@ function(install)
         # Delegate installation of non-IMPORTED targets
         get_target_property(IS_IMPORTED ${TGT} IMPORTED)
         if (NOT IS_IMPORTED)
-            _install(TARGETS ${TGT} ${DELEGATE_ARGS} ${COMPONENT_ARGS})
+            _install(TARGETS ${TGT} ${DELEGATE_ARGS})
             continue()
         endif()
 
