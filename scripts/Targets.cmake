@@ -279,6 +279,9 @@ function(apply_default_standard_properties TARGET)
             # We do actually want to use OpenMP sometimes...
             -Wno-source-uses-openmp
 
+            # Extensions we need.
+            -Wno-bit-int-extension # Not in C++ yet.
+
             # Warnings that appear to be broken.
             -Wno-weak-template-vtables           # Incorrectly warns about explicit instantiations in .cpp.
             -Wno-weak-vtables
