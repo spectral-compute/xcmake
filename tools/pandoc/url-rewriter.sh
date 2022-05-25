@@ -38,4 +38,4 @@ done
 # Run said sed program, along with a two default rules:
 # - Replace `README.md` in hyperlinks with `index.html`
 # - Replace all relative hyperlinks that point to *.md to point to *.html instead.
-cat "$INPUT_FILE" | sed -Ee $REPLACEMENT_SED';s|README.md\)|index.html)|g;s|(\[[^]]+\])\(([^)]+).md\)|\1(\2.html)|g' > "$OUTPUT_FILE"
+cat "$INPUT_FILE" | sed -Ee $REPLACEMENT_SED';s|README.md(#[^)]*)?\)|index.html\1)|g;s|(\[[^]]+\])\(([^)]+).md(#[^)]*)?\)|\1(\2.html\3)|g' > "$OUTPUT_FILE"
