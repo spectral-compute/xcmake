@@ -310,7 +310,7 @@ function(apply_default_standard_properties TARGET)
 
         if (NOT DEFINED ENV{CLION_IDE})
             # Some flags break clion's clangd, so need to be omitted.
-            target_compile_options(${TARGET} BEFORE PRIVATE
+            target_optional_compile_options(${TARGET} BEFORE PRIVATE
                 # Emit an error if we accidentally code-gen jumbo-sized objects (even if these would be removed by optimization,
                 # it's better not to generate them in the first place).
                 -fmax-data-global-size=67108864
