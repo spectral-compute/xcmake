@@ -20,9 +20,10 @@ default_tc_value(CMAKE_C_COMPILER_TARGET "${XCMAKE_CONVENTIONAL_TRIPLE}")
 default_tc_value(CMAKE_CXX_COMPILER_TARGET "${XCMAKE_CONVENTIONAL_TRIPLE}")
 
 # Get the toolchain location.
+default_tc_value(XCMAKE_TOOLCHAIN_BASE_DIR "/usr")
 if (NOT DEFINED XCMAKE_TOOLCHAIN_DIR)
     # TODO: A more elaborate "autodetect".
-    set(XCMAKE_TOOLCHAIN_DIR "/usr/${XCMAKE_TRIBBLE}")
+    set(XCMAKE_TOOLCHAIN_DIR "${XCMAKE_TOOLCHAIN_BASE_DIR}/${XCMAKE_TRIBBLE}")
 endif()
 
 # Get find_package() and friends to look in the right place.
