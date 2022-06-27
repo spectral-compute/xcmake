@@ -1,1 +1,1 @@
-set(XCMAKE_TRIPLE_ABI gnueabi)
+set(XCMAKE_TRIPLE_ABI gnu)
