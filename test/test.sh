@@ -9,6 +9,9 @@ while [ "$#" != "0" ] ; do
     ARG="$1"
     shift
     case "${ARG}" in
+        -c|--toolchain-base-dir)
+            shift
+        ;;
         -k)
             KEEP_TMP=1
         ;;
@@ -37,7 +40,7 @@ for D in $(find -mindepth 1 -type d) ; do
 
     # Run the test, and record the pass/fail result.
     echo -e "\e[35;1mRunning test\e[m: \e[1m${D:2}\e[m"
-    if "${D}/test.sh" "${XCMAKE_DIR}" "${TMP_DIR}" "${ARGS[@]}" ; then
+    if "${D}/test.sh" "${XCMAKE_DIR}" "${TMP_DIR}/${D:2}" "${ARGS[@]}" ; then
         echo -e "\e[32;1mPassed\e[m"
         SUCCESS_TESTS+=("${D:2}")
     else
