@@ -89,3 +89,6 @@ testTribble "native" \
 testTribble "ubuntu16.04-aarch64-generic" \
             "clang[+][+] .*--target=aarch64-unknown-linux-gnu" \
             "clang[+][+] .*-mcpu=generic"
+testTribble "ubuntu16.04-aarch64-cortexa72" \
+            "clang[+][+] .*--target=aarch64-unknown-linux-gnu" \
+            "clang[+][+] .*-mcpu=cortex-a72"
