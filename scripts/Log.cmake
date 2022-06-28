@@ -188,6 +188,11 @@ endfunction()
 
 function(warning MSG)
     message(WARNING "Warning${RST}: ${MSG}")
+    if (XCMAKE_ACCUMULATED_WARNINGS)
+        set(XCMAKE_ACCUMULATED_WARNINGS "${XCMAKE_ACCUMULATED_WARNINGS}" "${MSG}" CACHE INTERNAL "")
+    else()
+        set(XCMAKE_ACCUMULATED_WARNINGS "${MSG}" CACHE INTERNAL "")
+    endif()
 endfunction()
 
 macro (print_list LEVEL COLOUR LIST)
