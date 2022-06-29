@@ -107,6 +107,10 @@ endmacro()
 
 # Find the default compilers/linkers/etc.
 if(WIN32)
+    string(REGEX MATCH "^Visual Studio" _BAD_VS "${CMAKE_GENERATOR}")
+    if (_BAD_VS)
+        message(FATAL_ERROR "Using Visual Studio project files as the generator disables use of Clang. Use -G\"NMake Makefiles JOM\"")
+    endif()
     find_default_program(CMAKE_LINKER "lld-link.exe")
     find_default_program(CMAKE_C_COMPILER "clang-cl.exe")
     find_default_program(CMAKE_CXX_COMPILER "clang-cl.exe")
