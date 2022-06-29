@@ -26,3 +26,8 @@ else()
         list(APPEND XCMAKE_COMPILER_FLAGS -march=${XCMAKE_MICROARCH} -mtune=${XCMAKE_MICROARCH})
     endif()
 endif()
+
+# If we're using clang-cl, we need to swap -mtune= for /tune:.
+if (WIN32)
+    string(REPLACE "-mtune=" "/tune:" XCMAKE_COMPILER_FLAGS "${XCMAKE_COMPILER_FLAGS}")
+endif()
