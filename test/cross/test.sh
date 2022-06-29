@@ -22,6 +22,15 @@ while [ "$#" != "0" ] ; do
     esac
 done
 
+# Windows stupidity.
+if uname | fgrep MINGW ; then
+    WINDOWS=1
+    CMAKE_ARGS+=(-G"NMake Makefiles")
+    MAKE=("nmake")
+else
+    MAKE=("make")
+fi
+
 # Test function.
 function testTribble {
     TRIBBLE="$1"
@@ -56,7 +65,7 @@ function testTribble {
     fi
 
     # Run make.
-    MAKE_OUTPUT="$(make install VERBOSE=1 2>&1)"
+    MAKE_OUTPUT="$("${MAKE[@]}" install VERBOSE=1 2>&1)"
     E="$?"
     echo "${MAKE_OUTPUT}"
 
@@ -69,6 +78,10 @@ function testTribble {
     set -e
 
     # Check the output for the required patterns.
+    if [ ! -z "${WINDOWS}" ] ; then
+        cd -
+        return # Because Windows has a stupid command line length limit, the arguments end up in a file we can't read.
+    fi
     while [ "$#" != "0" ] ; do
         if ! echo "${MAKE_OUTPUT}" | grep -qE "$1" ; then
             echo -e "\e[31;1mError\e[m: Compiler output did not match $1" 1>&2
@@ -85,6 +98,12 @@ function testTribble {
 testTribble "native" \
             "clang[+][+] .*-march=native" \
             "clang[+][+] .*-mtune=native"
+
+
+if [ ! -z "${WINDOWS}" ] ; then
+    exit # Don't cross compile on Windows, please.
+fi
+
 testTribble "ubuntu16.04-aarch64-generic" \
             "clang[+][+] .*--target=aarch64-unknown-linux-gnu" \
             "clang[+][+] .*-mcpu=generic"
