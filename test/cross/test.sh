@@ -16,7 +16,6 @@ while [ "$#" != "0" ] ; do
     shift
     case "${ARG}" in
         -c|--toolchain-base-dir)
-            echo ">>>> XCMAKE_TOOLCHAIN_BASE_DIR"
             CMAKE_ARGS+=(-DXCMAKE_TOOLCHAIN_BASE_DIR="$1")
             shift
         ;;
