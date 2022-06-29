@@ -3,6 +3,9 @@
 # Default arguments.
 XCMAKE_DIR="$(realpath "$(dirname "$0")/..")"
 
+# This script should run from the test directory.
+cd "${XCMAKE_DIR}/test"
+
 # Parse arguments.
 ARGS=("$@")
 while [ "$#" != "0" ] ; do
