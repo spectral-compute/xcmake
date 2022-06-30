@@ -342,6 +342,10 @@ function(apply_default_standard_properties TARGET)
 
                 # TODO: CMake appears to be adding /TP to all the invocations, even though it shouldn't for cpp files.
                 -Wno-unused-command-line-argument
+
+                # Coroutines with Clang aren't supported by the Microsoft header. Note: clang-cl doesn't support
+                # -fno-coroutines-ts.
+                -U__cpp_coroutines
             )
         endif()
 
