@@ -356,6 +356,7 @@ function(apply_default_standard_properties TARGET)
         target_compile_definitions(${TARGET} PRIVATE
             # Stop Windows including more headers than needed
             -DWIN32_LEAN_AND_MEAN
+            -DNOMINMAX # Maybe don't break std::min and std::max by default?
             -D_CONTAINER_DEBUG_LEVEL=${DEBUG_LEVEL_VAL}
             -D_ITERATOR_DEBUG_LEVEL=${DEBUG_LEVEL_VAL}
         )
