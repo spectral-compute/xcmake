@@ -13,6 +13,9 @@ define_xcmake_target_property(
 )
 target_compile_definitions(ASSERTIONS_EFFECTS INTERFACE
     -DENABLE_ASSERTIONS
+
+    # Enable assertions baked into the gnu STL.
+    -D_GLIBCXX_DEBUG
 )
 target_optional_compile_options(ASSERTIONS_EFFECTS INTERFACE
     # Don't warn about optimiser failures (assertions cause lots of them).
