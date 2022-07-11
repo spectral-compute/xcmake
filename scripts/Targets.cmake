@@ -197,11 +197,13 @@ endfunction()
 
 # Apply standard CMake properties that we set to specific values.
 function(apply_default_standard_properties TARGET)
-    set_target_properties(${TARGET} PROPERTIES
-        CXX_EXTENSIONS OFF
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED ON
-    )
+    if (NOT CMAKE_CXX_STANDARD)
+        set_target_properties(${TARGET} PROPERTIES
+            CXX_EXTENSIONS OFF
+            CXX_STANDARD 20
+            CXX_STANDARD_REQUIRED ON
+        )
+    endif()
 
     # A sane default for RPATH which allows dynamic libraries installed as part of this build to be found by executables
     # also installed by this build.
