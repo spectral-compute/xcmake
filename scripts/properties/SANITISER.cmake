@@ -33,8 +33,8 @@ target_link_options(Address_SANITISER_EFFECTS INTERFACE -fsanitize=address)
 target_compile_options(Leak_SANITISER_EFFECTS INTERFACE -fsanitize=leak)
 target_link_options(Leak_SANITISER_EFFECTS INTERFACE -fsanitize=leak)
 
-target_compile_options(Memory_SANITISER_EFFECTS INTERFACE -fsanitize=memory)
-target_link_options(Memory_SANITISER_EFFECTS INTERFACE -fsanitize=memory)
+target_compile_options(Memory_SANITISER_EFFECTS INTERFACE -fsanitize=memory -fsanitize-memory-track-origins=2)
+target_link_options(Memory_SANITISER_EFFECTS INTERFACE -fsanitize=memory -fsanitize-memory-track-origins=2)
 
 target_compile_options(Thread_SANITISER_EFFECTS INTERFACE -fsanitize=thread)
 target_link_options(Thread_SANITISER_EFFECTS INTERFACE -fsanitize=thread)
