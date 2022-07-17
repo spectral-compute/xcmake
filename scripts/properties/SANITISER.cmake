@@ -67,3 +67,10 @@ if (XCMAKE_SANITIZER_RECOVERY)
     target_compile_options(common_SANITISER_EFFECTS INTERFACE -fsanitize-recover=all)
     target_link_options(common_SANITISER_EFFECTS INTERFACE -fsanitize-recover=all)
 endif()
+
+# Compatibility checks.
+if (XCMAKE_SANITISER STREQUAL "Memory")
+    if (NOT XCMAKE_LIBCXX)
+        warning("Memory sanitizer requires libc++ built with memory sanitizer. Use -DXCMAKE_LIBCXX=On with an appropriate library search path. Otherwise, set -DXCMAKE_SANITIZER_RECOVERY=On, and you'll get a lot of false positives.")
+    endif()
+endif()
