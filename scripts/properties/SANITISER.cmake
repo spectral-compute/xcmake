@@ -33,8 +33,14 @@ target_link_options(Address_SANITISER_EFFECTS INTERFACE -fsanitize=address)
 target_compile_options(Leak_SANITISER_EFFECTS INTERFACE -fsanitize=leak)
 target_link_options(Leak_SANITISER_EFFECTS INTERFACE -fsanitize=leak)
 
-target_compile_options(Memory_SANITISER_EFFECTS INTERFACE -fsanitize=memory -fsanitize-memory-track-origins=2)
-target_link_options(Memory_SANITISER_EFFECTS INTERFACE -fsanitize=memory -fsanitize-memory-track-origins=2)
+target_compile_options(Memory_SANITISER_EFFECTS INTERFACE
+    -fsanitize=memory
+    -fsanitize-memory-track-origins=2
+)
+target_link_options(Memory_SANITISER_EFFECTS INTERFACE
+    -fsanitize=memory
+    -fsanitize-memory-track-origins=2
+)
 
 target_compile_options(Thread_SANITISER_EFFECTS INTERFACE -fsanitize=thread)
 target_link_options(Thread_SANITISER_EFFECTS INTERFACE -fsanitize=thread)
@@ -55,3 +61,9 @@ target_link_libraries(Leak_SANITISER_EFFECTS INTERFACE common_SANITISER_EFFECTS)
 target_link_libraries(Memory_SANITISER_EFFECTS INTERFACE common_SANITISER_EFFECTS)
 target_link_libraries(Thread_SANITISER_EFFECTS INTERFACE common_SANITISER_EFFECTS)
 target_link_libraries(Undefined_SANITISER_EFFECTS INTERFACE common_SANITISER_EFFECTS)
+
+# Configurable sanitizer flags.
+if (XCMAKE_SANITIZER_RECOVERY)
+    target_compile_options(common_SANITISER_EFFECTS INTERFACE -fsanitize-recover=all)
+    target_link_options(common_SANITISER_EFFECTS INTERFACE -fsanitize-recover=all)
+endif()
