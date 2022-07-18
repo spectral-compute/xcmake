@@ -26,6 +26,7 @@ The XCMake toolchain file uses the following options to control its behaviour:
  `XCMAKE_SHOW_TRIBBLE`  | Show the values of the variables set by the toolchain file (including ones set elsewhere and ones left empty). The form is `VARIABLE=VALUE`. This is intended to be used with `cmake -P`.
  `XCMAKE_TOOLCHAIN_DIR` | For cross compilation, the directory to find the toolchain in. This is automatically detected by default.
  `XCMAKE_TRIBBLE`       | Specify the target tribble to compile for. The default value is `native`.
+ `XCMAKE_TRIPLE_VENDOR` | Override the default selection of conventional target triple vendor. E.g: `pc` in `x86_64-pc-linux-gnu` or `unknown` in `aarch64-unknown-linux-gnu`.
 
 ## XCMake Toolchain Variables
 The XCMake toolchain file acts much like any other
