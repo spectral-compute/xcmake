@@ -378,11 +378,21 @@ function(apply_default_standard_properties TARGET)
             # Suppress buffer overrun detection, except in assert builds.
             $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,$<$<COMPILE_LANGUAGE:CXX>:/GS->>
         )
+
+        get_target_property(TGT_TYPE ${TARGET} TYPE)
+
+        # Dynamically-link the windows STL if building a shared library, and static-link it for executables.
+        if (${TGT_TYPE} STREQUAL "SHARED_LIBRARY")
+            set(IS_DLL "DLL")
+        else()
+            set(IS_DLL "")
+        endif()
+
         # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
         # This is _technically_ defaulted to by /MT
         set_target_properties(${TARGET}
             PROPERTIES
-            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>${IS_DLL}"
         )
     endif ()
 endfunction()
