@@ -379,13 +379,11 @@ function(apply_default_standard_properties TARGET)
             $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,$<$<COMPILE_LANGUAGE:CXX>:/GS->>
         )
 
-        get_target_property(TGT_TYPE ${TARGET} TYPE)
-
-        # Dynamically-link the windows STL if building a shared library, and static-link it for executables.
-        if (${TGT_TYPE} STREQUAL "SHARED_LIBRARY")
-            set(IS_DLL "DLL")
-        else()
+        # Dynamically-link the windows C++ standard library unless static linking is specified.
+        if (XCMAKE_STATIC_STDCXXLIB)
             set(IS_DLL "")
+        else()
+            set(IS_DLL "DLL")
         endif()
 
         # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
