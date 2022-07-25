@@ -411,6 +411,14 @@ macro(ensure_not_interface TARGET)
     endif ()
 endmacro()
 
+macro(ensure_not_aliased TARGET)
+    # If it's an alias target, stop.
+    get_target_property(T_ALIAS ${TARGET} ALIASED_TARGET)
+    if (T_ALIAS)
+        return()
+    endif ()
+endmacro()
+
 macro(ensure_not_object TARGET)
     # If it's an object library target, stop
     get_target_property(T_TYPE ${TARGET} TYPE)
@@ -507,6 +515,9 @@ function(add_library TARGET)
     cmake_parse_arguments(args "NOINSTALL;NOEXPORT" "" "" ${ARGN})
 
     _add_library(${TARGET} ${args_UNPARSED_ARGUMENTS})
+
+    # Alias libraries shouldn't be modified.
+    ensure_not_aliased(${TARGET})
 
     # Imported or interface targets definitely do not need to have their properties futzed with.
     ensure_not_imported(${TARGET})
