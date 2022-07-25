@@ -611,6 +611,7 @@ endfunction()
 function(target_link_libraries TARGET)
     set(CURRENT_KEYWORD "")
     set(ALLOW_RAW FALSE)
+    set(FORCE_KEYWORD)
 
     foreach(_ARG ${ARGN})
         # We can't sanitise generator expressions...
@@ -634,6 +635,7 @@ function(target_link_libraries TARGET)
         else()
             if("${CURRENT_KEYWORD}" STREQUAL "")
                 message(AUTHOR_WARNING "Keywordless target_link_libraries() is not allowed.")
+                set(FORCE_KEYWORD "PUBLIC")
             elseif(NOT TARGET "${_ARG}" AND NOT "${ALLOW_RAW}")
                 message(AUTHOR_WARNING
                     "Tried to link to nonexistent target \"${_ARG}\".\n"
@@ -647,7 +649,7 @@ function(target_link_libraries TARGET)
         endif()
     endforeach()
 
-    _target_link_libraries(${TARGET} ${ARGN})
+    _target_link_libraries(${TARGET} ${FORCE_KEYWORD} ${ARGN})
 endfunction()
 
 function(propogate_dll_paths KEYWORD TARGET LINKED)
