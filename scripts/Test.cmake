@@ -21,6 +21,7 @@ macro(configure_test_target TARGET)
         -Wno-missing-variable-declarations
     )
 
+    set_target_properties(${TARGET} PROPERTIES IS_TEST ON)
     set_property(TARGET ${TARGET} APPEND PROPERTY INSTALL_RPATH "$ORIGIN/../../lib")
 endmacro()
 
