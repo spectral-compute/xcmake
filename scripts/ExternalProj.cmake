@@ -116,7 +116,7 @@ function(add_external_project TARGET)
     # - Add install instructions for some of those functions. NOTE - These instructions are for installation of the
     #     top-level project, NOT for the external project's own install step.
     foreach (_LIB ${ep_STATIC_LIBRARIES})
-        add_library(${_LIB} STATIC IMPORTED GLOBAL)
+        add_library(${_LIB} STATIC IMPORTED NOINSTALL GLOBAL)
 
         set(SLIB_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${_LIB}${CMAKE_STATIC_LIBRARY_SUFFIX})
         list(APPEND ep_BUILD_BYPRODUCTS ${SLIB_PATH})
@@ -128,7 +128,7 @@ function(add_external_project TARGET)
     endforeach ()
 
     foreach (_LIB ${ep_SHARED_LIBRARIES})
-        add_library(${_LIB} SHARED IMPORTED GLOBAL)
+        add_library(${_LIB} SHARED IMPORTED NOINSTALL GLOBAL)
 
         # Only put IMPLIB data in place on platforms which need it to avoid polluting the build and expecting files that won't exist
         # The two DLIB paths differ in that non-implib platforms send their shared library to /lib, and implib platforms send the
@@ -157,13 +157,13 @@ function(add_external_project TARGET)
     endforeach ()
 
     foreach (_HL ${ep_HEADER_LIBRARIES})
-        add_library(${_HL} INTERFACE IMPORTED GLOBAL)
+        add_library(${_HL} INTERFACE IMPORTED NOINSTALL GLOBAL)
         add_dependencies(${_HL} ${TARGET})
         target_include_directories(${_HL} INTERFACE ${EP_INSTALL_DIR}/include)
     endforeach()
 
     foreach (_EXE ${ep_EXECUTABLES})
-        add_executable(${_EXE} STATIC IMPORTED GLOBAL)
+        add_executable(${_EXE} STATIC IMPORTED NOINSTALL GLOBAL)
 
         set(EXE_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_BINDIR}/${_EXE}${CMAKE_EXECUTABLE_SUFFIX})
         list(APPEND ep_BUILD_BYPRODUCTS ${EXE_PATH})
@@ -187,7 +187,6 @@ function(add_external_project TARGET)
     # Configure the exported targets...
     foreach (_ARTEFACT IN LISTS ep_STATIC_LIBRARIES ep_SHARED_LIBRARIES ep_EXECUTABLES)
         add_dependencies(${_ARTEFACT} ${TARGET})
-        install(TARGETS ${_ARTEFACT} EP_TARGET)
     endforeach ()
 endfunction()
 

@@ -14,6 +14,9 @@ add_external_project(docopt_proj
         "-DCMAKE_BUILD_TYPE=Release"
     SHARED_LIBRARIES docopt
 )
+if (BUILD_SHARED_LIBS)
+    install(TARGETS docopt EP_TARGET)
+endif()
 
 if(XCMAKE_IMPLIB_PLATFORM)
     set(LIBNAME "${CMAKE_SHARED_LIBRARY_PREFIX}docopt${CMAKE_SHARED_LIBRARY_SUFFIX}")

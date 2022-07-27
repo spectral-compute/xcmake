@@ -20,6 +20,9 @@ else()
         CMAKE_ARGS        -DCMAKE_BUILD_TYPE=Release
         LIBRARIES         ${GT_PRODUCTS}
     )
+    if (BUILD_SHARED_LIBS)
+        install(TARGETS ${GT_PRODUCTS} EP_TARGET)
+    endif()
 endif()
 
 target_link_libraries(gtest INTERFACE RAW ${CMAKE_DL_LIBS})
