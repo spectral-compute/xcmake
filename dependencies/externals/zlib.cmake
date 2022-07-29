@@ -2,7 +2,9 @@ include_guard(GLOBAL)
 include(ExternalProj)
 
 # On Windows, we need _CRT_DECLARE_NONSTDC_NAMES.
+set(LIB_NAME z)
 if (WIN32)
+    set(LIB_NAME zlib)
     set(COMPILE_OPTIONS -D_CRT_DECLARE_NONSTDC_NAMES)
 endif()
 
@@ -14,5 +16,9 @@ add_external_project(zlib_proj
         "-DCMAKE_C_FLAGS=${CMAKE_CXX_FLAGS} ${COMPILE_OPTIONS}"
         "-DCMAKE_BUILD_TYPE=Release"
     STATIC_LIBRARIES
-        z
+        ${LIB_NAME}
 )
+
+if (WIN32)
+    add_library(z ALIAS ${LIB_NAME})
+endif()
