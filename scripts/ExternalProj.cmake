@@ -41,6 +41,17 @@ else()
     endif()
 endif()
 
+# Pass in the toolchain's arguments.
+if (XCMAKE_TOOLCHAIN_DIR)
+    list(APPEND XCMAKE_EP_CMAKE_ARGS "-DXCMAKE_TOOLCHAIN_DIR=${XCMAKE_TOOLCHAIN_DIR}")
+endif()
+if (XCMAKE_TRIBBLE)
+    list(APPEND XCMAKE_EP_CMAKE_ARGS "-DXCMAKE_TRIBBLE=${XCMAKE_TRIBBLE}")
+endif()
+if (XCMAKE_TRIPLE_VENDOR)
+    list(APPEND XCMAKE_EP_CMAKE_ARGS "-DXCMAKE_TRIPLE_VENDOR=${XCMAKE_TRIPLE_VENDOR}")
+endif()
+
 function(add_external_project TARGET)
     # Parse the function arguments. These are split into three categories:
     # - Arguments added in XCMake which dictate libraries or executables to be created and marked dependent on TARGET
