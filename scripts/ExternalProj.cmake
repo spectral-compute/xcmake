@@ -10,6 +10,8 @@ set(EP_INSTALL_DIR "${EP_ROOT_DIR}/inst" CACHE INTERNAL "")
 # Extra CFLAGS/CXXFLAGS for external projects
 set(XCMAKE_EP_CXX_FLAGS "")
 set(XCMAKE_EP_C_FLAGS "")
+set(XCMAKE_EP_LINKER_FLAGS "")
+set(XCMAKE_EP_CMAKE_ARGS "")
 
 if(WIN32)
     if(CMAKE_CXX_COMPILER_ID MATCHES MSVC)
@@ -19,6 +21,23 @@ if(WIN32)
         # arrangement that's least likely to explode.
         list(APPEND XCMAKE_EP_CXX_FLAGS "-fms-compatibility")
         list(APPEND XCMAKE_EP_C_FLAGS "-fms-compatibility")
+    endif()
+
+    # Propagate the default runtime selection.
+    set(_MSVC_RUNTIME_LIBRARY_TYPE "MultiThreaded")
+    if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        set(_MSVC_RUNTIME_LIBRARY_TYPE "${_MSVC_RUNTIME_LIBRARY_TYPE}Debug")
+    endif()
+    if (NOT XCMAKE_STATIC_STDCXXLIB)
+        set(_MSVC_RUNTIME_LIBRARY_TYPE "${_MSVC_RUNTIME_LIBRARY_TYPE}DLL")
+    endif()
+    list(APPEND XCMAKE_EP_CMAKE_ARGS "-DCMAKE_POLICY_DEFAULT_CMP0091=NEW"
+                                     "-DCMAKE_MSVC_RUNTIME_LIBRARY=${_MSVC_RUNTIME_LIBRARY_TYPE}")
+else()
+    # Propagate the default C++ standard library staticness.
+    if (XCMAKE_STATIC_STDCXXLIB)
+        # Unfortunately, I see no way ot make this get added only to C++ targets.
+        list(APPEND XCMAKE_EP_LINKER_FLAGS "-static-libstdc++")
     endif()
 endif()
 
@@ -78,10 +97,13 @@ function(add_external_project TARGET)
             -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
             -DCMAKE_CXX_FLAGS=${XCMAKE_EP_CXX_FLAGS}
             -DCMAKE_C_FLAGS=${XCMAKE_EP_C_FLAGS}
+            -DCMAKE_EXE_LINKER_FLAGS=${XCMAKE_EP_LINKER_FLAGS}
+            -DCMAKE_SHARED_LINKER_FLAGS=${XCMAKE_EP_LINKER_FLAGS}
 
             # Avoid install-time logspam
             -DCMAKE_INSTALL_MESSAGE=NEVER
 
+            ${XCMAKE_EP_CMAKE_ARGS}
             ${ep_CMAKE_ARGS}
         )
     endif()
