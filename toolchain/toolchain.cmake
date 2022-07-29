@@ -43,7 +43,8 @@ if ("${XCMAKE_OS}" STREQUAL "native" AND "${XCMAKE_ARCH}" STREQUAL "native")
     include(${CMAKE_CURRENT_LIST_DIR}/fragments/native.cmake)
 else()
     # Include the microarchitecture fragment.
-    include(${CMAKE_CURRENT_LIST_DIR}/fragments/arch/${XCMAKE_ARCH}/${XCMAKE_MICROARCH}.cmake)
+    set(XCMAKE_CONVENTIONAL_TRIPLE_ARCH "${XCMAKE_ARCH}")
+    include("${CMAKE_CURRENT_LIST_DIR}/fragments/microarch.cmake")
 
     # Include the general architecture fragment.
     include(${CMAKE_CURRENT_LIST_DIR}/fragments/arch/${XCMAKE_ARCH}/common.cmake)
