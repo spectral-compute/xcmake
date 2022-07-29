@@ -14,15 +14,21 @@ else()
     set(XCMAKE_CONVENTIONAL_TRIPLE_ARCH_CC "${XCMAKE_CONVENTIONAL_TRIPLE_ARCH}")
 endif()
 
-# Sadly, ARM/AArch64 and x86/x86_64 differ here.
-string(REGEX MATCH "^(aarch64|arm).*" _use_mcpu "${XCMAKE_CONVENTIONAL_TRIPLE}")
-if (_use_mcpu)
-    list(APPEND XCMAKE_COMPILER_FLAGS -mcpu=${XCMAKE_MICROARCH})
+# See if we have a microarch fragment. If so, we should use that (e.g: for -mavx2). Otherwise, assume the microarch is a
+# specific CPU.
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/arch/${XCMAKE_CONVENTIONAL_TRIPLE_ARCH}/${XCMAKE_MICROARCH}.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/arch/${XCMAKE_CONVENTIONAL_TRIPLE_ARCH}/${XCMAKE_MICROARCH}.cmake")
 else()
-    if ("${XCMAKE_MICROARCH}" STREQUAL "generic")
-        list(APPEND XCMAKE_COMPILER_FLAGS -march=${XCMAKE_CONVENTIONAL_TRIPLE_ARCH_CC} -mtune=${XCMAKE_MICROARCH})
+    # Sadly, ARM/AArch64 and x86/x86_64 differ here.
+    string(REGEX MATCH "^(aarch64|arm).*" _use_mcpu "${XCMAKE_CONVENTIONAL_TRIPLE}")
+    if (_use_mcpu)
+        list(APPEND XCMAKE_COMPILER_FLAGS -mcpu=${XCMAKE_MICROARCH})
     else()
-        list(APPEND XCMAKE_COMPILER_FLAGS -march=${XCMAKE_MICROARCH} -mtune=${XCMAKE_MICROARCH})
+        if ("${XCMAKE_MICROARCH}" STREQUAL "generic")
+            list(APPEND XCMAKE_COMPILER_FLAGS -march=${XCMAKE_CONVENTIONAL_TRIPLE_ARCH_CC} -mtune=${XCMAKE_MICROARCH})
+        else()
+            list(APPEND XCMAKE_COMPILER_FLAGS -march=${XCMAKE_MICROARCH} -mtune=${XCMAKE_MICROARCH})
+        endif()
     endif()
 endif()
 
