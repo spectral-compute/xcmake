@@ -50,7 +50,8 @@ Fragments provide information to XCMake's toolchain file in the form of variable
 be used outside the toolchain system.
 
 For cross compilation, the order in which the fragments are included is:
-1. `toolchain/fragments/arch/${arch}/${microarch}.cmake`
+1. `toolchain/fragments/arch/${arch}/${microarch}.cmake` (microarchitecture is specified for which there's a
+   microarchitecture file).
 2. `toolchain/fragments/arch/${arch}/common.cmake`
 2. `toolchain/fragments/arch/common.cmake`
 4. `toolchain/fragments/os/${os}.cmake`
@@ -59,5 +60,7 @@ For cross compilation, the order in which the fragments are included is:
 7. `toolchain/fragments/common.cmake`
 
 For native compilation, the order in which the fragments are included is:
-1. `toolchain/fragments/native.cmake`
-2. `toolchain/fragments/common.cmake`
+1. `toolchain/fragments/arch/${arch}/${microarch}.cmake` (if a non-native microarchitecture is specified for which
+    there's a microarchitecture file). The architecture (`${arch}`) is detected automatically.
+2. `toolchain/fragments/native.cmake`
+3. `toolchain/fragments/common.cmake`
