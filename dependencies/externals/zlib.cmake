@@ -3,7 +3,7 @@ include(ExternalProj)
 
 # On Windows, we need _CRT_DECLARE_NONSTDC_NAMES.
 if (WIN32)
-    set(COMPILE_OPTIONS ${COMPILE_OPTIONS} PUBLIC -D_CRT_DECLARE_NONSTDC_NAMES)
+    set(COMPILE_OPTIONS -D_CRT_DECLARE_NONSTDC_NAMES)
 endif()
 
 add_external_project(zlib_proj
