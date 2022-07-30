@@ -17,7 +17,7 @@ else()
     add_external_project(googletest
         GIT_REPOSITORY    git@gitlab.com:spectral-ai/engineering/thirdparty/googletest
         GIT_TAG           ${GTEST_TAG}
-        CMAKE_ARGS        -DCMAKE_BUILD_TYPE=Release
+        CMAKE
         LIBRARIES         ${GT_PRODUCTS}
     )
     if (BUILD_SHARED_LIBS)

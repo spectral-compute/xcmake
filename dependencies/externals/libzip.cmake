@@ -7,7 +7,6 @@ add_external_project(libzip_proj
     GIT_TAG           v1.9.2
     CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF
-        -DCMAKE_BUILD_TYPE=Release
 
         # Turn off many features we don't want.
         -DENABLE_WINDOWS_CRYPTO=OFF

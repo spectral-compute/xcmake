@@ -14,7 +14,6 @@ add_external_project(zlib_proj
     CMAKE_ARGS
         "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} ${COMPILE_OPTIONS}"
         "-DCMAKE_C_FLAGS=${CMAKE_CXX_FLAGS} ${COMPILE_OPTIONS}"
-        "-DCMAKE_BUILD_TYPE=Release"
     STATIC_LIBRARIES
         ${LIB_NAME}
 )
