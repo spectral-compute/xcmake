@@ -6,7 +6,6 @@ if (WIN32)
     # The nullability attribute isn't consistently used on Windows. It also calls some Windows APIs with the wrong
     # pointer type.
     set(COMPILE_OPTIONS -Wno-nullability-completeness
-                        -Wno-incompatible-function-pointer-types
                         -Wno-incompatible-function-pointer-types)
 endif()
 
