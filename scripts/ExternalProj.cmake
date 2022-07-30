@@ -102,6 +102,7 @@ function(add_external_project TARGET)
     if(ep_CMAKE OR ep_CMAKE_ARGS)
         string(JOIN " " CXX_FLAGS ${XCMAKE_EP_CXX_FLAGS} ${ep_CXX_FLAGS})
         string(JOIN " " C_FLAGS ${XCMAKE_EP_CXX_FLAGS} ${ep_C_FLAGS})
+        string(JOIN " " LINKER_FLAGS ${XCMAKE_EP_LINKER_FLAGS})
 
         list(APPEND CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
@@ -113,8 +114,8 @@ function(add_external_project TARGET)
             -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
             "-DCMAKE_CXX_FLAGS=${CXX_FLAGS}"
             "-DCMAKE_C_FLAGS=${C_FLAGS}"
-            -DCMAKE_EXE_LINKER_FLAGS=${XCMAKE_EP_LINKER_FLAGS}
-            -DCMAKE_SHARED_LINKER_FLAGS=${XCMAKE_EP_LINKER_FLAGS}
+            "-DCMAKE_EXE_LINKER_FLAGS=${LINKER_FLAGS}"
+            "-DCMAKE_SHARED_LINKER_FLAGS=${LINKER_FLAGS}"
 
             # Avoid install-time logspam
             -DCMAKE_INSTALL_MESSAGE=NEVER
