@@ -11,9 +11,8 @@ endif()
 add_external_project(zlib_proj
     GIT_REPOSITORY    https://github.com/madler/zlib.git
     GIT_TAG           v1.2.12
-    CMAKE_ARGS
-        "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} ${COMPILE_OPTIONS}"
-        "-DCMAKE_C_FLAGS=${CMAKE_CXX_FLAGS} ${COMPILE_OPTIONS}"
+    CMAKE
+    C_FLAGS "${COMPILE_OPTIONS}"
     STATIC_LIBRARIES
         ${LIB_NAME}
 )

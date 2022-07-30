@@ -72,6 +72,8 @@ function(add_external_project TARGET)
     )
     set(multiValueArgs
         # Custom
+        C_FLAGS # Only used by supported build systems (CMake). Support for others may be added in the future.
+        CXX_FLAGS # Only used by supported build systems (CMake). Support for others may be added in the future.
         LIBRARIES
         SHARED_LIBRARIES
         STATIC_LIBRARIES
@@ -98,6 +100,9 @@ function(add_external_project TARGET)
     # Set or override some of the CMake arguments, if it's a CMake build system
     set(CMAKE_ARGS "")
     if(ep_CMAKE OR ep_CMAKE_ARGS)
+        string(JOIN " " CXX_FLAGS ${XCMAKE_EP_CXX_FLAGS} ${ep_CXX_FLAGS})
+        string(JOIN " " C_FLAGS ${XCMAKE_EP_CXX_FLAGS} ${ep_C_FLAGS})
+
         list(APPEND CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
@@ -106,8 +111,8 @@ function(add_external_project TARGET)
             -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
             -DCMAKE_LINKER=${CMAKE_LINKER}
             -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
-            -DCMAKE_CXX_FLAGS=${XCMAKE_EP_CXX_FLAGS}
-            -DCMAKE_C_FLAGS=${XCMAKE_EP_C_FLAGS}
+            "-DCMAKE_CXX_FLAGS=${CXX_FLAGS}"
+            "-DCMAKE_C_FLAGS=${C_FLAGS}"
             -DCMAKE_EXE_LINKER_FLAGS=${XCMAKE_EP_LINKER_FLAGS}
             -DCMAKE_SHARED_LINKER_FLAGS=${XCMAKE_EP_LINKER_FLAGS}
 
