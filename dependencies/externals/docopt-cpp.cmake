@@ -11,7 +11,6 @@ add_external_project(docopt_proj
     GIT_TAG 72a8e3e01effe22ac0f4e29c14153743172efcb5
     CMAKE_ARGS
         "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} ${DOCOPT_FLAGS}"
-        "-DCMAKE_BUILD_TYPE=Release"
     SHARED_LIBRARIES docopt
 )
 if (BUILD_SHARED_LIBS)
