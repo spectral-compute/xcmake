@@ -2,9 +2,18 @@ include_guard(GLOBAL)
 include(ExternalProj)
 include(externals/zlib)
 
+if (WIN32)
+    # The nullability attribute isn't consistently used on Windows. It also calls some Windows APIs with the wrong
+    # pointer type.
+    set(COMPILE_OPTIONS -Wno-nullability-completeness
+                        -Wno-incompatible-function-pointer-types
+                        -Wno-incompatible-function-pointer-types)
+endif()
+
 add_external_project(libzip_proj
     GIT_REPOSITORY    https://github.com/nih-at/libzip.git
     GIT_TAG           v1.9.2
+    C_FLAGS "${COMPILE_OPTIONS}"
     CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF
 
