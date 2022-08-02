@@ -122,4 +122,4 @@ chmod a+x $TMP_SCRIPT
 # Run the script, using socat to trick it into yielding colour output.
 # socat propagates the return code of the script, and hence any failure from
 # clang-tidy.
-socat -du EXEC:$TMP_SCRIPT,pty,stderr STDOUT
+socat -d -u EXEC:$TMP_SCRIPT,pty,stderr STDOUT
