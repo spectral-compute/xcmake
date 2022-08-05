@@ -305,8 +305,6 @@ function(apply_default_standard_properties TARGET)
             -fdiagnostics-show-template-tree
             -fdiagnostics-show-option
             -fdiagnostics-show-category=name
-
-            -fscale-addrspaces
         )
 
 
