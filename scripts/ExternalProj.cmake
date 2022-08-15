@@ -41,6 +41,12 @@ else()
     endif()
 endif()
 
+# Propagate libc++, if it's being used as the default.
+if (XCMAKE_LIBCXX)
+    list(APPEND XCMAKE_EP_CXX_FLAGS "-stdlib=libc++")
+    list(APPEND XCMAKE_EP_LINKER_FLAGS "-stdlib=libc++")
+endif()
+
 # Pass in the toolchain's arguments.
 if (XCMAKE_TOOLCHAIN_DIR)
     list(APPEND XCMAKE_EP_CMAKE_ARGS "-DXCMAKE_TOOLCHAIN_DIR=${XCMAKE_TOOLCHAIN_DIR}")
