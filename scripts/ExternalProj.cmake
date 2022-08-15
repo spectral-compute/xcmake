@@ -47,6 +47,12 @@ if (XCMAKE_LIBCXX)
     list(APPEND XCMAKE_EP_LINKER_FLAGS "-stdlib=libc++")
 endif()
 
+# Dependent libraries need to be built with msan, too
+if (XCMAKE_SANITISER STREQUAL "Memory")
+    list(APPEND XCMAKE_EP_CXX_FLAGS "-fsanitize=memory" -fsanitize-memory-track-origins=2)
+    list(APPEND XCMAKE_EP_LINKER_FLAGS "-fsanitize=memory" -fsanitize-memory-track-origins=2)
+endif()
+
 # Pass in the toolchain's arguments.
 if (XCMAKE_TOOLCHAIN_DIR)
     list(APPEND XCMAKE_EP_CMAKE_ARGS "-DXCMAKE_TOOLCHAIN_DIR=${XCMAKE_TOOLCHAIN_DIR}")
