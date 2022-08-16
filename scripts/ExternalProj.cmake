@@ -50,6 +50,7 @@ endif()
 # Dependent libraries need to be built with msan, too
 if (XCMAKE_SANITISER STREQUAL "Memory")
     list(APPEND XCMAKE_EP_CXX_FLAGS "-fsanitize=memory" -fsanitize-memory-track-origins=2)
+    list(APPEND XCMAKE_EP_C_FLAGS "-fsanitize=memory" -fsanitize-memory-track-origins=2)
     list(APPEND XCMAKE_EP_LINKER_FLAGS "-fsanitize=memory" -fsanitize-memory-track-origins=2)
 endif()
 
