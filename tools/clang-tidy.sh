@@ -88,7 +88,6 @@ performance-type-promotion-in-math-fn,\
 performance-unnecessary-copy-initialization,\
 performance-unnecessary-value-param,\
 readability-avoid-const-params-in-decls,\
-readability-braces-around-statements,\
 readability-container-size-empty,\
 readability-deleted-default,\
 readability-delete-null-pointer,\
