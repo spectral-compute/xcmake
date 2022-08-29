@@ -8,11 +8,16 @@ cd "${XCMAKE_DIR}/test"
 
 # Parse arguments.
 ARGS=("$@")
+TEST_FILTER=".*"
 while [ "$#" != "0" ] ; do
     ARG="$1"
     shift
     case "${ARG}" in
         -c|--toolchain-base-dir)
+            shift
+        ;;
+        -f)
+            TEST_FILTER="$1"
             shift
         ;;
         -k)
@@ -32,6 +37,11 @@ TMP_DIR="$(mktemp -d -t XCMAKE_TEST.XXXXXXXX)"
 SUCCESS_TESTS=()
 FAIL_TESTS=()
 for D in $(find -mindepth 1 -type d) ; do
+    # Only matching tests should run.
+    if ! echo "${D}" | grep -q -E "${TEST_FILTER}" ; then
+        continue
+    fi
+
     # Only directories with a test script should be run.
     if [ ! -e "${D}/test.sh" ] ; then
         continue
