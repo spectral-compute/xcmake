@@ -18,10 +18,6 @@ while [ "$#" != "0" ] ; do
         -k)
             KEEP_TMP=1
         ;;
-        -x)
-            XCMAKE_TOOLCHAIN_BASE_DIR="$1"
-            shift
-        ;;
         *)
             echo -e "\e[31;1mUnknown argument\e[m: ${ARG}" 1>&2
             exit 1
