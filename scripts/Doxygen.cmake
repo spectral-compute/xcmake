@@ -99,10 +99,6 @@ function(add_doxygen TARGET)
         list(APPEND HEADERS_USED ${NEW_HEADER})
     endforeach()
 
-    # Add the things we always include.
-    set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} \"${XCMAKE_TOOLS_DIR}/doxygen/include\"")
-    set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} \"${XCMAKE_TOOLS_DIR}/doxygen/include\"")
-
     # The tagfile we're going to generate. This could be tweaked to allow the caller to specify the output path...
     # This must be quoted in the Doxyfile, but we don't put the quotes in it here because we need the _actual file name_
     # in the cmake variable. This is in contrast to some other variables below.
