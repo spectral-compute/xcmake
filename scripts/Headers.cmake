@@ -136,8 +136,10 @@ function(add_headers TARGET)
                         --disable-auto-pragma-once # Don't mangle #pragma once.
                         --line-directive # Disable insertion of line directives (yes, this flag does that).
                         "${PCPP_ARGS}" -o "${FULL_HDR_PATH}" "${FULL_SRC_HDR_PATH}"
-                DEPENDS "${FULL_SRC_HDR_PATH}"
+                COMMAND ${XCMAKE_TOOLS_DIR}/deduplicate_newlines.sh "${FULL_HDR_PATH}"
+                DEPENDS "${FULL_SRC_HDR_PATH}" ${XCMAKE_TOOLS_DIR}/deduplicate_newlines.sh
             )
+            message(${FULL_HDR_PATH})
             add_custom_target(${FILE_TGT}_PCPP_OUT DEPENDS "${FULL_HDR_PATH}")
             add_dependencies(${FILE_TGT}_PCPP ${FILE_TGT}_PCPP_OUT)
         endif()
