@@ -44,7 +44,7 @@ for D in $(find -mindepth 1 -maxdepth 1 -type d) ; do
     fi
 
     # Run make.
-    MAKE_OUTPUT="$("${MAKE[@]}" install VERBOSE=1 2>&1)"
+    MAKE_OUTPUT="$("${MAKE[@]}" install 2>&1)"
     E="$?"
     echo "${MAKE_OUTPUT}"
 
