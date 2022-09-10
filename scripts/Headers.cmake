@@ -139,7 +139,6 @@ function(add_headers TARGET)
                 COMMAND ${XCMAKE_TOOLS_DIR}/deduplicate_newlines.sh "${FULL_HDR_PATH}"
                 DEPENDS "${FULL_SRC_HDR_PATH}" ${XCMAKE_TOOLS_DIR}/deduplicate_newlines.sh
             )
-            message(${FULL_HDR_PATH})
             add_custom_target(${FILE_TGT}_PCPP_OUT DEPENDS "${FULL_HDR_PATH}")
             add_dependencies(${FILE_TGT}_PCPP ${FILE_TGT}_PCPP_OUT)
         endif()
