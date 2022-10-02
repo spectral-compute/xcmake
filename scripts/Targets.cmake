@@ -302,6 +302,30 @@ function(apply_default_standard_properties TARGET)
             -Wno-documentation-unknown-command
             -Wno-documentation  # https://gitlab.com/spectral-ai/engineering/cuda/platform/clang/issues/340
 
+            -Wno-suggest-override
+            -Wno-unused-parameter
+            -Wno-zero-as-null-pointer-constant
+            -Wno-extra-semi
+            -Wno-extra-semi-stmt
+            -Wno-dtor-name
+            -Wno-deprecated-dynamic-exception-spec
+            -Wno-header-hygiene
+            -Wno-shadow
+            -Wno-shorten-64-to-32
+            -Wno-unused-macros
+            -Wno-covered-switch-default
+            -Wno-double-promotion
+            -Wno-gnu-zero-variadic-macro-arguments
+            -Wno-variadic-macros
+            -Wno-newline-eof
+
+            -Xclang -fcolor-diagnostics
+
+            -Wno-deprecated-copy-with-user-provided-copy
+            -Wno-float-conversion
+            -Wno-overloaded-virtual
+            -Wno-missing-variable-declarations
+
             # Make errors more readable in the presence of insane templates
             -fdiagnostics-show-template-tree
             -fdiagnostics-show-option
@@ -632,12 +656,16 @@ function(target_link_libraries TARGET)
                 message(AUTHOR_WARNING "Keywordless target_link_libraries() is not allowed.")
                 set(FORCE_KEYWORD "PUBLIC")
             elseif(NOT TARGET "${_ARG}" AND NOT "${ALLOW_RAW}")
-                message(AUTHOR_WARNING
-                    "Tried to link to nonexistent target \"${_ARG}\".\n"
-                    "Did you typo your target name?\n"
-                    "If you are trying to add linker flags, cmake now has `target_link_options()` for doing that.\n"
-                    "If you are trying to link an external library by its raw name, use an IMPORTED target instead."
-                )
+                # Lol
+                string(FIND "${_ARG}" "-includes" HACK)
+                if (${HACK} EQUAL -1)
+#                    message(AUTHOR_WARNING
+#                        "Tried to link to nonexistent target \"${_ARG}\".\n"
+#                        "Did you typo your target name?\n"
+#                        "If you are trying to add linker flags, cmake now has `target_link_options()` for doing that.\n"
+#                        "If you are trying to link an external library by its raw name, use an IMPORTED target instead."
+#                    )
+                endif()
             elseif(NOT ${ALLOW_RAW})
                 propogate_dll_paths(${CURRENT_KEYWORD} ${TARGET} ${_ARG})
             endif()

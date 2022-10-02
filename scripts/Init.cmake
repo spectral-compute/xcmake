@@ -142,8 +142,8 @@ include(InstallExternal)
 
 # All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
 # build others' libraries with that toolchain.
-default_value(CMAKE_CXX_VISIBILITY_PRESET "hidden")
-default_value(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+default_value(CMAKE_CXX_VISIBILITY_PRESET "default")
+default_value(CMAKE_VISIBILITY_INLINES_HIDDEN OFF)
 
 # Exclude effect targets from the output of cmake GraphViz graphs.
 file(WRITE ${CMAKE_BINARY_DIR}/CMakeGraphVizOptions.cmake

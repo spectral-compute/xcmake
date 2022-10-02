@@ -73,20 +73,20 @@ function(PrintCompiler)
     message(CYAN "Linker version: ${BOLD}${LINKER_VERSION}${BOLD_OFF}")
 endfunction()
 
-function(PrintWarnings)
-    if (NOT XCMAKE_ACCUMULATED_WARNINGS)
-        return()
-    endif()
-
-    message(BOLD_YELLOW "\n\n======== FINISHED WITH WARNINGS =======\n")
-    foreach (WARNING IN LISTS XCMAKE_ACCUMULATED_WARNINGS)
-        message(BOLD_YELLOW "Warning${RST}: ${WARNING}")
-    endforeach()
-
-    set(XCMAKE_ACCUMULATED_WARNINGS "" CACHE INTERNAL "") # Don't generate a growing warning list.
-endfunction()
+#function(PrintWarnings)
+#    if (NOT XCMAKE_ACCUMULATED_WARNINGS)
+#        return()
+#    endif()
+#
+#    message(BOLD_YELLOW "\n\n======== FINISHED WITH WARNINGS =======\n")
+#    foreach (WARNING IN LISTS XCMAKE_ACCUMULATED_WARNINGS)
+#        message(BOLD_YELLOW "Warning${RST}: ${WARNING}")
+#    endforeach()
+#
+#    set(XCMAKE_ACCUMULATED_WARNINGS "" CACHE INTERNAL "") # Don't generate a growing warning list.
+#endfunction()
 
 # These are printed in reverse order.
-add_exit_function(PrintWarnings)
-add_exit_function(PrintConfig)
-add_exit_function(PrintCompiler)
+#add_exit_function(PrintWarnings)
+#add_exit_function(PrintConfig)
+#add_exit_function(PrintCompiler)

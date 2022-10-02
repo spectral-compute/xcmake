@@ -153,13 +153,13 @@ endfunction()
 #   message(BLUE "Hello, world")
 #   message(STATUS BLUE "Hello, world")
 #
-#   # These foour are equivalent.
+#   # These four are equivalent.
 #   message(FATAL_ERROR "Hello, world")
 #   message(FATAL_ERROR BOLD_RED "Hello, world")
 #   fatal_error("Hello, world")
 #   fatal_error(BOLD_RED "Hello, world")
 # ```
-function(message MODE)
+function(message_colour MODE)
     string(TOUPPER "${MODE}" UP_MODE)
     # If the first argument is recognised as a log-level, consume it as one. Otherwise, just delegate everything to
     # the other function (which is going to try to interpret it as a colour instead).
