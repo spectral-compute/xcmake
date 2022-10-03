@@ -206,8 +206,9 @@ function(apply_default_standard_properties TARGET)
     endif()
 
     # A sane default for RPATH which allows dynamic libraries installed as part of this build to be found by executables
-    # also installed by this build.
-    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/../lib")
+    # also installed by this build. It represents the relative path from the directory containing the executables to
+    # the one containing the libraries
+    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/$<PATH:RELATIVE_PATH,${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR},${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}>")
 
     # Configure aggressive defaults for compiler warnings...
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
