@@ -525,10 +525,6 @@ function(add_library TARGET)
     apply_global_effects(${TARGET})
     fix_source_file_properties(${TARGET})
 
-    # Object libraries inherit their target properties from what they get assimilated by,
-    # so they stop here.
-    ensure_not_object(${TARGET})
-
     # Apply our custom properties...
     apply_default_standard_properties(${TARGET})
     apply_default_properties(${TARGET})
