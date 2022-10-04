@@ -1,16 +1,53 @@
 # XCmake
 
-XCMake is a set of scripts that aim to make using cmake more pleasant. Key features include:
+We observed that many projects end up solving the same set of cmake-related problems, usually imperfectly. We also
+observed that cmake has some rather _unhelpful_ default behaviours.
+
+XCMake is a set of scripts that aim to make using cmake more pleasant. It fixes things we consider bugs
+in built-in functions, extends built-in functions to perform more validation, solves many common problems
+so you never have to think about them, and adds a few new abstractions for things that commonly get people
+tangled up.
 
 - Less astonishing default behaviours for many of cmake's existing features.
 - Doxygen integration
 - Simplified generation of installers and packages for distribution.
 - Coloured logging.
-- Clang-sanitiser integration.
+- Clang sanitiser integration.
 - Clang-tidy integration.
 - A simple, modular mechanism for adding custom properties.
 - Pandoc integration.
 - Extension of builtin cmake functions to add extra features (such as `install()` supporting `IMPORTED` targets).
+
+
+## Extended built-ins
+
+### `install()`
+
+`install()` can now be applied to `IMPORTED` targets. This allows you to very straightforwardly copy all of your
+dependencies to the install tree, which is mostly useful for Windows builds.
+
+### `target_link_libraries()`
+
+If you do `target_link_libraries(my_target something_that_does_not_exit)`, cmake will just optimistically stick
+`-lsomething_that_does_not_exist` onto the linker command and hope for the best. Generally, that's not what you want.
+
+With xcmake, `target_link_libraries` will emit a warning if you try to link to something that is not a target. You
+should be creating imported targets for libraries you're importing, and you obviously you should be linking against your
+own targets only after creating them.
+
+If you wish to simply throw `-lfoo` onto the linker command, you can do that directly with cmake's `target_link_options()`
+function (which explicitly serves the purpose of "please add this to the linker command line", as opposed to being a
+very different operation that degrades to doing that if you make a mistake).
+
+## Small things that "just work"
+
+- `add_custom_command` always uses VERBATIM, so your shell scripts don't randomly break.
+- Release executable stripping (can be disabled with target property)
+- Helptext defined by `option()` calls is always added, not just for options that were not set on the command line.
+- RPATH just works (respecting `LIBDIR` and friends).
+- Target installation to standard locations (governed by the usual variables). Disable with `NOINSTALL` option.
+- On implib platforms (ie. Windows), the install step also creates symlinks to all the needed dlls, and can optionally
+  copy them.
 
 ## New Target Properties
 
@@ -21,7 +58,7 @@ Many of CMake's target properties have a corresponding global variable `CMAKE_FO
 prefix is `XCMAKE_FOO`.
 
 For example, to set the default value of the `SANITISER` property to `"Address"`, you could pass
-`-DXCMAKE_SANITISER=Address` on the command line.
+`-DXCMAKE_SANITISER=Address` on the command line (which is how you'd do an asan build of your entire project).
 
 #### `ASSERTIONS`: Bool
 
@@ -136,7 +173,20 @@ Run LLVM's source coverage report generator on the target.
 
 Default: *OFF*
 
-Enable `std::filesystem` for this target.
+Enable `std::filesystem` for this target. Depending on which standard library and platform is in use, this can
+require some custom linker flags and whatnot, which this property takes care of.
+
+#### `LIBCXX`: Bool
+
+Default: *OFF*
+
+Use libc++ instead of the gnu standard library.
+
+#### `STATIC_STDCXXLIB`: Bool
+
+Default: *OFF*
+
+Statically link the standard library (mostly useful for Windows executables).
 
 #### `STRIP`: Bool
 
@@ -148,7 +198,7 @@ Strip the output binary.
 
 Default: *OFF*
 
-Enable remarks from the LLVM loop vectoriser.
+Enable [remarks from the LLVM loop vectoriser](https://llvm.org/docs/Vectorizers.html#diagnostics).
 
 #### `WERROR`: Bool
 
@@ -159,11 +209,9 @@ Warnings are errors.
 ## CUDA Support
 
 Although CMake now has native support for CUDA, it's hardcoded to use nvcc. XCMake provides convenient CUDA support
-that supports `clang` as well as `nvcc`, and allows targeting AMD GPUs if spectral-clang and amdcuda are present.
+that supports `clang` as well as `nvcc`.
 
-Select GPU target(s) with `-DXCMAKE_GPUS=x,y,z`. Arguments can be NVIDIA targets (eg `sm_61`) or AMD ones.
-Mixing the two will work iff we've added that feature to the compiler yet. If unspecified, the GPUs in the build machine
-will be autodetected and _all of them_ will be targeted.
+Select GPU target(s) with `-DXCMAKE_GPUS=x,y,z`.
 
 `add_cuda_library()` and `add_cuda_executable()` are provided for conveniently creating targets that use CUDA.
 This will hook up the CUDA runtime library appropriate for your chosen target GPU(s), and do a few obscure
@@ -179,7 +227,7 @@ add_headers(spec_includes
 )
 ```
 
-Header targets, by default, will be installed to `./include`.
+Header targets, by default, will be installed to [`${CMAKE_INSTALL_INCLUDEDIR}`](https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html).
 
 Add a Doxygen target like this:
 
@@ -296,6 +344,7 @@ Where `NameOfMyLibrary` is all of:
 - The directory under `./lib/cmake` to install the export files.
 
 It's unclear why you'd ever want these things to differ, so this simplification is rather handy.
+This essentially skips the usual ritual of `configure_package_config_file`, `install(EXPORT)`, `export(EXPORT)`, etc.
 
 ## [Automatic external project binding](./scripts/ExternalProj.cmake)
 
