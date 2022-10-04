@@ -1,6 +1,6 @@
 include_guard(GLOBAL)
 
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
     set(DEFAULT_DEB "ON")
 else()
     set(DEFAULT_DEB "OFF")
