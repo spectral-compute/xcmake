@@ -30,6 +30,7 @@ function(find_sources OUT)
 
     file(GLOB_RECURSE FOUND_SOURCES
         LIST_DIRECTORIES OFF
+        CONFIGURE_DEPENDS
         ${GLOB_PATTERN}
     )
 
@@ -321,6 +322,7 @@ function(apply_default_standard_properties TARGET)
             -Wno-gnu-zero-variadic-macro-arguments
             -Wno-variadic-macros
             -Wno-newline-eof
+            -Wno-undefined-var-template
 
             -Xclang -fcolor-diagnostics
 
