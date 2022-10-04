@@ -201,9 +201,12 @@ function(apply_default_standard_properties TARGET)
         set_target_properties(${TARGET} PROPERTIES
             CXX_EXTENSIONS OFF
             CXX_STANDARD 20
-            CXX_STANDARD_REQUIRED ON
         )
     endif()
+
+    set_target_properties(${TARGET} PROPERTIES
+        CXX_STANDARD_REQUIRED ON
+    )
 
     # A sane default for RPATH which allows dynamic libraries installed as part of this build to be found by executables
     # also installed by this build. It represents the relative path from the directory containing the executables to
