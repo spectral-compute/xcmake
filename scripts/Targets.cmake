@@ -334,6 +334,12 @@ function(apply_default_standard_properties TARGET)
             -Wno-undefined-var-template
             -Wno-enum-float-conversion
             -Wno-vla-extension
+            -Wno-constant-logical-operand
+            -Wno-unused-exception-parameter
+            -Wno-unused-but-set-variable
+            -Wno-unreachable-code-return
+            -Wno-unreachable-code
+            -Wno-deprecated-declarations
 
             -Xclang -fcolor-diagnostics
 
