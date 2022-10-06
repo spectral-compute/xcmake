@@ -323,6 +323,17 @@ function(apply_default_standard_properties TARGET)
             -Wno-variadic-macros
             -Wno-newline-eof
             -Wno-undefined-var-template
+            -Wno-deprecated-copy-with-user-provided-dtor
+            -Wno-inconsistent-missing-destructor-override
+            -Wno-unreachable-code-break
+            -Wno-implicit-fallthrough
+            -Wno-deprecated-declarations
+            -Wno-undefined-var-template
+            -Wno-deprecated-copy
+            -Wno-deprecated-copy-with-dtor
+            -Wno-undefined-var-template
+            -Wno-enum-float-conversion
+            -Wno-vla-extension
 
             -Xclang -fcolor-diagnostics
 
