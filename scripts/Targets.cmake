@@ -73,7 +73,13 @@ function(target_optional_compile_options TARGET)
     foreach (_F ${d_UNPARSED_ARGUMENTS})
         string(MAKE_C_IDENTIFIER ${_F} CACHE_VAR)
         if (XCMAKE_CHECK_COMPILE_FLAGS)
-            check_cxx_compiler_flag(${_F} ${CACHE_VAR})
+            # Some compilers (such as gcc) have slightly insane semantics for unknown warning flags. If you give GCC an
+            # unknown `-Wno-foo`, it will emit a non-fatal, non-turn-off-able warning about the unknwon flag at the end,
+            # but only if the translation unit created at least one warning. Otherwise, it's silent.
+            # Fortunately, GCC (along with every sane compiler) errors out when given an unknown `-Wfoo`. So: we flip
+            # all optional `-Wno-X` into `-WX` flags for the purposes of this check.
+            string(REGEX REPLACE ^-Wno- -W _G ${_F})
+            check_cxx_compiler_flag(${_G} ${CACHE_VAR})
         else ()
             set(${CACHE_VAR} 1)
         endif ()
