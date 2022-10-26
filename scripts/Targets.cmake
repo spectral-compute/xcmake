@@ -468,15 +468,33 @@ function(add_export_header TARGET)
 
     # Exclude windows DLL functionality when compiling for device
     # Indented poorly so the resulting output is nice
-    set(DLL_EXCLUDE
-"\n#if defined(_WIN32) && defined(__CUDA__) && defined(__CUDA_ARCH__) \n\
-    #undef ${BASE_NAME}_EXPORT \n\
-    #define ${BASE_NAME}_EXPORT \n\
-#endif\n"
+    set(DLL_EXCLUDE "
+#if defined(_WIN32) && defined(__CUDA__) && defined(__CUDA_ARCH__)
+    #undef ${BASE_NAME}_EXPORT
+    #define ${BASE_NAME}_EXPORT
+#endif
+
+#ifdef SWIG
+    #undef ${BASE_NAME}_EXPORT
+    #define ${BASE_NAME}_EXPORT
+    #undef ${BASE_NAME}_NO_EXPORT
+    #define ${BASE_NAME}_NO_EXPORT
+    #undef ${BASE_NAME}_DEPRECATED
+    #define ${BASE_NAME}_DEPRECATED
+    #undef ${BASE_NAME}_DEPRECATED_EXPORT
+    #define ${BASE_NAME}_DEPRECATED_EXPORT
+    #undef ${BASE_NAME}_DEPRECATED_NO_EXPORT
+    #define ${BASE_NAME}_DEPRECATED_NO_EXPORT
+#endif
+"
     )
 
     # Generate the header.
-    generate_export_header(${TARGET} BASE_NAME "${BASE_NAME}" EXPORT_FILE_NAME "${EXPORT_HDR_PATH}" CUSTOM_CONTENT_FROM_VARIABLE DLL_EXCLUDE)
+    generate_export_header(${TARGET}
+        BASE_NAME "${BASE_NAME}"
+        EXPORT_FILE_NAME "${EXPORT_HDR_PATH}"
+        CUSTOM_CONTENT_FROM_VARIABLE DLL_EXCLUDE
+    )
 
     # Install the header.
     if (NOT args_NOINSTALL)
