@@ -5,7 +5,6 @@ function(get_git_version OUT)
         COMMAND ${GIT_EXE} describe --tags --always
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         OUTPUT_VARIABLE STDOUT
-        COMMAND_ECHO STDERR
         OUTPUT_STRIP_TRAILING_WHITESPACE
         COMMAND_ERROR_IS_FATAL ANY
     )
