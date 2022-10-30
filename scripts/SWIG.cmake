@@ -40,7 +40,10 @@ function(add_swig_bindings_to TARGET)
             OUTFILE_DIR ${SWIG_GENSRC_DIR}
             SOURCES ${h_SOURCES}
         )
-        set_target_properties(${SWIG_TARGET} PROPERTIES WERROR OFF)
+        set_target_properties(${SWIG_TARGET}
+            PROPERTIES WERROR OFF
+            CXX_CLANG_TIDY ""
+        )
         target_compile_options(${SWIG_TARGET} PRIVATE
             # the goal is to turn off warnings introduced by SWIG, but leave enough enabled that actual issues with the input
             # program headers will get shown.
