@@ -12,6 +12,7 @@ function(add_swig_bindings_to TARGET)
 
     find_package(SWIG)
     include(UseSWIG)
+
     set(SWIG_SOURCE_FILE_EXTENSIONS ".i" ".swg")
     set(CMAKE_SWIG_FLAGS "-doxygen")
 
@@ -23,20 +24,36 @@ function(add_swig_bindings_to TARGET)
         )
     endforeach()
 
-    set(SWIG_INTERFACE_DIR ${CMAKE_CURRENT_BINARY_DIR}/swig)
+    # It turns out that naming a variable "SWIG_DIR" stops swig from working. Bravo.
+    set(FUCKING_SWIG_DIR ${CMAKE_CURRENT_BINARY_DIR}/swig)
+
+    set(SWIG_TMP ${FUCKING_SWIG_DIR}/tmp)
+    file(MAKE_DIRECTORY ${SWIG_TMP})
+
+    set(SWIG_OUT ${FUCKING_SWIG_DIR}/out)
+    file(MAKE_DIRECTORY ${SWIG_OUT})
+
     foreach (LANG IN LISTS h_LANGUAGES)
-        set(SWIG_GENSRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/swiggen_${LANG})
-        file(MAKE_DIRECTORY ${SWIG_INTERFACE_DIR}/${LANG})
-        file(MAKE_DIRECTORY ${SWIG_GENSRC_DIR})
-        install(DIRECTORY ${SWIG_INTERFACE_DIR}/${LANG}
+        set(TAGFILE ${SWIG_TMP}/${LANG}_tag)
+
+        # Where SWIG's output goes before it gets post-processed.
+        file(MAKE_DIRECTORY ${SWIG_TMP}/${LANG})
+
+        # Final location of the generated python etc. before being install'd.
+        file(MAKE_DIRECTORY ${SWIG_OUT}/${LANG})
+        install(DIRECTORY ${SWIG_OUT}/${LANG}
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}
         )
+
+        # Where the generated C++ goes.
+        set(SWIG_GENSRC_DIR ${SWIG_TMP}/${LANG}/cxx)
+        file(MAKE_DIRECTORY ${SWIG_GENSRC_DIR})
 
         set(SWIG_TARGET ${TARGET}_${LANG})
         swig_add_library(${SWIG_TARGET}
             TYPE USE_BUILD_SHARED_LIBS
             LANGUAGE ${LANG}
-            OUTPUT_DIR ${SWIG_INTERFACE_DIR}/${LANG}
+            OUTPUT_DIR ${SWIG_TMP}/${LANG}
             OUTFILE_DIR ${SWIG_GENSRC_DIR}
             SOURCES ${h_SOURCES}
         )
@@ -53,15 +70,33 @@ function(add_swig_bindings_to TARGET)
             -Wno-extra-semi-stmt
             -Wno-unused-parameter
             -Wno-shadow
+            -Wno-suggest-override
+            -Wno-deprecated-copy-with-user-provided-dtor
+            -Wno-cast-qual
         )
-
         target_link_libraries(${SWIG_TARGET} PRIVATE ${TARGET})
 
+        # Post-processing to work around a 16 year old swig bug. Sigh.
+        # Note that this does nothing except copy the files: the interesting stuff is appended to this custom command
+        # in the language-specific blocks below.
+        add_custom_command(
+            OUTPUT "${TAGFILE}"
+            COMMAND cmake -E copy_directory ${SWIG_TMP}/${LANG} ${SWIG_OUT}/${LANG}
+            COMMAND cmake -E touch "${TAGFILE}"
+            DEPENDS ${SWIG_TARGET}
+        )
         # Language-specific magic goes here.
         if (${LANG} STREQUAL python)
             # For Python bindings, we need Python libraries and stuff.
             find_package(Python COMPONENTS Development.Module REQUIRED)
             target_link_libraries(${SWIG_TARGET} PRIVATE Python::Module)
+
+            # All python exceptions must inherit from BaseException, but SWIG fails to do this.
+            add_custom_command(OUTPUT "${TAGFILE}" APPEND
+                COMMAND sed -i"" -Ee "s|class Exception\\(object\\):|class Exception\\(BaseException\\):|g" ${SWIG_OUT}/${LANG}/${TARGET}.py
+            )
         endif()
+
+        add_custom_target(${SWIG_TARGET}_pp ALL DEPENDS ${TAGFILE})
     endforeach()
 endfunction()
