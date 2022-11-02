@@ -346,6 +346,11 @@ function(apply_default_standard_properties TARGET)
             -Wno-unreachable-code-return
             -Wno-unreachable-code
             -Wno-deprecated-declarations
+            -Wno-missing-noreturn
+            -Wno-inconsistent-missing-override
+
+            # To make icecream happier.
+            -fno-caret-diagnostics
 
             -Xclang -fcolor-diagnostics
 
