@@ -36,7 +36,6 @@
 # TODO (maybe): extend with ExternalProject download + build option
 # TODO: put on conda-forge
 
-message(FIND)
 
 if( NOT FFTW_ROOT AND DEFINED ENV{FFTWDIR} )
     set( FFTW_ROOT $ENV{FFTWDIR} )
