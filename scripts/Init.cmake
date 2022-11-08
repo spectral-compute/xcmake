@@ -66,7 +66,7 @@ default_cache_value(ExternalData_TIMEOUT_ABSOLUTE 0)
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-tree builds are not wise.")
 endif()
-if (NOT CMAKE_INSTALL_PREFIX)
+if (NOT CMAKE_INSTALL_PREFIX AND NOT DEFINED ENV{CLION_IDE})
     message(FATAL_ERROR "Please specify a value for `CMAKE_INSTALL_PREFIX`.")
 endif()
 
