@@ -35,7 +35,7 @@ if(WIN32)
                                      "-DCMAKE_MSVC_RUNTIME_LIBRARY=${_MSVC_RUNTIME_LIBRARY_TYPE}")
 else()
     # Propagate the default C++ standard library staticness.
-    if (XCMAKE_STATIC_STDCXXLIB)
+    if (${XCMAKE_STATIC_STDCXXLIB} AND NOT ${XCMAKE_SANITISER} STREQUAL "Memory")
         # Unfortunately, I see no way ot make this get added only to C++ targets.
         list(APPEND XCMAKE_EP_LINKER_FLAGS "-static-libstdc++")
     endif()
