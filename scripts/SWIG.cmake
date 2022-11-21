@@ -4,10 +4,11 @@ include(GNUInstallDirs)
 # - Automatically harvest properties from the backing library
 # - Automatically link against needed interpreters (eg. python's libraries when you ask for python)
 # - Various --please-work settings.
+# - Forward include directories to SWIG (INCLUDE_DIRS).
 function(add_swig_bindings_to TARGET)
     set(flags)
     set(oneValueArgs)
-    set(multiValueArgs LANGUAGES SOURCES)
+    set(multiValueArgs LANGUAGES SOURCES INCLUDE_DIRS)
     cmake_parse_arguments("h" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     find_package(SWIG)
@@ -73,6 +74,7 @@ function(add_swig_bindings_to TARGET)
             -Wno-cast-qual
         )
         target_link_libraries(${SWIG_TARGET} PRIVATE ${TARGET})
+        target_include_directories(${SWIG_TARGET} PRIVATE "${h_INCLUDE_DIRS}")
 
         # Post-processing to work around a 16 year old swig bug. Sigh.
         # Note that this does nothing except copy the files: the interesting stuff is appended to this custom command
