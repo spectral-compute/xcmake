@@ -18,10 +18,7 @@ function(add_swig_bindings_to TARGET)
 
     # UGH WHY ARE THESE SOURCE PROPERTIES.
     foreach (ARG IN LISTS h_SOURCES)
-        set_source_files_properties(${ARG} PROPERTIES
-            CPLUSPLUS ON
-            SWIG_USE_TARGET_INCLUDE_DIRECTORIES ON
-        )
+        set_source_files_properties(${ARG} PROPERTIES CPLUSPLUS ON)
     endforeach()
 
     # It turns out that naming a variable "SWIG_DIR" stops swig from working. Bravo.
@@ -60,6 +57,7 @@ function(add_swig_bindings_to TARGET)
         set_target_properties(${SWIG_TARGET}
             PROPERTIES WERROR OFF
             CXX_CLANG_TIDY ""
+            SWIG_USE_TARGET_INCLUDE_DIRECTORIES ON
         )
         target_compile_options(${SWIG_TARGET} PRIVATE
             # the goal is to turn off warnings introduced by SWIG, but leave enough enabled that actual issues with the input
