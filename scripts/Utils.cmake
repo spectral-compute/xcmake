@@ -15,6 +15,20 @@ endmacro()
 set(XCMAKE_TMP_SCRIPT_DIR "${CMAKE_BINARY_DIR}/tmp/cmake")
 file(MAKE_DIRECTORY "${XCMAKE_TMP_SCRIPT_DIR}")
 
+# Execute a string as a cmake script within the current context. Even more insane.
+macro(exec SCRIPT)
+    string(RANDOM SNAME)
+    set(SCRIPT_PATH "${XCMAKE_TMP_SCRIPT_DIR}/${SNAME}.cmake")
+
+    file(WRITE ${SCRIPT_PATH} "macro(do_the_thing)\n${SCRIPT}\nendmacro()")
+
+    # Including a file makes cmake consider it a buildsystem dependency. So we mustn't delete it, or the cmake build
+    # system is always considered dirty, and cmake is always rerun.
+    include(${SCRIPT_PATH})
+
+    do_the_thing()
+endmacro()
+
 # Invoke a function, macro, or command by name.
 # This is, clearly, completely insane. All args given are forwarded to the target routine.
 macro(dynamic_call FN_NAME)
@@ -22,15 +36,7 @@ macro(dynamic_call FN_NAME)
         message(FATAL_ERROR "No such function: ${FN_NAME}")
     endif()
 
-    string(RANDOM SNAME)
-    set(SCRIPT_PATH "${XCMAKE_TMP_SCRIPT_DIR}/${SNAME}.cmake")
-
-    file(WRITE ${SCRIPT_PATH} "macro(do_the_thing)\n${FN_NAME}(${ARGN})\nendmacro()")
-    include(${SCRIPT_PATH})
-    # Including a file makes cmake consider it a buildsystem dependency. So we mustn't delete it, or the cmake build
-    # system is always considered dirty, and cmake is always rerun.
-
-    do_the_thing()
+    exec("${FN_NAME}(${ARGN})")
 endmacro()
 
 # Convert a directory path like `a/b/c` to the right number of `../` to undo it, like `../../../`
