@@ -208,7 +208,13 @@ function(apply_default_standard_properties TARGET)
     # A sane default for RPATH which allows dynamic libraries installed as part of this build to be found by executables
     # also installed by this build. It represents the relative path from the directory containing the executables to
     # the one containing the libraries
-    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH "$ORIGIN/$<PATH:RELATIVE_PATH,${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR},${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}>")
+    if (APPLE)
+        set(RPATH_ORIGIN "@loader_path")
+    else()
+        set(RPATH_ORIGIN "$ORIGIN")
+    endif()
+    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH
+                          "${RPATH_ORIGIN}/$<PATH:RELATIVE_PATH,${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR},${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}>")
 
     # Configure aggressive defaults for compiler warnings...
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -261,6 +267,7 @@ function(apply_default_standard_properties TARGET)
             -Wno-overloaded-shift-op-parentheses # It would be nice for __int not to trigger this where int wouldn't.
             -Wno-reserved-identifier             # We create some of these reserved identifiers.
             -Wno-reserved-macro-identifier       # We create some of these reserved identifiers too.
+            -Wno-poison-system-directories       # This shows up on macOS even when not cross compiling.
 
             # Re-enable parts of `-Wconversion` that we can cope with.
             -Wdouble-promotion                   # Warn about implicit double promotion: a common performance problem.

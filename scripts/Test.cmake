@@ -22,7 +22,13 @@ macro(configure_test_target TARGET)
     )
 
     set_target_properties(${TARGET} PROPERTIES IS_TEST ON)
-    set_property(TARGET ${TARGET} APPEND PROPERTY INSTALL_RPATH "$ORIGIN/../../lib")
+
+    if (APPLE)
+        set(RPATH_ORIGIN "@loader_path")
+    else()
+        set(RPATH_ORIGIN "$ORIGIN")
+    endif()
+    set_property(TARGET ${TARGET} APPEND PROPERTY INSTALL_RPATH "${RPATH_ORIGIN}/../../lib")
 endmacro()
 
 # Add a test executable (installed under ./test)
