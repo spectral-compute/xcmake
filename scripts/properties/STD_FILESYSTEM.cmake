@@ -7,8 +7,8 @@ define_xcmake_target_property(
 )
 
 # The windows STL has std::filesystem baked into it, at least as of VS2019. Supporting old versions of VS is enough of
-# a nightmare that I'm not keen on trying to do it.
-if (NOT WIN32)
+# a nightmare that I'm not keen on trying to do it. MacOS also seems to have it baked in.
+if (NOT WIN32 AND NOT APPLE)
     set_target_properties(STD_FILESYSTEM_EFFECTS
         PROPERTIES INTERFACE_LINK_LIBRARIES $<IF:$<BOOL:$<TARGET_PROPERTY:LIBCXX>>,,stdc++fs>
     )
