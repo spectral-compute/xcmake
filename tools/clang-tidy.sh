@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+EXTRA_ARGS=
+
+while echo "$1" | grep -qE '^--extra-arg-before[= ]' ; do
+    EXTRA_ARGS="${EXTRA_ARGS} $1"
+    shift
+done
+
 printError() {
     echo -e "\e[1m\e[97m$1: \e[31merror: \e[97m$2\e[0m"
 }
@@ -113,7 +120,7 @@ TMP_SCRIPT=$(mktemp)
 # A self-deleting shell-script that runs the compilation job.
 cat << EOF > $TMP_SCRIPT
 set -o errexit
-clang-tidy ${TIDY_ARGS}
+clang-tidy ${EXTRA_ARGS} ${TIDY_ARGS}
 rm $TMP_SCRIPT
 EOF
 chmod a+x $TMP_SCRIPT
