@@ -12,8 +12,8 @@ define_xcmake_target_property(
     DEFAULT ${DEFAULT_STRIP}
 )
 
-# --strip-all is not supported by lld-link.exe on Windows
+# --strip-all is not supported by lld-link.exe on Windows or ld on MacOS.
 # TODO: Investigate using RULE_LAUNCH_LINK to call to strip or llvm-strip after linking
-if (NOT WIN32)
+if (NOT WIN32 AND NOT APPLE)
     target_link_options(STRIP_EFFECTS INTERFACE -Wl,--strip-all)
 endif()
