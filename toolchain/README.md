@@ -18,6 +18,16 @@ tribbles may map to a single target triple. The special target tribble, `native`
 
 > Target tribbles are like target triples, but soft and furry. They're nicer to work with.
 
+### Native Tribbles
+It's common to build for either the same platform as the compilation platform, or a platform that is very similar
+(having at least the same OS). This is the opposite of cross-compilation. To support this, XCMake supports the target
+OS `native`. A target tribble of `native` (with no other components) is a shorthand for `native-native-native`, and is
+the default.
+
+Some OSs, such as MacOS, have special handling to build as if natively, but for a different architecture. For example,
+CMake has the `CMAKE_OSX_ARCHITECTURES` to allow compiling for x86_64 and aarch64 using the system compiler. XCMake
+supports this with the `native` OS and non-native architecture, for example: `native-aarch64-generic`.
+
 ## XCMake Toolchain Options
 The XCMake toolchain file uses the following options to control its behaviour:
 

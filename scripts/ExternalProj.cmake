@@ -65,6 +65,14 @@ if (XCMAKE_TRIPLE_VENDOR)
     list(APPEND XCMAKE_EP_CMAKE_ARGS "-DXCMAKE_TRIPLE_VENDOR=${XCMAKE_TRIPLE_VENDOR}")
 endif()
 
+# Pass in other cmake properties.
+if (CMAKE_OSX_ARCHITECTURES)
+    list(APPEND XCMAKE_EP_CMAKE_ARGS "-DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}")
+endif()
+if (CMAKE_OSX_DEPLOYMENT_TARGET)
+    list(APPEND XCMAKE_EP_CMAKE_ARGS "-DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}")
+endif()
+
 function(add_external_project TARGET)
     # Parse the function arguments. These are split into three categories:
     # - Arguments added in XCMake which dictate libraries or executables to be created and marked dependent on TARGET
