@@ -187,6 +187,7 @@ function (add_manual LIB_NAME)
     install(
         DIRECTORY ${OUT_DIR}/
         DESTINATION ${d_INSTALL_DESTINATION}
+        PATTERN "*.html.d" EXCLUDE
     )
 
     # Install the stylesheet
