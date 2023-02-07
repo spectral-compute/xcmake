@@ -23,15 +23,15 @@ else()
     if (BUILD_SHARED_LIBS)
         install(TARGETS ${GT_PRODUCTS} EP_TARGET)
     endif()
+
+    target_link_libraries(gtest INTERFACE RAW ${CMAKE_DL_LIBS})
+
+    foreach(LIB ${GT_PRODUCTS})
+        if(${BUILD_SHARED_LIBS})
+            target_compile_definitions(${LIB} INTERFACE "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+        endif()
+
+        # Googletest depends on pthread, so we need to link that in for the case of building googletest statically
+        target_link_libraries(${LIB} INTERFACE Threads::Threads)
+    endforeach()
 endif()
-
-target_link_libraries(gtest INTERFACE RAW ${CMAKE_DL_LIBS})
-
-foreach(LIB ${GT_PRODUCTS})
-    if(${BUILD_SHARED_LIBS})
-        target_compile_definitions(${LIB} INTERFACE "GTEST_LINKED_AS_SHARED_LIBRARY=1")
-    endif()
-
-    # Googletest depends on pthread, so we need to link that in for the case of building googletest statically
-    target_link_libraries(${LIB} INTERFACE Threads::Threads)
-endforeach()
