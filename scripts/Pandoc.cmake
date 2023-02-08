@@ -62,18 +62,7 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
                 -d "${OUT_FILE}" -i "${INTERMEDIATE_FILE}.2" -o "${OUT_FILE}.d"
 
         # Convert the markdown to HTML.
-        COMMAND pandoc
-            --fail-if-warnings
-            --from markdown
-            --to html
-
-            --filter pandoc-include-code
-
-            # Insert a pandoc metadata block at the start of your document to disable this. The opposite configuration
-            # (enabling per-document) is not supported by Pandoc.
-            --toc
-            --css "${DOTSLASHES}style.css"
-            --standalone "${INTERMEDIATE_FILE}.2" > "${OUT_FILE}"
+        COMMAND "${XCMAKE_TOOLS_DIR}/pandoc/pandoc.sh" "${INTERMEDIATE_FILE}.2" "${OUT_FILE}" "${DOTSLASHES}style.css"
 
         # Tidy up the temporary file.
         COMMAND ${CMAKE_COMMAND} -E remove -f "${INTERMEDIATE_FILE}.1" "${INTERMEDIATE_FILE}.2"
@@ -81,6 +70,7 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
         DEPENDS
             "${TARGET}_PREREQS"
             "${MARKDOWN_FILE}"
+            "${XCMAKE_TOOLS_DIR}/pandoc/pandoc.sh"
             "${XCMAKE_TOOLS_DIR}/pandoc/preprocessor.py"
             "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh"
             "${XCMAKE_TOOLS_DIR}/pandoc/code-snippet-dependencies.py"
