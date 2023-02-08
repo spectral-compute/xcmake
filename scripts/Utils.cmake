@@ -41,7 +41,7 @@ endmacro()
 
 # Convert a directory path like `a/b/c` to the right number of `../` to undo it, like `../../../`
 function (path_to_slashes PATH OUTVAR)
-    string(REGEX REPLACE "[^/]+/" "../" DOTSLASHES "${PATH}")
+    string(REGEX REPLACE "[^/]+(/|$)" "../" DOTSLASHES "${PATH}")
     string(REGEX REPLACE "^/" "" DOTSLASHES "${DOTSLASHES}")
     string(REGEX REPLACE "/[^/]+" "/../" DOTSLASHES "${DOTSLASHES}")
     string(REGEX REPLACE "/\\./" "/" DOTSLASHES "${DOTSLASHES}")
