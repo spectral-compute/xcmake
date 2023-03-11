@@ -18,5 +18,4 @@ target_optional_compile_options(DEBUG_INFO_EFFECTS INTERFACE
     -gcolumn-info
     -fdebug-macro
     -fno-limit-debug-info
-    -gdwarf-4 # Workaround for a bug in valgrind's DWARF5 implementation.
 )
