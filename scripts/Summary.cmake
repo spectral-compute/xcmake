@@ -87,6 +87,8 @@ function(PrintWarnings)
 endfunction()
 
 # These are printed in reverse order.
-add_exit_function(PrintWarnings)
-add_exit_function(PrintConfig)
-add_exit_function(PrintCompiler)
+function(PrintConfigSummary)
+    PrintCompiler()
+    PrintConfig()
+    PrintWarnings()
+endfunction()
