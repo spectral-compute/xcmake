@@ -1,0 +1,12 @@
+# Puts a .clang-tidy in the root directory of LLVM's VFS, so it's always found when clang-tidy searches for it in the
+# parent directories. That way, projects can override these settings with a .clang-tidy of their own (which would not be
+# the case for options specified over the command line).
+version: 0
+overlay-relative: true
+roots:
+  - name: "/"
+    type: directory
+    contents:
+      - name: ".clang-tidy"
+        type: file
+        external-contents: "defaults.yaml"
