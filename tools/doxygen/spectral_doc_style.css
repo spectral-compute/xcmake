@@ -114,6 +114,14 @@ div.navtab {
 	margin-right: 15px;
 }
 
+#nav-tree {
+	line-height: 22px;
+}
+
+#nav-tree .selected {
+	background-image: url('tab_b.png');
+}
+
 /* @group Link Styling */
 
 a {
