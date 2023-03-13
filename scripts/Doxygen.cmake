@@ -51,7 +51,8 @@ function(add_doxygen TARGET)
     # Oh, the argparse boilerplate
     set(flags NOINSTALL CUDA)
     set(oneValueArgs INSTALL_DESTINATION DOXYFILE LAYOUT_FILE DOXYFILE_SUFFIX LOGO SUBJECT)
-    set(multiValueArgs HEADER_TARGETS DEPENDS INPUT_HEADERS EXTRA_EXAMPLE_PATHS ENABLED_SECTIONS PREDEFINED FILTER)
+    set(multiValueArgs TARGETS HEADER_TARGETS DEPENDS INPUT_HEADERS EXTRA_EXAMPLE_PATHS ENABLED_SECTIONS PREDEFINED
+                       FILTER)
     cmake_parse_arguments("d" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     default_value(d_INSTALL_DESTINATION "docs/${TARGET}")
@@ -73,10 +74,23 @@ function(add_doxygen TARGET)
         set(EXAMPLE_PATH "${EXAMPLE_PATH} \"${CMAKE_CURRENT_LIST_DIR}/${P}\"")
     endforeach ()
 
-    # Extract the list of input paths from the list of given header targets, and build a list of all the header files
-    # Doxygen is about to process, so we can add them as dependencies.
+    # Extract the source files from the targets.
     set(DOXYGEN_INPUTS "")
     set(DOXYGEN_INPUT_DIRS "")
+    set(DOXYGEN_TARGET_DEPS "")
+    foreach (T ${d_TARGETS})
+        list(APPEND DOXYGEN_TARGET_DEPS ${T})
+        get_target_property(SOURCES ${T} SOURCES)
+
+        foreach(SOURCE ${SOURCES})
+            get_filename_component(NEW_DIR ${SOURCE} DIRECTORY)
+            set(DOXYGEN_INPUTS "${DOXYGEN_INPUTS} \"${SOURCE}\"")
+            set(DOXYGEN_INPUT_DIRS "${DOXYGEN_INPUT_DIRS} \"${NEW_DIR}\"")
+        endforeach()
+    endforeach()
+
+    # Extract the list of input paths from the list of given header targets, and build a list of all the header files
+    # Doxygen is about to process, so we can add them as dependencies.
     set(HEADERS_USED "")
     foreach (T ${d_HEADER_TARGETS})
         # Pick up the ORIGINAL_SOURCES property from the custom target that add_headers() creates.
@@ -179,6 +193,7 @@ function(add_doxygen TARGET)
         COMMENT "Doxygenation of ${TARGET}..."
         DEPENDS
             "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+            ${DOXYGEN_TARGET_DEPS}
             ${HEADERS_USED} # <- This one deliberately not quoted.
             "${DOXYGEN_LAYOUT_FILE}"
             "${CMAKE_CURRENT_BINARY_DIR}/spectral_doc_header.html"
