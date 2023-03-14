@@ -200,7 +200,7 @@ function(apply_default_standard_properties TARGET)
     if (NOT CMAKE_CXX_STANDARD)
         set_target_properties(${TARGET} PROPERTIES
             CXX_EXTENSIONS OFF
-            CXX_STANDARD 20
+            CXX_STANDARD 23
             CXX_STANDARD_REQUIRED ON
         )
     endif()
@@ -237,6 +237,7 @@ function(apply_default_standard_properties TARGET)
             -Wno-c++14-compat-pedantic
             -Wno-c++17-compat-pedantic
             -Wno-c++20-compat-pedantic
+            -Wno-c++23-compat-pedantic
             -Wno-c99-compat
 
             -Wno-spectral-extensions
