@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-EXTRA_ARGS=
+SRCDIR="$1"
+shift
 
+EXTRA_ARGS=
 while echo "$1" | grep -qE '^--extra-arg-before[= ]' ; do
     EXTRA_ARGS="${EXTRA_ARGS} $1"
     shift
@@ -34,7 +36,7 @@ TMP_SCRIPT=$(mktemp)
 # A self-deleting shell-script that runs the compilation job.
 cat << EOF > $TMP_SCRIPT
 set -o errexit
-clang-tidy ${EXTRA_ARGS} --vfsoverlay="$(dirname "$0")/vfs.yaml" $@
+clang-tidy ${EXTRA_ARGS} --header-filter="$SRCDIR/.*" --vfsoverlay="$(dirname "$0")/vfs.yaml" $@
 rm $TMP_SCRIPT
 EOF
 chmod a+x $TMP_SCRIPT

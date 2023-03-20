@@ -11,6 +11,6 @@ add_custom_target(xcmake_clang_tidy DEPENDS "${XCMAKE_TOOLS_DIR}/clang-tidy/clan
                                             "${XCMAKE_TOOLS_DIR}/clang-tidy/vfs.yaml")
 
 function(CLANG_TIDY_EFFECTS TARGET)
-    set_target_properties(${TARGET} PROPERTIES CXX_CLANG_TIDY "${XCMAKE_TOOLS_DIR}/clang-tidy/clang-tidy.sh")
+    set_target_properties(${TARGET} PROPERTIES CXX_CLANG_TIDY "${XCMAKE_TOOLS_DIR}/clang-tidy/clang-tidy.sh;${CMAKE_SOURCE_DIR}")
     add_dependencies("${TARGET}" xcmake_clang_tidy)
 endfunction()
