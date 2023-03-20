@@ -29,6 +29,7 @@ function(find_sources OUT)
     endforeach()
 
     file(GLOB_RECURSE FOUND_SOURCES
+        CONFIGURE_DEPENDS
         LIST_DIRECTORIES OFF
         ${GLOB_PATTERN}
     )
