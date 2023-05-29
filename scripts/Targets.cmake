@@ -254,6 +254,7 @@ function(apply_default_standard_properties TARGET)
             -Wno-shadow-field
             -Wno-shadow-field-in-constructor     # Sorry Nick, I like doing this. :D
             -Wshadow-field-in-constructor-modified # The above turns this off, but we want it back on.
+            -Wno-shadow-uncaptured-local         # A useful pattern is to std::move something into a lambda.
             -Wno-global-constructors             # We also use these
             -Wno-missing-prototypes
             -Wno-switch-enum                     # This is stupid.
