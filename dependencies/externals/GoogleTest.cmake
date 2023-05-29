@@ -12,7 +12,11 @@ mark_as_advanced(XCMAKE_SYSTEM_GTEST) # Should really just be using the find-or-
 set(GT_PRODUCTS gtest gmock gtest_main gmock_main)
 
 if(XCMAKE_SYSTEM_GTEST)
-    find_package(GTest)
+    find_package(GTest REQUIRED)
+    foreach (GT_PRODUCT IN LISTS GT_PRODUCTS)
+        add_library(${GT_PRODUCT} INTERFACE)
+        target_link_libraries(${GT_PRODUCT} INTERFACE GTest::${GT_PRODUCT})
+    endforeach()
 else()
     add_external_project(googletest
         GIT_REPOSITORY    git@gitlab.com:spectral-ai/engineering/thirdparty/googletest
