@@ -1,5 +1,5 @@
-project(gpu_autodetect)
 cmake_minimum_required(VERSION 3.14)
+project(gpu_autodetect)
 
 find_package(CUDA 8.0 REQUIRED)
 add_executable(gpu_autodetect main.cpp)
