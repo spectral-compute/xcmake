@@ -660,12 +660,18 @@ function(target_link_libraries TARGET)
                 message(AUTHOR_WARNING "Keywordless target_link_libraries() is not allowed.")
                 set(FORCE_KEYWORD "PUBLIC")
             elseif(NOT TARGET "${_ARG}" AND NOT "${ALLOW_RAW}")
-                message(AUTHOR_WARNING
-                    "Tried to link to nonexistent target \"${_ARG}\".\n"
-                    "Did you typo your target name?\n"
-                    "If you are trying to add linker flags, cmake now has `target_link_options()` for doing that.\n"
-                    "If you are trying to link an external library by its raw name, use an IMPORTED target instead."
-                )
+                get_filename_component(_name "${CMAKE_CURRENT_LIST_FILE}" NAME_WE)
+                string(SUBSTRING ${_name} 0 4 _fnd)
+                if (${_fnd} STREQUAL "Find")
+                    # Suppress these warnings inside finder modules, which are often written by annoying thirdparties.
+                else()
+                    message(AUTHOR_WARNING
+                        "Tried to link to nonexistent target \"${_ARG}\".\n"
+                        "Did you typo your target name?\n"
+                        "If you are trying to add linker flags, cmake now has `target_link_options()` for doing that.\n"
+                        "If you are trying to link an external library by its raw name, use an IMPORTED target instead."
+                    )
+                endif()
             elseif(NOT ${ALLOW_RAW})
                 propogate_dll_paths(${CURRENT_KEYWORD} ${TARGET} ${_ARG})
             endif()
