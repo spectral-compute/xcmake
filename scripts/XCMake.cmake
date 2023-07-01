@@ -2,6 +2,8 @@
 # making some things undefined that should be empty-string...
 include("${CMAKE_TOOLCHAIN_FILE}")
 
+set("${PROJECT_NAME}_DIR" "${PROJECT_SOURCE_DIR}" CACHE INTERNAL "")
+
 ## Include the rest of xcmake, for convenience.
 include(Doxygen)
 include(Properties)
