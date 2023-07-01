@@ -286,6 +286,8 @@ function(apply_default_standard_properties TARGET)
             -Wshorten-64-to-32                   # No implicit conversion from longer ints to shorter ones.
             -Wstring-conversion                  # No implicit string literal to bool conversion.
 
+            -Wno-unsafe-buffer-usage             # This is dumb.
+
             # Sometimes, we need to cast.
             -Wno-incompatible-pointer-types-discards-qualifiers
 
