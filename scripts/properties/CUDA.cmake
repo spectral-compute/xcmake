@@ -57,9 +57,8 @@ macro (populate_cuda_property)
 
         message(BOLD_RED "Using AMD CUDA from ${AMDCUDA_TOOLKIT_ROOT_DIR}")
     elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
-        find_package(CUDA 8.0 REQUIRED)
-        target_link_libraries(CUDA_EFFECTS INTERFACE cuda)
-        target_link_libraries(CUDA_EFFECTS INTERFACE cudart)
+        find_package(CUDAToolkit 8.0 REQUIRED)
+        target_link_libraries(CUDA_EFFECTS INTERFACE CUDA::cudart)
 
         # Warn about CUDA 9
         if ("${CUDA_VERSION_MAJOR}" EQUAL 9)
