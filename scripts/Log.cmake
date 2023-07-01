@@ -181,6 +181,8 @@ function(message MODE)
         colour_log_impl(CHECK_PASS ${ARGN})
     elseif("${UP_MODE}" STREQUAL CHECK_FAIL)
         colour_log_impl(CHECK_FAIL ${ARGN})
+    elseif("${UP_MODE}" STREQUAL CONFIGURE_LOG)
+        # blackhole it :D
     else()
         colour_log_impl(STATUS "${MODE}" ${ARGN})
     endif()
