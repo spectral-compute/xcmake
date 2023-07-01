@@ -1,4 +1,4 @@
-find_package(CUDA 8.0 REQUIRED)
+find_package(CUDAToolkit 8.0 REQUIRED)
 list(GET CUDA_INCLUDE_DIRS 0 CUDA_INCLUDE_DIR)
 add_custom_target(nvcuda)
 set(COMPONENT_INSTALL_ROOT)
