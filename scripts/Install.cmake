@@ -178,10 +178,10 @@ function(install)
         default_value(${KEY}_PERMISSIONS "${DEFAULT_PERMISSIONS}")
 
         # Install the imported target's main file.
-        install(FILES "${FILE_PATH}" ${OPT_FLAG}
-            PERMISSIONS ${${KEY}_PERMISSIONS}
-            DESTINATION "${${KEY}_DESTINATION}"
-            ${${KEY}_FORWARD}
+        install_following_symlinks("${FILE_PATH}"
+            "${${KEY}_DESTINATION}"
+            ${${KEY}_PERMISSIONS}
+#            ${${KEY}_FORWARD}
         )
 
         # Install the imported target's IMPLIB, if it has one.
@@ -193,13 +193,35 @@ function(install)
 
             handle_ep(${IMPLIB_FILE_PATH})
 
-            install(FILES "${IMPLIB_FILE_PATH}" ${OPT_FLAG}
-                PERMISSIONS "${${KEY}_PERMISSIONS}"
-                DESTINATION "${ARCHIVE_DESTINATION}"
-                ${ARCHIVE_FORWARD}
+            install_following_symlinks(FILES "${IMPLIB_FILE_PATH}"
+                "${ARCHIVE_DESTINATION}"
+                "${${KEY}_PERMISSIONS}"
+#                ${ARCHIVE_FORWARD}
             )
         endif()
     endforeach()
+endfunction()
+
+function(install_following_symlinks FILE DESTINATION PERMISSIONS)
+    while (IS_SYMLINK ${FILE})
+        install(FILES "${FILE}" ${OPT_FLAG}
+            PERMISSIONS ${PERMISSIONS}
+            DESTINATION "${DESTINATION}"
+        )
+
+        # Look through this symlink and update "FILE"
+        file(READ_SYMLINK "${FILE}" RES)
+        if (NOT IS_ABSOLUTE "${RES}")
+            get_filename_component(DIR "${FILE}" DIRECTORY)
+            set(RES "${DIR}/${RES}")
+        endif()
+        set(FILE "${RES}")
+    endwhile ()
+
+    install(FILES "${FILE}" ${OPT_FLAG}
+        PERMISSIONS ${PERMISSIONS}
+        DESTINATION "${DESTINATION}"
+    )
 endfunction()
 
 macro(handle_ep CHECKPATH)
