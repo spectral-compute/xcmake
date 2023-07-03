@@ -180,7 +180,7 @@ function(install)
         # Install the imported target's main file.
         install_following_symlinks("${FILE_PATH}"
             "${${KEY}_DESTINATION}"
-            ${${KEY}_PERMISSIONS}
+            "${${KEY}_PERMISSIONS}"
 #            ${${KEY}_FORWARD}
         )
 
