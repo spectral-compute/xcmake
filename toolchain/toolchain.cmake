@@ -123,9 +123,11 @@ else()
     # Make sure that CMAKE_LINKER actually sets the linker. Can hook this up to XCMAKE_CLANG_LINKER_FLAGS if we ever care...
     # -fuse-ld is an unknown argument to lld-link
     if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        default_cache_value(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
-        default_cache_value(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
-        default_cache_value(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=\"${CMAKE_LINKER}\"")
+        default_cache_value(CMAKE_STATIC_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+        default_cache_value(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+        default_cache_value(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+        default_cache_value(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
+        default_cache_value(CMAKE_CXX_LINK_OPTIONS_IPO "-fuse-ld=${CMAKE_LINKER}")
     endif()
 endif()
 
