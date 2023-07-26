@@ -92,8 +92,9 @@ function(add_swig_bindings_to TARGET)
             target_link_libraries(${SWIG_TARGET} PRIVATE Python::Module)
 
             # All python exceptions must inherit from BaseException, but SWIG fails to do this.
+            # sed on macOS requires the backup file to be created whenever to -i option is specified
             add_custom_command(OUTPUT "${TAGFILE}" APPEND
-                COMMAND sed -i"" -Ee "s|class Exception\\(object\\):|class Exception\\(BaseException\\):|g" ${SWIG_OUT}/${LANG}/${TARGET}.py
+                COMMAND sed -i.bkup -Ee "s|class Exception\\(object\\):|class Exception\\(BaseException\\):|g" ${SWIG_OUT}/${LANG}/${TARGET}.py && rm -f ${SWIG_OUT}/${LANG}/${TARGET}.py.bkup
             )
         endif()
 
