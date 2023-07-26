@@ -5,6 +5,7 @@ include(GNUInstallDirs)
 # - Automatically link against needed interpreters (eg. python's libraries when you ask for python)
 # - Various --please-work settings.
 # - Forward include directories to SWIG (INCLUDE_DIRS).
+# - Provides the option to link against a specified version of Python
 function(add_swig_bindings_to TARGET)
     set(flags)
     set(oneValueArgs)
@@ -88,7 +89,16 @@ function(add_swig_bindings_to TARGET)
         # Language-specific magic goes here.
         if (${LANG} STREQUAL python)
             # For Python bindings, we need Python libraries and stuff.
-            find_package(Python COMPONENTS Development.Module REQUIRED)
+            # If the user has specified a version to link against then use this; otherwise, use any version
+
+            if (DEFINED XCMAKE_SWIG_PY_VER)
+                message(STATUS "Using Python ${XCMAKE_SWIG_PY_VER}.")
+                find_package(Python ${XCMAKE_SWIG_PY_VER} EXACT COMPONENTS Development.Module REQUIRED)
+                target_link_libraries(${SWIG_TARGET} PRIVATE Python::Module)
+            else()
+                message(STATUS "Python version to link against not specified. Using any available version.")
+                find_package(Python COMPONENTS Development.Module REQUIRED)
+            endif()
             target_link_libraries(${SWIG_TARGET} PRIVATE Python::Module)
 
             # All python exceptions must inherit from BaseException, but SWIG fails to do this.
