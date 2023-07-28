@@ -530,7 +530,7 @@ function(fix_source_file_properties TARGET)
             if ((${CUR_LANG} STREQUAL "CUDA") OR ("${FILE_EXT}" STREQUAL ".cu") OR ("${FILE_EXT}" STREQUAL ".cuh"))
                 # This disables cmake's built-in CUDA support, which only does NVCC. This stops
                 # cmake doing automatic things that derail our attempts to do this properly...
-                get_target_property(CUDA_TU_FLAGS CUDA_FLAGS INTERFACE_COMPILE_OPTIONS)
+                set(CUDA_TU_FLAGS "$<TARGET_PROPERTY:CUDA_FLAGS,INTERFACE_COMPILE_OPTIONS>")
                 set_source_files_properties(${_F} PROPERTIES
                     LANGUAGE CXX
                     COMPILE_OPTIONS "$<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},CUDA>>,${CUDA_TU_FLAGS},>"
