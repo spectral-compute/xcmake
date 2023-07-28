@@ -66,7 +66,7 @@ macro (populate_cuda_property)
         endif ()
 
         target_compile_options(CUDA_FLAGS INTERFACE
-            --cuda-path=$<SHELL_PATH:${CUDA_TOOLKIT_ROOT_DIR}>
+            --cuda-path=$<SHELL_PATH:${CUDAToolkit_BIN_DIR}/../>
 
             # The various PTX versions that were requested...
             --cuda-gpu-arch=sm_$<JOIN:${TARGET_CUDA_COMPUTE_CAPABILITIES}, --cuda-gpu-arch=sm_>
