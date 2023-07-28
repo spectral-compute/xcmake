@@ -149,13 +149,10 @@ function(add_cuda_to_target TARGET)
         message(FATAL_ERROR "You didn't specify any GPU targets with -DXCMAKE_GPUS, so CUDA targets are not supported.")
     endif()
 
-    # Breaks clion's language service...
-    if (NOT DEFINED ENV{CLION_IDE})
-        # We want non-CUDA C++ code that's part of a CUDA project to use enhanced address spaces, but we don't want to
-        # require that any resulting library can only be used by stuff compiled with our compiler. That's why this isn't
-        # part of the CUDA interface target.
-        target_compile_options("${TARGET}" PRIVATE -fscale-addrspaces)
-    endif()
+    # We want non-CUDA C++ code that's part of a CUDA project to use enhanced address spaces, but we don't want to
+    # require that any resulting library can only be used by stuff compiled with our compiler. That's why this isn't
+    # part of the CUDA interface target.
+    target_optional_compile_options("${TARGET}" PRIVATE -fscale-addrspaces)
 endfunction()
 
 # Add an executable that uses CUDA.
