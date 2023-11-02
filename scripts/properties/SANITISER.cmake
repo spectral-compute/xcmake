@@ -54,6 +54,7 @@ target_link_options(Undefined_SANITISER_EFFECTS INTERFACE
     -fsanitize=undefined
     -fno-sanitize-recover=undefined
     -fsanitize=unsigned-integer-overflow
+    -lubsan
 )
 
 target_link_libraries(Address_SANITISER_EFFECTS INTERFACE common_SANITISER_EFFECTS)
