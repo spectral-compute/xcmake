@@ -12,6 +12,8 @@
 #   RESULT The name of the variable to write the list of dependencies to.
 #   RELATIVE If set, the resulting list will be relative to this location. Only headers that are in this location will
 #            be returned.
+#   TARGET Extract include directories, macrodefs, etc. from the given target. Generator expressions are ignored, as are
+#          macros/incdirs added after the call to this function.
 #
 # Multi-value arguments:
 #   SOURCES The list of source files to get dependencies for. The result is the union of the dependencies of all the
@@ -20,7 +22,19 @@
 #   DEFINES A list of defines (with the -D) to be given to the compiler. This affects the dependencies if some of the
 #           includes are wrapped in #ifdefs.
 function (get_cpp_dependencies)
-    cmake_parse_arguments("args" "INCLUDE_SELF" "RELATIVE;RESULT" "SOURCES;INCLUDE_PATHS;DEFINES" ${ARGN})
+    cmake_parse_arguments("args" "INCLUDE_SELF" "RELATIVE;RESULT;TARGET" "SOURCES;INCLUDE_PATHS;DEFINES" ${ARGN})
+
+    if (TARGET ${args_TARGET})
+        get_target_property(INCS ${args_TARGET} INCLUDE_DIRECTORIES)
+        get_target_property(IINCS ${args_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
+        foreach (F IN LISTS IINCS INCS)
+            if (F) # Omit "NOTFOUND"s
+                list(APPEND args_INCLUDE_PATHS ${F})
+            endif()
+        endforeach ()
+    endif()
+
+    print_list(STATUS RED args_INCLUDE_PATHS)
 
     # Figure out the arguments that apply for each source file.
     set(args -MM ${args_DEFINES})
@@ -39,16 +53,15 @@ function (get_cpp_dependencies)
         endif()
 
         # Turn the output into a semicolon-separated list.
-        string(REGEX REPLACE "\\\\ " "|" source_deps "${source_deps}")
-        string(REGEX REPLACE " *\\\n| +" ";" source_deps "${source_deps}")
-        string(REGEX REPLACE "[|]" " " source_deps "${source_deps}")
+        string(REGEX REPLACE "\n" "" source_deps "${source_deps}")
+        string(REGEX REPLACE " *\\\\ *" ";" source_deps "${source_deps}")
 
         # The first item in the list is a fictional object file.
-        list(REMOVE_AT source_deps 0)
+        list(POP_FRONT source_deps)
 
         # The next item in the list is the source itself.
         if (NOT args_INCLUDE_SELF)
-            list(REMOVE_AT source_deps 0)
+            list(POP_FRONT source_deps)
         endif()
 
         # Accumulate the dependencies as absolute paths.
