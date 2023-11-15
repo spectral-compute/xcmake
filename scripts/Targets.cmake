@@ -564,15 +564,22 @@ function(add_library TARGET)
     set_property(TARGET ${TARGET} APPEND PROPERTY INTERFACE_DLL_SEARCH_PATHS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
     if (NOT args_NOINSTALL)
-        if (NOT args_NOEXPORT)
-            set(EXPORT_FLAGS EXPORT ${PROJECT_NAME})
-        endif()
-        install(TARGETS ${TARGET} ${EXPORT_FLAGS}
-            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-        )
+        install_library(${TARGET} ${ARGN})
     endif()
+endfunction()
+
+function(install_library TARGET)
+    cmake_parse_arguments(args "NOEXPORT" "" "" ${ARGN})
+    if (NOT args_NOEXPORT)
+        set(EXPORT_FLAGS EXPORT ${PROJECT_NAME})
+    endif()
+    install(
+        TARGETS ${TARGET} ${EXPORT_FLAGS}
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    )
 endfunction()
 
 function(add_executable TARGET)
