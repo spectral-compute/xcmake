@@ -22,19 +22,21 @@
 #   DEFINES A list of defines (with the -D) to be given to the compiler. This affects the dependencies if some of the
 #           includes are wrapped in #ifdefs.
 function (get_cpp_dependencies)
-    cmake_parse_arguments("args" "INCLUDE_SELF" "RELATIVE;RESULT;TARGET" "SOURCES;INCLUDE_PATHS;DEFINES" ${ARGN})
+    cmake_parse_arguments("args" "INCLUDE_SELF" "RELATIVE;RESULT" "TARGETS;SOURCES;INCLUDE_PATHS;DEFINES" ${ARGN})
 
-    if (TARGET ${args_TARGET})
-        get_target_property(INCS ${args_TARGET} INCLUDE_DIRECTORIES)
-        get_target_property(IINCS ${args_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
+    foreach(_TGT IN LISTS args_TARGETS)
+        get_target_property(INCS ${_TGT} INCLUDE_DIRECTORIES)
+        get_target_property(IINCS ${_TGT} INTERFACE_INCLUDE_DIRECTORIES)
         foreach (F IN LISTS IINCS INCS)
             if (F) # Omit "NOTFOUND"s
-                list(APPEND args_INCLUDE_PATHS ${F})
+                string(REGEX REPLACE "\\$<BUILD_INTERFACE:([^>]+)>" "\\1" F "${F}")
+                string(GENEX_STRIP F "${F}")
+                if (NOT "${F}" STREQUAL "")
+                    list(APPEND args_INCLUDE_PATHS ${F})
+                endif()
             endif()
         endforeach ()
-    endif()
-
-    print_list(STATUS RED args_INCLUDE_PATHS)
+    endforeach()
 
     # Figure out the arguments that apply for each source file.
     set(args -MM ${args_DEFINES})
@@ -53,8 +55,9 @@ function (get_cpp_dependencies)
         endif()
 
         # Turn the output into a semicolon-separated list.
-        string(REGEX REPLACE "\n" "" source_deps "${source_deps}")
-        string(REGEX REPLACE " *\\\\ *" ";" source_deps "${source_deps}")
+        string(REGEX REPLACE "[\n|\\|]" " " source_deps "${source_deps}")
+        string(REGEX REPLACE " +" ";" source_deps "${source_deps}")
+        string(REGEX REPLACE ";^" "" source_deps "${source_deps}")
 
         # The first item in the list is a fictional object file.
         list(POP_FRONT source_deps)
