@@ -8,6 +8,7 @@
 # FILTER_INCLUDE_REGEX If given, then no header will be included that does not match at least one of the given regular
 #                      expressions.
 # FILTER_EXCLUDE_REGEX No header will be included that matches at least one of the given regular expressions.
+# HEADER_FILES Extra header files (mostly useful for header files with stupid file extensions).
 #
 # The following options run pcpp. Note that this has a few quirks, such as stripping #pragma once.
 # DEFINE_MACRO Define a macro to be expanded during partial preprocessing.
@@ -18,7 +19,7 @@ function(add_headers TARGET)
     set(flags COMPRESS)
     set(oneValueArgs HEADER_PATH INSTALL_DESTINATION)
     set(multiValueArgs FILTER_INCLUDE FILTER_EXCLUDE FILTER_INCLUDE_REGEX FILTER_EXCLUDE_REGEX
-                       DEFINE_MACRO UNDEFINE_MACRO)
+                       DEFINE_MACRO UNDEFINE_MACRO HEADER_FILES)
     cmake_parse_arguments("h" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Make the target object for building unconditionally.
@@ -36,6 +37,9 @@ function(add_headers TARGET)
         "${SRC_INCLUDE_DIR}/*.cuh"
         "${SRC_INCLUDE_DIR}/*.h"
     )
+    foreach (EXTRA_H ${h_HEADER_FILES})
+        list(APPEND SRC_HEADER_FILES "${EXTRA_H}")
+    endforeach ()
 
     # Find PCPP if we're going to use it.
     if (h_DEFINE_MACRO OR h_UNDEFINE_MACRO OR h_COMPRESS)
