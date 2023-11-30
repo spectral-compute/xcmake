@@ -8,7 +8,7 @@ endif()
 
 add_external_project(docopt_proj
     GIT_REPOSITORY https://github.com/docopt/docopt.cpp.git
-    GIT_TAG 72a8e3e01effe22ac0f4e29c14153743172efcb5
+    GIT_TAG 42ebcec9dc2c99a1b3a4542787572045763ad196
     CMAKE
     CXX_FLAGS "${DOCOPT_FLAGS}"
     SHARED_LIBRARIES docopt
