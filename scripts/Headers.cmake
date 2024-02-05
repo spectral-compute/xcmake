@@ -105,9 +105,12 @@ function(add_headers TARGET)
         )
 
         # Partially pre-process.
-        add_custom_target(${FILE_TGT}_PCPP)
+        set(HEADER_PROCESS_DEPENDENCIES)
         set(FULL_HDR_PATH "${FULL_SRC_HDR_PATH}")
         if (PCPP_DIR)
+            add_custom_target(${FILE_TGT}_PCPP)
+            list(APPEND HEADER_PROCESS_DEPENDENCIES ${FILE_TGT}_PCPP)
+
             set(FULL_HDR_PATH "${PCPP_DIR}/${SRC_HDR_FILE}")
             get_filename_component(FULL_HDR_PATH_DIR "${FULL_HDR_PATH}" DIRECTORY)
             file(MAKE_DIRECTORY "${FULL_HDR_PATH_DIR}")
@@ -150,13 +153,13 @@ function(add_headers TARGET)
         if (NOT WIN32)
             add_custom_command(OUTPUT "${OUTPUT_HDR_PATH}" APPEND
                 COMMAND ${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh "${FULL_HDR_PATH}" ${XCMAKE_SANITISE_TRADEMARKS}
-                DEPENDS ${FILE_TGT}_PCPP
+                DEPENDS ${HEADER_PROCESS_DEPENDENCIES}
             )
         endif()
 
         add_custom_command(OUTPUT "${OUTPUT_HDR_PATH}" APPEND
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FULL_HDR_PATH}" "${OUTPUT_HDR_PATH}"
-            DEPENDS ${FILE_TGT}_PCPP
+            DEPENDS ${HEADER_PROCESS_DEPENDENCIES}
         )
         add_custom_target(${FILE_TGT}
             DEPENDS "${OUTPUT_HDR_PATH}"
