@@ -15,7 +15,7 @@ target_compile_definitions(ASSERTIONS_EFFECTS INTERFACE
     -DENABLE_ASSERTIONS
 
     # Enable assertions baked into the gnu STL.
-    -D_GLIBCXX_DEBUG
+    -D_GLIBCXX_ASSERTIONS
 
     # Enable libc++ assertions, too.
     -D_LIBCPP_ENABLE_ASSERTIONS
