@@ -12,7 +12,6 @@ cert-flp30-c,\
 cppcoreguidelines-interfaces-global-init,\
 cppcoreguidelines-no-malloc,\
 cppcoreguidelines-slicing,\
-google-explicit-constructor,\
 google-runtime-member-string-references,\
 llvm-namespace-comment,\
 misc-assert-side-effect,\
