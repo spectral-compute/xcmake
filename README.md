@@ -159,7 +159,7 @@ Warnings are errors.
 ## CUDA Support
 
 Although CMake now has native support for CUDA, it's hardcoded to use nvcc. XCMake provides convenient CUDA support
-that supports `clang` as well as `nvcc`, and allows targeting AMD GPUs if spectral-clang and amdcuda are present.
+that supports `clang` as well as `nvcc`, and allows targeting AMD GPUs if spectral-clang and redscale are present.
 
 Select GPU target(s) with `-DXCMAKE_GPUS=x,y,z`. Arguments can be NVIDIA targets (eg `sm_61`) or AMD ones.
 Mixing the two will work iff we've added that feature to the compiler yet. If unspecified, the GPUs in the build machine

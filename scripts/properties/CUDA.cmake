@@ -46,16 +46,16 @@ macro (populate_cuda_property)
     endif()
 
     if ("${XCMAKE_GPU_TYPE}" STREQUAL "amd")
-        find_package(AmdCuda REQUIRED)
+        find_package(redscale REQUIRED)
 
         target_compile_options(CUDA_FLAGS INTERFACE
-            --cuda-path=$<SHELL_PATH:${AMDCUDA_TOOLKIT_ROOT_DIR}>
+            --cuda-path=$<SHELL_PATH:${redscale_TOOLKIT_ROOT_DIR}>
             # The GPU targets selected...
             --cuda-gpu-arch=$<JOIN:${TARGET_AMD_GPUS}, --cuda-gpu-arch=>
         )
-        target_link_libraries(CUDA_EFFECTS INTERFACE AmdCuda::amdcuda)
+        target_link_libraries(CUDA_EFFECTS INTERFACE redscale::redscale)
 
-        message(BOLD_RED "Using AMD CUDA from ${AMDCUDA_TOOLKIT_ROOT_DIR}")
+        message(BOLD_RED "Using AMD CUDA from ${redscale_TOOLKIT_ROOT_DIR}")
     elseif ("${XCMAKE_GPU_TYPE}" STREQUAL "nvidia")
         find_package(CUDAToolkit 8.0 REQUIRED)
         target_link_libraries(CUDA_EFFECTS INTERFACE CUDA::cudart)

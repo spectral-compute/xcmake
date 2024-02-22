@@ -7,8 +7,8 @@ function(getCudaFatbinLinker DST ARCH)
         find_package(CUDA 8.0 REQUIRED)
         set(cudaPath "${CUDA_TOOLKIT_ROOT_DIR}")
     else()
-        find_package(AmdCuda REQUIRED)
-        set(cudaPath "${AMDCUDA_TOOLKIT_ROOT_DIR}")
+        find_package(redscale REQUIRED)
+        set(cudaPath "${redscale_TOOLKIT_ROOT_DIR}")
     endif()
 
     execute_process(COMMAND ${CMAKE_COMMAND} -E echo
