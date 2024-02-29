@@ -39,6 +39,21 @@ endfunction()
 
 option(XCMAKE_CHECK_COMPILE_FLAGS "Check compiler flag compatibility at CMAKE configure time" ON)
 
+macro(check_cuda_compiler_flag FLAG OUTVAR)
+    if (DEFINED ${OUTVAR})
+    else()
+        message(BLUE "Performing Test (NVCC) ${OUTVAR}")
+        execute_process(COMMAND ${CMAKE_CUDA_COMPILER} "${FLAG}" ERROR_VARIABLE NVCC_OUT)
+        if ("${NVCC_OUT}" MATCHES "Unknown option" OR "${NVCC_OUT}" MATCHES "Unknown argument")
+            message(BLUE "Performing Test (NVCC) ${OUTVAR}${RST} - ${YELLOW}Failed${RST}")
+            set(${OUTVAR} 0 CACHE BOOL "")
+        else()
+            message(BLUE "Performing Test (NVCC) ${OUTVAR}${RST} - ${GREEN}Success${RST}")
+            set(${OUTVAR} 1 CACHE BOOL "")
+        endif()
+    endif()
+endmacro()
+
 # Try to add some compile options, but - for each one - only do so if the compiler accepts them.
 # This is useful for things like warning or optimisation flags that aren't strictly required, but are
 # preferred. It means your cmake script can work with lots of different compiler versions without the need
@@ -55,7 +70,6 @@ option(XCMAKE_CHECK_COMPILE_FLAGS "Check compiler flag compatibility at CMAKE co
 function(target_optional_compile_options TARGET)
     if (XCMAKE_USE_NVCC)
         # You may not have nice things
-        message(WARNING "Optional compiler options not allowed with NVCC")
         return()
     endif()
 
@@ -72,14 +86,19 @@ function(target_optional_compile_options TARGET)
 
     foreach (_F ${d_UNPARSED_ARGUMENTS})
         string(MAKE_C_IDENTIFIER ${_F} CACHE_VAR)
+        set(CACHE_VAR_CUDA ${CACHE_VAR}_CUDA)
         if (XCMAKE_CHECK_COMPILE_FLAGS)
             check_cxx_compiler_flag(${_F} ${CACHE_VAR})
+            check_cuda_compiler_flag(${_F} ${CACHE_VAR_CUDA})
         else ()
             set(${CACHE_VAR} 1)
         endif ()
 
         if (${CACHE_VAR})
-            target_compile_options(${TARGET} ${MAYBE_BEFORE} ${KEYWORD} ${_F})
+            target_compile_options(${TARGET} ${MAYBE_BEFORE} ${KEYWORD} $<$<COMPILE_LANGUAGE:C,CXX>:${_F}>)
+        endif ()
+        if (${CACHE_VAR_CUDA})
+            target_compile_options(${TARGET} ${MAYBE_BEFORE} ${KEYWORD} $<$<COMPILE_LANGUAGE:CUDA>:${_F}>)
         endif ()
     endforeach ()
 endfunction()
