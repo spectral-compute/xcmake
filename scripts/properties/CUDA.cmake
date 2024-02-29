@@ -104,7 +104,7 @@ macro (populate_cuda_property)
             target_compile_options(CUDA_FLAGS INTERFACE -fcuda-disable-symbol-hashing)
         endif()
 
-        message(BOLD_GREEN "Using NVIDIA CUDA ${CUDA_VERSION_STRING} from ${CUDA_TOOLKIT_ROOT_DIR}")
+        message(BOLD_GREEN "Using NVIDIA CUDA ${CUDAToolkit_VERSION} from ${CUDAToolkit_BIN_DIR}/../")
     else()
         target_compile_options(CUDA_FLAGS INTERFACE --cuda-works-better-if-you-enable-gpu-support-in-xcmake) # :D
     endif()
