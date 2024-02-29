@@ -58,10 +58,10 @@ if (XCMAKE_PACKAGING)
     endif()
 
     if (NOT XCMAKE_SANITISE_TRADEMARKS)
-        warning(Off "Packaging is enabled, but trademark sanitisation is not.")
+        warning("Packaging is enabled, but trademark sanitisation is not.")
     endif()
     if (NOT XCMAKE_ENABLE_DOCS)
-        warning(Off "Packaging is enabled, but documentation generation is not. The produced package will have no documentation!")
+        warning("Packaging is enabled, but documentation generation is not. The produced package will have no documentation!")
     endif()
 
     message(BOLD_RED "-----------------------------------------------------------------")
