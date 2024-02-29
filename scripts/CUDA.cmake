@@ -153,6 +153,9 @@ function(add_cuda_to_target TARGET)
     # require that any resulting library can only be used by stuff compiled with our compiler. That's why this isn't
     # part of the CUDA interface target.
     target_optional_compile_options("${TARGET}" PRIVATE -fscale-addrspaces)
+
+    # Tell cmake that all the files are CXX-language, so our legacy CUDA support can do its thing.
+    fix_source_file_properties(${TARGET})
 endfunction()
 
 # Add an executable that uses CUDA.

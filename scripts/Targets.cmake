@@ -553,7 +553,6 @@ function(add_library TARGET)
     ensure_not_interface(${TARGET})
 
     apply_global_effects(${TARGET})
-    fix_source_file_properties(${TARGET})
 
     # Apply our custom properties...
     apply_default_standard_properties(${TARGET})
@@ -599,7 +598,6 @@ function(add_executable TARGET)
     apply_default_properties(${TARGET})
     apply_effect_groups(${TARGET})
     apply_global_effects(${TARGET})
-    fix_source_file_properties(${TARGET})
 
     if (NOT args_NOINSTALL)
         install(TARGETS ${TARGET} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
@@ -715,19 +713,6 @@ function(propogate_dll_paths KEYWORD TARGET LINKED)
     if (NOT "${KEYWORD}" STREQUAL "PRIVATE")
         set_property(TARGET ${TARGET} APPEND PROPERTY INTERFACE_DLL_SEARCH_PATHS ${LINKED_PATHS_CONTENT})
     endif()
-endfunction()
-
-# Override target_sources to call fix_source_file_properties() again each time. Not exactly efficient, but it does
-# the trick :D
-# TODO: a more elaborate override that only iterates _new_ source files for the iteration. If we ever care enough about
-#       performance...
-# Note that cmake's default behaviour doesn't actually require true file names for input sources: it will automatically
-# try with various file extensions. Replicating that behaviour is much of why doing the incremental version of this
-# function would be a bit more fiddly than I can be bothered with just now.
-function (target_sources TARGET)
-    _target_sources(${TARGET} ${ARGN})
-
-    fix_source_file_properties(${TARGET})
 endfunction()
 
 # This function adds a build-time command to run an external script finding DLLs
