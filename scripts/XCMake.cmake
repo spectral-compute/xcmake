@@ -73,3 +73,7 @@ if (XCMAKE_PACKAGING)
 else()
     set(COMPONENT_INSTALL_ROOT)
 endif()
+
+# A handy place to put generated files.
+set(XCMAKE_GENERATED_DIR ${CMAKE_BINARY_DIR}/generated)
+file(MAKE_DIRECTORY "${XCMAKE_GENERATED_DIR}")

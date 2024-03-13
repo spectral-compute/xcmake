@@ -234,7 +234,7 @@ function (add_manual_generator LIB_NAME)
     # Create a directory for the script to write its output to.
     get_filename_component(SCRIPT_DIR "${d_SCRIPT}" DIRECTORY)
     get_filename_component(SCRIPT_FILE "${d_SCRIPT}" NAME)
-    set(INTERMEDIATE_BASE_DIR "${CMAKE_BINARY_DIR}/generated/${TARGET}")
+    set(INTERMEDIATE_BASE_DIR "${XCMAKE_GENERATED_DIR}/${TARGET}")
     set(INTERMEDIATE_DIR "${INTERMEDIATE_BASE_DIR}/${SCRIPT_DIR}")
     file(MAKE_DIRECTORY "${INTERMEDIATE_DIR}")
 

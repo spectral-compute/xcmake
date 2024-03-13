@@ -489,7 +489,7 @@ function(add_export_header TARGET)
     endif()
 
     # Make somewhere to put the header.
-    set(EXPORT_HEADER_DIR ${CMAKE_BINARY_DIR}/generated/exportheaders)
+    set(EXPORT_HEADER_DIR ${XCMAKE_GENERATED_DIR}/exportheaders)
     file(MAKE_DIRECTORY ${EXPORT_HEADER_DIR})
     target_include_directories(${TARGET} PUBLIC $<BUILD_INTERFACE:${EXPORT_HEADER_DIR}/${args_INCLUDE_PATH_SUFFIX}>)
 
