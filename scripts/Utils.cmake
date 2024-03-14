@@ -48,3 +48,9 @@ function (path_to_slashes PATH OUTVAR)
     string(REGEX REPLACE "//" "/" DOTSLASHES "${DOTSLASHES}")
     set(${OUTVAR} ${DOTSLASHES} PARENT_SCOPE)
 endfunction()
+
+# Given a path a file we want to make, ensure the corresponding directory exists.
+function (ensure_directory FILEPATH)
+    get_filename_component(DIR "${FILEPATH}" DIRECTORY)
+    file(MAKE_DIRECTORY "${DIR}")
+endfunction()

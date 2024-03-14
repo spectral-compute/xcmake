@@ -75,5 +75,5 @@ else()
 endif()
 
 # A handy place to put generated files.
-set(XCMAKE_GENERATED_DIR ${CMAKE_BINARY_DIR}/generated)
+set(XCMAKE_GENERATED_DIR ${CMAKE_BINARY_DIR}/generated CACHE INTERNAL "")
 file(MAKE_DIRECTORY "${XCMAKE_GENERATED_DIR}")
