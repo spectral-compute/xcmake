@@ -79,13 +79,10 @@ function(OPT_LEVEL_EFFECTS TARGET)
         )
     endif()
 
-    # Filter on Windows until Clang issue #270 is properly resolved
-    if (NOT WIN32)
-        target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
-            # An experimental but years-old optimisation.
-            -fstrict-vtable-pointers
-        )
-    endif()
+    target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
+        # An experimental but years-old optimisation.
+        -fstrict-vtable-pointers
+    )
 
     # I realise this is ridiculous.
     target_link_libraries(
