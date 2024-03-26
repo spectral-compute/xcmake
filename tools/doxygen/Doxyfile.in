@@ -2899,3 +2899,7 @@ MSCGEN_TOOL            =
 # command).
 
 MSCFILE_DIRS           =
+
+# Add the project-specific Doxygen overrides.
+# Don't forget that it's legal to use `+=` to append to lists in those...
+@DOXYFILE_SUFFIX_PAYLOAD@
