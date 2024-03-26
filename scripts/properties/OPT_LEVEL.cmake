@@ -12,7 +12,7 @@ define_xcmake_target_property(
     VALID_VALUES none debug size safe unsafe
 )
 
-# This one has to be funtion-style so we can run a generator expression on TARGET.
+# This one has to be function-style so we can run a generator expression on TARGET.
 function(OPT_LEVEL_EFFECTS TARGET)
     add_library(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE)
     add_library(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE)
@@ -54,8 +54,8 @@ function(OPT_LEVEL_EFFECTS TARGET)
 
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         # NVCC does nothing, since O2 is the default, and it doesn't accept it twice!
-        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2>                      # MSVC
-        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Ofast>       # Clang
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2>
+        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Ofast -fwhole-program-vtables>
     )
 
     # In optimising builds, have the linker delete unused sections.
