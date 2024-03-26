@@ -56,6 +56,8 @@ function(add_swig_bindings_to TARGET)
             OUTFILE_DIR ${SWIG_GENSRC_DIR}
             SOURCES ${h_SOURCES}
         )
+        # Politely ask for some Python that doesn't segfault, please. Defaults that work? Nahhh.
+        target_compile_definitions(${SWIG_TARGET} PRIVATE -DPy_LIMITED_API=0x03040000)
         set_target_properties(${SWIG_TARGET}
             PROPERTIES WERROR OFF
             CXX_CLANG_TIDY ""
