@@ -67,6 +67,7 @@ function(add_swig_bindings_to TARGET)
             # the goal is to turn off warnings introduced by SWIG, but leave enough enabled that actual issues with the input
             # program headers will get shown.
             -Wno-zero-as-null-pointer-constant
+            -Wno-deprecated-non-prototype
             -Wno-unused-macros
             -Wno-used-but-marked-unused
             -Wno-extra-semi-stmt
