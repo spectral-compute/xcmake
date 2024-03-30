@@ -1,9 +1,5 @@
-if (WIN32)
-    # On Windows, there's a bug that causes an infinite loop in older versions of cmake.
-    cmake_minimum_required(VERSION 3.19)
-else ()
-    cmake_minimum_required(VERSION 3.18)
-endif()
+cmake_minimum_required(VERSION 3.26)
+
 if (XCMAKE_INCLUDED)
     return()
 endif ()

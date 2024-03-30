@@ -91,18 +91,9 @@ function(add_swig_bindings_to TARGET)
         )
         # Language-specific magic goes here.
         if (${LANG} STREQUAL python)
-            # For Python bindings, we need Python libraries and stuff.
-            # If the user has specified a version to link against then use this; otherwise, use any version
-
-            if (DEFINED XCMAKE_SWIG_PY_VER)
-                message(STATUS "Using Python ${XCMAKE_SWIG_PY_VER}.")
-                find_package(Python ${XCMAKE_SWIG_PY_VER} EXACT COMPONENTS Development.Module REQUIRED)
-                target_link_libraries(${SWIG_TARGET} PRIVATE Python::Module)
-            else()
-                message(STATUS "Python version to link against not specified. Using any available version.")
-                find_package(Python COMPONENTS Development.Module REQUIRED)
-            endif()
-            target_link_libraries(${SWIG_TARGET} PRIVATE Python::Module)
+            # we want to link against the Stable Application Binary Interface (requires CMake >= 3.26)
+            find_package(Python COMPONENTS Development.SABIModule REQUIRED)
+            target_link_libraries(${SWIG_TARGET} PRIVATE Python::SABIModule)
 
             # All python exceptions must inherit from BaseException, but SWIG fails to do this.
             # sed on macOS requires the backup file to be created whenever to -i option is specified
