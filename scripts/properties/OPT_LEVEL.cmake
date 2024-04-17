@@ -61,8 +61,11 @@ function(OPT_LEVEL_EFFECTS TARGET)
     # In optimising builds, have the linker delete unused sections.
     # Note that this *does* do something even without `-ffunction-sections` (and you definitely do not
     # want `-ffunction-sections`, since it hurts performance and LTO does a much better job anyway.
-    target_link_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE "LINKER:--gc-sections")
-    target_link_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE "LINKER:--gc-sections")
+    # This causes an error on the macOS build server
+    if (NOT APPLE)
+        target_link_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE "LINKER:--gc-sections")
+        target_link_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE "LINKER:--gc-sections")
+    endif()
 
     # There are also CUDA translation unit specific flags, predicated on the
     # OPT_LEVEL target property, defined in CUDA.cmake
