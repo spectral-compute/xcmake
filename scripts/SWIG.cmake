@@ -76,6 +76,8 @@ function(add_swig_bindings_to TARGET)
             -Wno-suggest-override
             -Wno-deprecated-copy-with-user-provided-dtor
             -Wno-cast-qual
+            -Wno-disabled-macro-expansion
+            -Wno-conditional-uninitialized # Oh dear.
         )
         target_link_libraries(${SWIG_TARGET} PRIVATE ${TARGET})
         target_include_directories(${SWIG_TARGET} PRIVATE "${h_INCLUDE_DIRS}")
