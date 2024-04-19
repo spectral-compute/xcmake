@@ -13,7 +13,7 @@ add_external_project(zlib_proj
     GIT_TAG           v1.2.12
     CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF
-    C_FLAGS "${COMPILE_OPTIONS}"
+    C_FLAGS "${COMPILE_OPTIONS} -Wno-deprecated-non-prototype"
     STATIC_LIBRARIES
         ${LIB_NAME}
 )
