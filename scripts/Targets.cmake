@@ -410,17 +410,11 @@ function(apply_default_standard_properties TARGET)
         )
 
         # Dynamically-link the windows C++ standard library unless static linking is specified.
-        if (XCMAKE_STATIC_STDCXXLIB)
-            set(IS_DLL "")
-        else()
-            set(IS_DLL "DLL")
-        endif()
-
         # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
         # This is _technically_ defaulted to by /MT
         set_target_properties(${TARGET}
             PROPERTIES
-            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>${IS_DLL}"
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>$<IF:$<TARGET_PROPERTY:STATIC_STDCXXLIB>,,DLL>"
         )
     endif ()
 endfunction()
