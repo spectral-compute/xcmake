@@ -414,7 +414,7 @@ function(apply_default_standard_properties TARGET)
         # This is _technically_ defaulted to by /MT
         set_target_properties(${TARGET}
             PROPERTIES
-            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>$<IF:$<TARGET_PROPERTY:STATIC_STDCXXLIB>,,DLL>"
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>$<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},STATIC_STDCXXLIB>>,,DLL>"
         )
     endif ()
 endfunction()
