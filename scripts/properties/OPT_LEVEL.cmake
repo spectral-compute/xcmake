@@ -14,6 +14,10 @@ define_xcmake_target_property(
 
 # This one has to be function-style so we can run a generator expression on TARGET.
 function(OPT_LEVEL_EFFECTS TARGET)
+    # Bits and pieces to build the optimization levels below.
+    set(IS_CLANG $<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>)
+
+    # Individual optimization levels.
     add_library(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE)
     add_library(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE)
     add_library(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE)
@@ -23,7 +27,7 @@ function(OPT_LEVEL_EFFECTS TARGET)
     target_compile_options(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE
             $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O0>                   # NVCC
             $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/Od>                      # MSVC
-            $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-O0>          # Clang
+            $<${IS_CLANG}:-O0>
     )
     target_optional_compile_options(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE
         -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
@@ -32,14 +36,14 @@ function(OPT_LEVEL_EFFECTS TARGET)
     target_compile_options(${TARGET}_size_OPT_LEVEL_EFFECTS INTERFACE
         $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O2>                   # NVCC
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O1>                      # O1 is "optimise for size" on MSVC...
-        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Oz>          # Clang
+        $<${IS_CLANG}:-Oz>
         # Can probably do more here if you care enough to bother...
     )
 
     target_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
         $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O0>                   # NVCC
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/Od>                      # MSVC
-        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Og>          # Clang
+        $<${IS_CLANG}:-Og>
     )
     target_optional_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
         -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
@@ -48,7 +52,7 @@ function(OPT_LEVEL_EFFECTS TARGET)
     target_compile_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE
         $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O2>                   # NVCC
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2 /Ob2>                 # MSVC
-        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-O3>          # Clang
+        $<${IS_CLANG}:-O3>
     )
     target_optional_compile_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE
         -finline-functions
@@ -57,7 +61,7 @@ function(OPT_LEVEL_EFFECTS TARGET)
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         # NVCC does nothing, since O2 is the default, and it doesn't accept it twice!
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2 /Ob2>
-        $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Ofast -fwhole-program-vtables>
+        $<${IS_CLANG}:-Ofast -fwhole-program-vtables>
     )
     target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         -finline-functions
