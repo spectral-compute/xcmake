@@ -87,6 +87,12 @@ function(OPT_LEVEL_EFFECTS TARGET)
         -fstrict-vtable-pointers
     )
 
+    # When LTO is enabled, copy the compiler arguments to the linker.
+    foreach (LEVEL IN ITEMS none debug size safe unsafe)
+        target_link_options(${TARGET}_${LEVEL}_OPT_LEVEL_EFFECTS INTERFACE
+                            $<TARGET_PROPERTY:${TARGET}_${LEVEL}_OPT_LEVEL_EFFECTS,INTERFACE_COMPILE_OPTIONS>)
+    endforeach()
+
     # I realise this is ridiculous.
     target_link_libraries(
         ${TARGET} PRIVATE
