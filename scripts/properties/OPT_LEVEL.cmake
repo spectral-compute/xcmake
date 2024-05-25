@@ -41,7 +41,6 @@ function(OPT_LEVEL_EFFECTS TARGET)
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/Od>                      # MSVC
         $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Og>          # Clang
     )
-
     target_optional_compile_options(${TARGET}_debug_OPT_LEVEL_EFFECTS INTERFACE
         -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
     )
