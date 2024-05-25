@@ -47,14 +47,20 @@ function(OPT_LEVEL_EFFECTS TARGET)
 
     target_compile_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE
         $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O2>                   # NVCC
-        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2>                      # MSVC
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2 /Ob2>                 # MSVC
         $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-O3>          # Clang
+    )
+    target_optional_compile_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE
+        -finline-functions
     )
 
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         # NVCC does nothing, since O2 is the default, and it doesn't accept it twice!
-        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2>
+        $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2 /Ob2>
         $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Ofast -fwhole-program-vtables>
+    )
+    target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
+        -finline-functions
     )
 
     # In optimising builds, have the linker delete unused sections.
@@ -64,21 +70,6 @@ function(OPT_LEVEL_EFFECTS TARGET)
     if (NOT APPLE)
         target_link_options(${TARGET}_safe_OPT_LEVEL_EFFECTS INTERFACE "LINKER:--gc-sections")
         target_link_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE "LINKER:--gc-sections")
-    endif()
-
-    # There are also CUDA translation unit specific flags, predicated on the
-    # OPT_LEVEL target property, defined in CUDA.cmake
-
-    # CMake unhelpfully adds inline configuration flags that differ between Release and
-    # RelWithDebInfo, so we take back control here.
-    if (MSVC)
-        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
-            $<$<COMPILE_LANGUAGE:CXX>:/Ob2>  # ... But only do this when compiling C++, not CUDA.
-        )
-    else()
-        target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
-            $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-finline-functions>
-        )
     endif()
 
     target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
