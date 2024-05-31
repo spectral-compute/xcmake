@@ -2,7 +2,10 @@
 #
 # TARGET The name of the target to create.
 # HEADER_PATH Where to find the headers to process.
+# BUILD_DESTINATION Where to put the headers in the build tree. This is useful to merge multiple header directories
+#                   together such that they can reference each other with relative paths.
 # INSTALL_DESTINATION A subdirectory within include to install to.
+# FORMAT The argument to give to clang-format's -style. If not given, clang-format will not run.
 # FILTER_INCLUDE If given, only the exact entries in this list are added.
 # FILTER_EXCLUDE No exact entry in this list is added.
 # FILTER_INCLUDE_REGEX If given, then no header will be included that does not match at least one of the given regular
@@ -13,13 +16,14 @@
 # The following options run pcpp. Note that this has a few quirks, such as stripping #pragma once.
 # DEFINE_MACRO Define a macro to be expanded during partial preprocessing.
 # UNDEFINE_MACRO Undefine a macro to declare that it is to be treated as never to be defined during partial expanded.
+# NEVERDEFINE_MACRO Never define the given macro, even if it's defined in the input.
 # COMPRESS Compress the header. This is useful because otherwise, pcpp leaves newlines where stuff removed from
 #          evaluated #ifs was.
 function(add_headers TARGET)
     set(flags COMPRESS)
-    set(oneValueArgs HEADER_PATH INSTALL_DESTINATION)
+    set(oneValueArgs HEADER_PATH BUILD_DESTINATION INSTALL_DESTINATION FORMAT ENTRY)
     set(multiValueArgs FILTER_INCLUDE FILTER_EXCLUDE FILTER_INCLUDE_REGEX FILTER_EXCLUDE_REGEX
-                       DEFINE_MACRO UNDEFINE_MACRO HEADER_FILES)
+                       DEFINE_MACRO UNDEFINE_MACRO NEVERDEFINE_MACRO HEADER_FILES INCLUDE_PATH)
     cmake_parse_arguments("h" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Make the target object for building unconditionally.
@@ -28,7 +32,12 @@ function(add_headers TARGET)
     # We're going to construct a shadow header directory in the object directory, and install that. This lets us
     # apply transformations to the headers as part of the build process (such as expanding some preprocessor macros).
     set(SRC_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/${h_HEADER_PATH}")
-    set(DST_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include/${TARGET}")
+
+    if ("${h_BUILD_DESTINATION}" STREQUAL "")
+        set(DST_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include/${TARGET}")
+    else()
+        set(DST_INCLUDE_DIR "${h_BUILD_DESTINATION}")
+    endif()
 
     file(MAKE_DIRECTORY "${DST_INCLUDE_DIR}")
 
@@ -42,7 +51,7 @@ function(add_headers TARGET)
     endforeach ()
 
     # Find PCPP if we're going to use it.
-    if (h_DEFINE_MACRO OR h_UNDEFINE_MACRO OR h_COMPRESS)
+    if (h_DEFINE_MACRO OR h_UNDEFINE_MACRO OR h_NEVERDEFINE_MACRO OR h_COMPRESS)
         set(PCPP_DIR "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}/pcpp")
         find_program(PCPP pcpp REQUIRED DOC "Python C PreProcessor program.")
     else()
@@ -128,6 +137,9 @@ function(add_headers TARGET)
             foreach (MACRO IN LISTS h_UNDEFINE_MACRO)
                 list(APPEND PCPP_ARGS -U "${MACRO}")
             endforeach()
+            foreach (MACRO IN LISTS h_NEVERDEFINE_MACRO)
+                list(APPEND PCPP_ARGS -N "${MACRO}")
+            endforeach()
 
             # Run pcpp.
             add_custom_command(
@@ -142,6 +154,7 @@ function(add_headers TARGET)
                         --passthru-includes ".*" # Don't try to inline inclusions.
                         --disable-auto-pragma-once # Don't mangle #pragma once.
                         --line-directive # Disable insertion of line directives (yes, this flag does that).
+                        -U__XCMAKE_PREPROCESS_FINAL_UNDEF__ # This is the last preprocessing step.
                         "${PCPP_ARGS}" -o "${FULL_HDR_PATH}" "${FULL_SRC_HDR_PATH}"
                 COMMAND ${XCMAKE_TOOLS_DIR}/deduplicate_newlines.sh "${FULL_HDR_PATH}"
                 DEPENDS "${FULL_SRC_HDR_PATH}" ${XCMAKE_TOOLS_DIR}/deduplicate_newlines.sh
@@ -181,4 +194,155 @@ function(add_headers TARGET)
 
     # Transplant the entire output header directory into the right part of the install tree.
     install(DIRECTORY ${DST_INCLUDE_DIR}/ DESTINATION ./include/${h_INSTALL_DESTINATION})
+endfunction()
+
+# An option to turn off release header building.
+option(XCMAKE_RELEASE_HEADER_LIBRARIES "Don't inline/process headers with add_release_header_library" On)
+
+# Like add_headers, but (unless XCMAKE_INLINE_HEADER_LIBRARIES is off) inlines everything starting from a single
+# entry-point header.
+#
+# The idea is to produce the closest thing to a "compiled" release build of a header library as possible given the need
+# to still be C++.
+#
+# Preprocessing happens twice. The first time, macros aren't passed through if they can be fully evaluated. The second
+# time, __XCMAKE_PREPROCESS_FINAL_UNDEF__ is explicitly undefined. To define macros that are exported by the header,
+# wrap them in #ifndef __XCMAKE_PREPROCESS_FINAL_UNDEF__. This is done with explicit undefinition so that the header
+# works when not pre-processed.
+#
+# If XCMAKE_INLINE_HEADER_LIBRARIES is off, then this just calls add_header_library. The idea is that including the
+# entry point works the same regardless of whether this flag is on or off.
+#
+# The inlined version is more limited: it assumes all headers in HEADER_PATH are dependencies, even whether or not
+# they're transitively used by ENTRY. It also assumes that no other headers are (though they may unresolved includes at
+# this point) except those listed by HEADER_FILES.
+#
+# The following extra arguments exist:
+#   ENTRY The entry point to start inlining from, relative to HEADER_PATH. If this is the not set, then the headers are
+#         installed when XCMAKE_INLINE_HEADER_LIBRARIES is off (as normal), otherwise, targets are created but without
+#         any generated ouptut.
+#   INCLUDE_PATH Extra directories to give to PCPP to find headers. This is useful for common headers that contain
+#                macros to expand things, but that are then undefined later so they don't end up in the final output.
+#
+# The following options exist matching those of add_headers: HEADER_PATH, INSTALL_DESTINATION, DEFINE_MACRO,
+# UNDEFINE_MACRO, HEADER_FILES. Additionally, when XCMAKE_INLINE_HEADER_LIBRARIES is on, the arguments are just
+# forwarded so all its arguments are available.
+function(add_release_header_library TARGET)
+    # Call add_headers.
+    if (NOT XCMAKE_RELEASE_HEADER_LIBRARIES)
+        add_headers(${TARGET} "${ARGN}")
+        return()
+    endif()
+
+    # Parse the arguments.
+    set(flags)
+    set(oneValueArgs ENTRY HEADER_PATH BUILD_DESTINATION INSTALL_DESTINATION FORMAT)
+    set(multiValueArgs DEFINE_MACRO UNDEFINE_MACRO NEVERDEFINE_MACRO HEADER_FILES INCLUDE_PATH)
+    cmake_parse_arguments("h" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    set(SRC_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/${h_HEADER_PATH}")
+    if ("${h_BUILD_DESTINATION}" STREQUAL "")
+        set(DST_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/headers/${TARGET}")
+    else()
+        set(DST_INCLUDE_DIR "${h_BUILD_DESTINATION}")
+    endif()
+
+    # Find PCPP.
+    find_program(PCPP pcpp REQUIRED DOC "Python C PreProcessor program.")
+
+    # Find the headers to use as dependencies.
+    file(GLOB_RECURSE SRC_HEADER_FILES "${SRC_INCLUDE_DIR}/*.hpp" "${SRC_INCLUDE_DIR}/*.cuh" "${SRC_INCLUDE_DIR}/*.h")
+    foreach (EXTRA_H ${h_HEADER_FILES})
+        list(APPEND SRC_HEADER_FILES "${SRC_INCLUDE_DIR}/${EXTRA_H}")
+    endforeach ()
+
+    # Handle the empty entry point case. Do an abbreviated version of the stuff below.
+    if ("${h_ENTRY}" STREQUAL "")
+        add_custom_target(${TARGET}_ALL ALL)
+        set_target_properties(${TARGET}_ALL PROPERTIES ORIGINAL_SOURCES "${SRC_HEADER_FILES}")
+        add_library(${TARGET} INTERFACE)
+        add_dependencies(${TARGET} ${TARGET}_ALL)
+        return()
+    endif()
+
+    # Get the entry point paths.
+    set(SRC_HDR_PATH "${SRC_INCLUDE_DIR}/${h_ENTRY}")
+    set(DST_HDR_PATH "${DST_INCLUDE_DIR}/${h_ENTRY}")
+
+    # Make a build include path.
+    get_filename_component(DST_HDR_PATH_DIR "${DST_HDR_PATH}" DIRECTORY)
+    file(MAKE_DIRECTORY "${DST_HDR_PATH_DIR}")
+
+    # Figure out pcpp flags from the arguments.
+    set(PCPP_ARGS)
+    foreach (D IN LISTS h_INCLUDE_PATH)
+        list(APPEND PCPP_ARGS -I "${D}")
+    endforeach()
+    foreach (MACRO IN LISTS h_DEFINE_MACRO)
+        list(APPEND PCPP_ARGS -D "${MACRO}")
+    endforeach()
+    foreach (MACRO IN LISTS h_UNDEFINE_MACRO)
+        list(APPEND PCPP_ARGS -U "${MACRO}")
+    endforeach()
+    foreach (MACRO IN LISTS h_NEVERDEFINE_MACRO)
+        list(APPEND PCPP_ARGS -N "${MACRO}")
+    endforeach()
+
+    # Run pcpp.
+    add_custom_command(
+        OUTPUT "${DST_HDR_PATH}"
+        COMMENT "Partially pre-processing and inlining ${h_ENTRY}"
+        COMMAND "${PCPP}"
+                --passthru-unfound-includes # No error for non-existent includes.
+                --passthru-unknown-exprs # No error for uses of unknown macros.
+                --passthru-magic-macros # Don't modify macros starting with double underscore.
+                --line-directive # Disable insertion of line directives (yes, this flag does that).
+                "${PCPP_ARGS}" -o "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}-pcpp-1.h" "${SRC_HDR_PATH}"
+        COMMAND "${PCPP}"
+                --passthru-defines # Don't strip macros the header still defines.
+                --passthru-unfound-includes
+                --passthru-unknown-exprs
+                --passthru-magic-macros
+                --line-directive
+                --compress # Remove blank lines, and so on.
+                -U__XCMAKE_PREPROCESS_FINAL_UNDEF__ # This is the last preprocessing step.
+                "${PCPP_ARGS}" -o "${DST_HDR_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}-pcpp-1.h"
+        DEPENDS "${SRC_HEADER_FILES}"
+    )
+
+    # Format the header.
+    if (NOT "${h_FORMAT}" STREQUAL "")
+        find_program(CLANG_FORMAT "clang-format" REQUIRED DOC "Clang source formatter.")
+        string(REGEX REPLACE "[ \t\r\n]+" " " FORMAT "${h_FORMAT}") # Allow nicer formatted strings.
+        add_custom_command(
+            OUTPUT "${DST_HDR_PATH}" APPEND
+            COMMAND "${CLANG_FORMAT}" -i "${DST_HDR_PATH}" --sort-includes=0 "-style=${FORMAT}"
+        )
+
+    endif()
+
+    # Run the trademark sanitizer.
+    if (NOT WIN32)
+        add_custom_command(
+            OUTPUT "${DST_HDR_PATH}" APPEND
+            COMMAND "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${FULL_HDR_PATH}" "${XCMAKE_SANITISE_TRADEMARKS}"
+            DEPENDS "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${SRC_HEADER_FILES}"
+        )
+    endif()
+
+    # Create a target for the above. Name it with _ALL for compatibility with users of the ORIGINAL_SOURCES property.
+    add_custom_target(${TARGET}_ALL ALL DEPENDS "${DST_HDR_PATH}")
+
+    # Record the original sources.
+    set_target_properties(${TARGET}_ALL PROPERTIES ORIGINAL_SOURCES "${SRC_HEADER_FILES}")
+
+    # Set up the interface library. This is the target that was requested.
+    add_library(${TARGET} INTERFACE)
+    target_include_directories(${TARGET} INTERFACE "$<BUILD_INTERFACE:${DST_INCLUDE_DIR}>"
+                                                   "$<INSTALL_INTERFACE:include/${h_INSTALL_DESTINATION}>")
+    add_dependencies(${TARGET} ${TARGET}_ALL)
+    install(TARGETS ${TARGET} EXPORT "${PROJECT_NAME}")
+
+    # Transplant the entire output header directory into the right part of the install tree.
+    install(DIRECTORY "${DST_INCLUDE_DIR}/" DESTINATION ./include/${h_INSTALL_DESTINATION})
 endfunction()
