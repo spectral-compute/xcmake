@@ -3,8 +3,9 @@ include_guard(GLOBAL)
 include(ExternalProj)
 include(externals/yaml-cpp)
 
-externalproject_add(yavl
-    GIT_REPOSITORY    git@gitlab.com:spectral-ai/engineering/thirdparty/yavl-cpp.git
+get_ep_url(YAVL_URL git@gitlab.com:spectral-ai/engineering/thirdparty/yavl-cpp.git yavl-cpp)
+externalproject_add(yavl-cpp
+    GIT_REPOSITORY    ${YAVL_URL}
     GIT_TAG           master
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""

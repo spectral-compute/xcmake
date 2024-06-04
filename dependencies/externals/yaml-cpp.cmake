@@ -1,8 +1,9 @@
-# git@github.com:jbeder/yaml-cpp.git
-
+include_guard(GLOBAL)
 include(ExternalProj)
+
+get_ep_url(YAML_CPP_URL git@github.com:jbeder/yaml-cpp.git yaml-cpp)
 add_external_project(yaml-cpp-proj
-    GIT_REPOSITORY    git@github.com:jbeder/yaml-cpp.git
+    GIT_REPOSITORY    ${YAML_CPP_URL}
     GIT_TAG           "0.8.0"
     CMAKE_ARGS
         -DYAML_CPP_BUILD_CONTRIB=OFF

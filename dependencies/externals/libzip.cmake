@@ -9,8 +9,9 @@ if (WIN32)
                         -Wno-incompatible-function-pointer-types)
 endif()
 
+get_ep_url(LIBZIP_URL https://github.com/nih-at/libzip.git libzip)
 add_external_project(libzip_proj
-    GIT_REPOSITORY    https://github.com/nih-at/libzip.git
+    GIT_REPOSITORY    ${LIBZIP_URL}
     GIT_TAG           v1.9.2
     C_FLAGS "${COMPILE_OPTIONS}"
     CMAKE_ARGS

@@ -8,8 +8,9 @@ if (WIN32)
     set(COMPILE_OPTIONS -D_CRT_DECLARE_NONSTDC_NAMES)
 endif()
 
+get_ep_url(ZLIB_URL https://github.com/madler/zlib.git zlib)
 add_external_project(zlib_proj
-    GIT_REPOSITORY    https://github.com/madler/zlib.git
+    GIT_REPOSITORY    ${ZLIB_URL}
     GIT_TAG           v1.2.12
     CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF

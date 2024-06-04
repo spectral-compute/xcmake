@@ -267,3 +267,13 @@ function(get_final_stamp_path OUTVAR TARGET)
 
     message(FATAL_ERROR "Failed to compute stampfile path for ${TARGET}")
 endfunction()
+
+function(get_ep_url OUTVAR REMOTE_URL PROJECT_NAME)
+    if (DEFINED XCMAKE_${PROJECT_NAME}_ROOT)
+        set(${OUTVAR} "${XCMAKE_${PROJECT_NAME}_ROOT}" PARENT_SCOPE)
+    elseif (DEFINED XCMAKE_EP_ROOT AND EXISTS ${XCMAKE_EP_ROOT}/${PROJECT_NAME})
+        set(${OUTVAR} "${XCMAKE_EP_ROOT}/${PROJECT_NAME}" PARENT_SCOPE)
+    else()
+        set(${OUTVAR} "${REMOTE_URL}" PARENT_SCOPE)
+    endif()
+endfunction()
