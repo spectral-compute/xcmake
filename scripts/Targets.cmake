@@ -215,30 +215,17 @@ function(apply_global_effects TARGET)
     endforeach()
 endfunction()
 
-# Apply standard CMake properties that we set to specific values.
-function(apply_default_standard_properties TARGET)
-    if (NOT CMAKE_CXX_STANDARD)
-        set_target_properties(${TARGET} PROPERTIES
-            CXX_EXTENSIONS OFF
-            CXX_STANDARD 23
-            CXX_STANDARD_REQUIRED ON
-        )
+function(init_default_flags)
+    if (TARGET xcmake_default_flags)
+        return()
     endif()
 
-    # A sane default for RPATH which allows dynamic libraries installed as part of this build to be found by executables
-    # also installed by this build. It represents the relative path from the directory containing the executables to
-    # the one containing the libraries
-    if (APPLE)
-        set(RPATH_ORIGIN "@loader_path")
-    else()
-        set(RPATH_ORIGIN "$ORIGIN")
-    endif()
-    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH
-                          "${RPATH_ORIGIN}/$<PATH:RELATIVE_PATH,${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR},${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}>")
+    # An interface target to hold our default flags.
+    _add_library(xcmake_default_flags INTERFACE)
 
     # Configure aggressive defaults for compiler warnings...
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        target_optional_compile_options(${TARGET} BEFORE PRIVATE
+        target_optional_compile_options(xcmake_default_flags BEFORE INTERFACE
             /W4
             /Wall
         )
@@ -247,7 +234,7 @@ function(apply_default_standard_properties TARGET)
         # gcc, leaving many of the most useful things turned off. You *can* run around enabling things one by one, but
         # there's far too many for this to be realistic (and you have to keep doing it as more get added).
         # Instead, we use `-Weverything`, and switch off the (many) contradictions that ensue.
-        target_optional_compile_options(${TARGET} BEFORE PRIVATE
+        target_optional_compile_options(xcmake_default_flags BEFORE INTERFACE
             -Weverything # We like warnings.
 
             # Don't warn for using cool things.
@@ -307,6 +294,11 @@ function(apply_default_standard_properties TARGET)
 
             -Wno-unsafe-buffer-usage             # This is dumb.
 
+            # This needs investigation. The Windows build /works/ when we
+            # ignore this warning -- need to see if it still works when we
+            # fix issues that this warning notifies us of.
+            -Wno-dll-attribute-on-redeclaration
+
             # Sometimes, we need to cast.
             -Wno-incompatible-pointer-types-discards-qualifiers
 
@@ -342,7 +334,7 @@ function(apply_default_standard_properties TARGET)
 
         if (NOT DEFINED ENV{CLION_IDE})
             # Some flags break clion's clangd, so need to be omitted.
-            target_optional_compile_options(${TARGET} BEFORE PRIVATE
+            target_optional_compile_options(xcmake_default_flags BEFORE INTERFACE
                 # Emit an error if we accidentally code-gen jumbo-sized objects (even if these would be removed by optimization,
                 # it's better not to generate them in the first place).
                 -fmax-data-global-size=67108864
@@ -351,21 +343,20 @@ function(apply_default_standard_properties TARGET)
         endif()
     endif()
 
-
     # Work around a bug in Ninja that prevents coloured diagnostics by default, which they refuse to fix:
     # https://github.com/ninja-build/ninja/issues/174
     if (${CMAKE_GENERATOR} STREQUAL "Ninja")
-        target_optional_compile_options(${TARGET} BEFORE PRIVATE -fdiagnostics-color=always)
+        target_optional_compile_options(xcmake_default_flags BEFORE INTERFACE -fdiagnostics-color=always)
     endif()
 
     if (WIN32)
-        target_link_options(${TARGET} PRIVATE
+        target_link_options(xcmake_default_flags INTERFACE
             /OPT:NOREF
         )
 
         if (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
         else()
-            target_compile_options(${TARGET} PRIVATE
+            target_compile_options(xcmake_default_flags INTERFACE
                 # No, LLVM, we don't want you to attempt to emulate bugs in the Microsoft compiler.
                 -fno-ms-compatibility
 
@@ -389,7 +380,7 @@ function(apply_default_standard_properties TARGET)
             set(DEBUG_LEVEL_VAL 0)
         endif()
 
-        target_compile_definitions(${TARGET} PRIVATE
+        target_compile_definitions(xcmake_default_flags INTERFACE
             # Stop Windows including more headers than needed
             -DWIN32_LEAN_AND_MEAN
             -DNOMINMAX # Maybe don't break std::min and std::max by default?
@@ -401,14 +392,44 @@ function(apply_default_standard_properties TARGET)
     # If the compiler accepts an MSVC-like command-line...
     # This will be true for `clang-cl`, `msvc`, and a few others.
     if (MSVC)
-        target_compile_options(${TARGET} PRIVATE
+        target_compile_options(${TARGET} INTERFACE
             # We use clang-cl on Windows instead of clang++, so we need a few clang-cl flags
             $<$<COMPILE_LANGUAGE:CXX>:/EHs> # CL error handling mode (s == synchronous)
 
             # Suppress buffer overrun detection, except in assert builds.
             $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,$<$<COMPILE_LANGUAGE:CXX>:/GS->>
         )
+    endif ()
+endfunction()
 
+# Apply standard CMake properties that we set to specific values.
+function(apply_default_standard_properties TARGET)
+    if (NOT CMAKE_CXX_STANDARD)
+        set_target_properties(${TARGET} PROPERTIES
+            CXX_EXTENSIONS OFF
+            CXX_STANDARD 23
+            CXX_STANDARD_REQUIRED ON
+        )
+    endif()
+
+    # A sane default for RPATH which allows dynamic libraries installed as part of this build to be found by executables
+    # also installed by this build. It represents the relative path from the directory containing the executables to
+    # the one containing the libraries
+    if (APPLE)
+        set(RPATH_ORIGIN "@loader_path")
+    else()
+        set(RPATH_ORIGIN "$ORIGIN")
+    endif()
+    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH
+                          "${RPATH_ORIGIN}/$<PATH:RELATIVE_PATH,${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR},${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}>")
+
+    # Tack on the default properties that can be represented as interface properties.
+    if (NOT TARGET xcmake_default_flags)
+        message(FATAL_ERROR "Wat")
+    endif()
+    target_link_libraries(${TARGET} PRIVATE $<BUILD_LOCAL_INTERFACE:xcmake_default_flags>)
+
+    if (MSVC)
         # Dynamically-link the windows C++ standard library unless static linking is specified.
         # Use Microsoft's multithread-compatible dynamic libraries to avoid copying the whole STL into our libraries
         # This is _technically_ defaulted to by /MT
