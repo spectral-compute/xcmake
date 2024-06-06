@@ -48,7 +48,7 @@ function (get_cpp_dependencies)
     set(deps "")
     foreach (source ${args_SOURCES})
         # Run the compiler.
-        execute_process(COMMAND ${CMAKE_CXX_COMPILER} ${args} ${source}
+        execute_process(COMMAND ${CMAKE_CXX_COMPILER} ${args} ${source} -Wno-deprecated
                         RESULT_VARIABLE cmd_result OUTPUT_VARIABLE source_deps)
         if (cmd_result)
             fatal_error("Could not get dependencies of ${source}")
