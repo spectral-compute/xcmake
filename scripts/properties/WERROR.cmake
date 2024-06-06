@@ -6,6 +6,6 @@ define_xcmake_target_property(
     DEFAULT ON
 )
 target_compile_options(WERROR_EFFECTS INTERFACE
-    $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX>                      # MSVC
-    $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>:-Werror>      # Clang
+    $<$<CXX_COMPILER_ID:MSVC>:/WX>                          # MSVC
+    $<$<CXX_COMPILER_ID:Clang,AppleClang,GNU>:-Werror>      # Clang/GCC
 )
