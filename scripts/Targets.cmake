@@ -37,6 +37,7 @@ function(find_sources OUT)
     set(${OUT} ${FOUND_SOURCES} PARENT_SCOPE)
 endfunction()
 
+option(XCMAKE_FORCE_COLOUR "Force coloured compiler output" OFF)
 option(XCMAKE_CHECK_COMPILE_FLAGS "Check compiler flag compatibility at CMAKE configure time" ON)
 
 macro(check_cuda_compiler_flag FLAG OUTVAR)
@@ -345,7 +346,7 @@ function(init_default_flags)
 
     # Work around a bug in Ninja that prevents coloured diagnostics by default, which they refuse to fix:
     # https://github.com/ninja-build/ninja/issues/174
-    if (${CMAKE_GENERATOR} STREQUAL "Ninja")
+    if (${CMAKE_GENERATOR} STREQUAL "Ninja" OR ${XCMAKE_FORCE_COLOUR})
         target_optional_compile_options(xcmake_default_flags BEFORE INTERFACE -fdiagnostics-color=always)
     endif()
 
