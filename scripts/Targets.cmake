@@ -393,7 +393,7 @@ function(init_default_flags)
     # If the compiler accepts an MSVC-like command-line...
     # This will be true for `clang-cl`, `msvc`, and a few others.
     if (MSVC)
-        target_compile_options(${TARGET} INTERFACE
+        target_compile_options(xcmake_default_flags INTERFACE
             # We use clang-cl on Windows instead of clang++, so we need a few clang-cl flags
             $<$<COMPILE_LANGUAGE:CXX>:/EHs> # CL error handling mode (s == synchronous)
 
