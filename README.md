@@ -12,6 +12,19 @@ XCMake is a set of scripts that aim to make using cmake more pleasant. Key featu
 - Pandoc integration.
 - Extension of builtin cmake functions to add extra features (such as `install()` supporting `IMPORTED` targets).
 
+## Getting Started
+
+To add xcmake to your project, add the following incantation to your top-level CMakeLists.txt:
+
+```cmake
+include(xcmake/scripts/Init.cmake)
+project(YourProjectHere)
+include(XCMake)
+```
+
+This slight weirdness is necessary due to the need to modify some variables that are mutable only before project() is
+called.
+
 ## New Target Properties
 
 Several features are provided by defining new target properties.

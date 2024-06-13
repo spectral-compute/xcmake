@@ -3,10 +3,11 @@ include(scripts/Init.cmake)
 project(XCMake
     VERSION 0.1.2
     DESCRIPTION "A library for building better build systems."
-    HOMEPAGE_URL "https://spectral-compute.co.uk/xcmake"
+    HOMEPAGE_URL "https://spectralcompute.co.uk/"
 )
 include(XCMake)
 
+message("If you're trying to *use* xcmake, then `add_subdirectory(xcmake)` is not what you want.")
 add_custom_target(xcmake)
 
 # This mostly exists so we can generate installers. Consequently, we do very little when not in packaging mode.
