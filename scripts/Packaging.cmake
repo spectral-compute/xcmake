@@ -12,6 +12,8 @@ default_value(XCMAKE_PACKAGE_ARCH x86_64) # TODO Slight laziness here. Should re
 
 # CPack configuration variables. All of these can be overridden by projects.
 default_value(CPACK_PACKAGE_VENDOR "${XCMAKE_COMPANY_NAME}")
+default_value(CPACK_PACKAGE_CONTACT "${XCMAKE_COMPANY_HELP_EMAIL}")
+
 default_value(CPACK_PACKAGE_ICON "${XCMAKE_COMPANY_LOGO_PATH}.svg")
 
 default_value(CPACK_PACKAGE_INSTALL_DIRECTORY "${XCMAKE_COMPANY_PATH_NAME}")
