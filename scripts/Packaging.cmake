@@ -3,6 +3,11 @@ subdirectory_guard(${CMAKE_PROJECT_NAME}_PACKAGING)
 
 default_cache_value(CPACK_VERBATIM_VARIABLES ON) # Would you like parse errors? No? Okay then.
 
+# Load the vendor configuration.
+default_cache_value(XCMAKE_VENDOR_CONFIG "${XCMAKE_SCRIPT_DIR}/../VendorConfig.cmake")
+default_cache_value(XCMAKE_RESOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../res")
+include("${XCMAKE_VENDOR_CONFIG}")
+
 ##################
 # Common options #
 ##################

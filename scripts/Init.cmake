@@ -33,11 +33,6 @@ add_custom_target(ide ALL)
 # Default to building shared libraries
 default_cache_value(BUILD_SHARED_LIBS ON)
 
-# Load the vendor configuration.
-default_cache_value(XCMAKE_VENDOR_CONFIG "${XCMAKE_SCRIPT_DIR}/../VendorConfig.cmake")
-default_cache_value(XCMAKE_RESOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../res")
-include("${XCMAKE_VENDOR_CONFIG}")
-
 # Default to a canonical output directory structure.
 default_cache_value(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 default_cache_value(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
