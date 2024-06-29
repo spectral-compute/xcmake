@@ -51,7 +51,7 @@ else()
     set(CPACK_DEBIAN_DEBUGINFO_PACKAGE OFF)
 endif()
 
-# TODO: Everything about package dependencies... :D
+default_value(CPACK_DEBIAN_PACKAGE_SHLIBDEPS On) # Automatically generate a list of dependencies.
 
 #############################
 # Archive Generator options #
