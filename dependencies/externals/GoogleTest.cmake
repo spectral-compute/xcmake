@@ -7,7 +7,7 @@ mark_as_advanced(GTEST_TAG) # This option probably shouldn't exist at all...
 include(ExternalProj)
 include(FindThreads)
 
-option(XCMAKE_SYSTEM_GTEST "Use system gtest rather than build our own" Off)
+option(XCMAKE_SYSTEM_GTEST "Use system gtest rather than build our own" On)
 mark_as_advanced(XCMAKE_SYSTEM_GTEST) # Should really just be using the find-or-build-package system...
 
 set(GT_PRODUCTS gtest gmock gtest_main gmock_main)
