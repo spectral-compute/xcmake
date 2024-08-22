@@ -21,7 +21,7 @@ macro(configure_test_target TARGET)
         -Wno-missing-variable-declarations
     )
 
-    set_target_properties(${TARGET} PROPERTIES IS_TEST ON)
+    set_target_properties(${TARGET} PROPERTIES INTERPROCEDURAL_OPTIMIZATION Off IS_TEST ON)
 
     if (APPLE)
         set(RPATH_ORIGIN "@loader_path")
@@ -34,14 +34,12 @@ endmacro()
 # Add a test executable (installed under ./test)
 function(add_test_executable TARGET)
     add_executable(${TARGET} ${ARGN} NOINSTALL)
-    set_target_properties(${TARGET} PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
     configure_test_target(${TARGET})
 endfunction()
 
 # Add a test library (installed under ./test)
 function(add_test_library TARGET)
     add_library(${TARGET} ${ARGN} NOINSTALL)
-    set_target_properties(${TARGET} PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
     configure_test_target(${TARGET})
 endfunction()
 
