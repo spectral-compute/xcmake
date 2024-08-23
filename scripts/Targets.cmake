@@ -12,7 +12,7 @@ function(find_sources OUT)
         if (${_L} STREQUAL "CXX")
             # cmake's CUDA support conflicts with our own, so we have to carefully work around it.
             # We teach cmake that *.cu is C++, not CUDA.
-            list(APPEND SOURCE_EXTENSIONS cu cuh hpp h)
+            list(APPEND SOURCE_EXTENSIONS cu)
         endif()
 
         # Construct the glob expression from the source extensions.
