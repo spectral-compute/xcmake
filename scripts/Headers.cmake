@@ -210,6 +210,8 @@ option(XCMAKE_RELEASE_HEADER_LIBRARIES "Don't inline/process headers with add_re
 # wrap them in #ifndef __XCMAKE_PREPROCESS_FINAL_UNDEF__. This is done with explicit undefinition so that the header
 # works when not pre-processed.
 #
+# Macros starting with `__` are not touched.
+#
 # If XCMAKE_INLINE_HEADER_LIBRARIES is off, then this just calls add_header_library. The idea is that including the
 # entry point works the same regardless of whether this flag is on or off.
 #
