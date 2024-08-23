@@ -11,7 +11,7 @@
 # FILTER_INCLUDE_REGEX If given, then no header will be included that does not match at least one of the given regular
 #                      expressions.
 # FILTER_EXCLUDE_REGEX No header will be included that matches at least one of the given regular expressions.
-# HEADER_FILES Extra header files (mostly useful for header files with stupid file extensions).
+# HEADER_EXT File extensions to consider when finding headers. Default is .h, .hpp, .cuh
 #
 # The following options run pcpp. Note that this has a few quirks, such as stripping #pragma once.
 # DEFINE_MACRO Define a macro to be expanded during partial preprocessing.
@@ -23,7 +23,7 @@ function(add_headers TARGET)
     set(flags COMPRESS)
     set(oneValueArgs HEADER_PATH BUILD_DESTINATION INSTALL_DESTINATION FORMAT ENTRY)
     set(multiValueArgs FILTER_INCLUDE FILTER_EXCLUDE FILTER_INCLUDE_REGEX FILTER_EXCLUDE_REGEX
-                       DEFINE_MACRO UNDEFINE_MACRO NEVERDEFINE_MACRO HEADER_FILES INCLUDE_PATH)
+                       DEFINE_MACRO UNDEFINE_MACRO NEVERDEFINE_MACRO HEADER_EXT INCLUDE_PATH)
     cmake_parse_arguments("h" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     # Make the target object for building unconditionally.
@@ -41,14 +41,15 @@ function(add_headers TARGET)
 
     file(MAKE_DIRECTORY "${DST_INCLUDE_DIR}")
 
-    file(GLOB_RECURSE SRC_HEADER_FILES RELATIVE "${SRC_INCLUDE_DIR}"
-        "${SRC_INCLUDE_DIR}/*.hpp"
-        "${SRC_INCLUDE_DIR}/*.cuh"
-        "${SRC_INCLUDE_DIR}/*.h"
-    )
-    foreach (EXTRA_H ${h_HEADER_FILES})
-        list(APPEND SRC_HEADER_FILES "${EXTRA_H}")
+    # Default value for this argument.
+    if ("${h_HEADER_EXT}" STREQUAL "")
+        set(h_HEADER_EXT .h .hpp .cuh)
+    endif()
+    set(SEARCH_GLOB "")
+    foreach(_ext IN LISTS h_HEADER_EXT)
+        list(APPEND SEARCH_GLOB "${SRC_INCLUDE_DIR}/*${_ext}")
     endforeach ()
+    file(GLOB_RECURSE SRC_HEADER_FILES RELATIVE "${SRC_INCLUDE_DIR}" CONFIGURE_DEPENDS ${SEARCH_GLOB})
 
     # Find PCPP if we're going to use it.
     if (h_DEFINE_MACRO OR h_UNDEFINE_MACRO OR h_NEVERDEFINE_MACRO OR h_COMPRESS)
@@ -217,7 +218,7 @@ option(XCMAKE_RELEASE_HEADER_LIBRARIES "Don't inline/process headers with add_re
 #
 # The inlined version is more limited: it assumes all headers in HEADER_PATH are dependencies, even whether or not
 # they're transitively used by ENTRY. It also assumes that no other headers are (though they may unresolved includes at
-# this point) except those listed by HEADER_FILES.
+# this point).
 #
 # The following extra arguments exist:
 #   ENTRY The entry point to start inlining from, relative to HEADER_PATH. If this is the not set, then the headers are
@@ -227,7 +228,7 @@ option(XCMAKE_RELEASE_HEADER_LIBRARIES "Don't inline/process headers with add_re
 #                macros to expand things, but that are then undefined later so they don't end up in the final output.
 #
 # The following options exist matching those of add_headers: HEADER_PATH, INSTALL_DESTINATION, DEFINE_MACRO,
-# UNDEFINE_MACRO, HEADER_FILES. Additionally, when XCMAKE_INLINE_HEADER_LIBRARIES is on, the arguments are just
+# UNDEFINE_MACRO, HEADER_EXT. Additionally, when XCMAKE_INLINE_HEADER_LIBRARIES is on, the arguments are just
 # forwarded so all its arguments are available.
 function(add_release_header_library TARGET)
     # Call add_headers.
@@ -239,8 +240,13 @@ function(add_release_header_library TARGET)
     # Parse the arguments.
     set(flags)
     set(oneValueArgs ENTRY HEADER_PATH BUILD_DESTINATION INSTALL_DESTINATION FORMAT)
-    set(multiValueArgs DEFINE_MACRO UNDEFINE_MACRO NEVERDEFINE_MACRO HEADER_FILES INCLUDE_PATH)
+    set(multiValueArgs DEFINE_MACRO UNDEFINE_MACRO NEVERDEFINE_MACRO HEADER_EXT INCLUDE_PATH)
     cmake_parse_arguments("h" "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+    # Default value for this argument.
+    if ("${h_HEADER_EXT}" STREQUAL "")
+        set(h_HEADER_EXT .h .hpp .cuh)
+    endif()
 
     set(SRC_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/${h_HEADER_PATH}")
     if ("${h_BUILD_DESTINATION}" STREQUAL "")
@@ -253,10 +259,11 @@ function(add_release_header_library TARGET)
     find_program(PCPP pcpp REQUIRED DOC "Python C PreProcessor program.")
 
     # Find the headers to use as dependencies.
-    file(GLOB_RECURSE SRC_HEADER_FILES "${SRC_INCLUDE_DIR}/*.hpp" "${SRC_INCLUDE_DIR}/*.cuh" "${SRC_INCLUDE_DIR}/*.h")
-    foreach (EXTRA_H ${h_HEADER_FILES})
-        list(APPEND SRC_HEADER_FILES "${SRC_INCLUDE_DIR}/${EXTRA_H}")
+    set(SEARCH_GLOB "")
+    foreach(_ext IN LISTS h_HEADER_EXT)
+        list(APPEND SEARCH_GLOB "${SRC_INCLUDE_DIR}/*${_ext}")
     endforeach ()
+    file(GLOB_RECURSE SRC_HEADER_FILES CONFIGURE_DEPENDS ${SEARCH_GLOB})
 
     # Handle the empty entry point case. Do an abbreviated version of the stuff below.
     if ("${h_ENTRY}" STREQUAL "")
