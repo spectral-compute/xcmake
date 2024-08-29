@@ -257,6 +257,7 @@ function(add_release_header_library TARGET)
 
     # Find PCPP.
     find_program(PCPP pcpp REQUIRED DOC "Python C PreProcessor program.")
+    find_program(SED sed REQUIRED DOC "sed")
 
     # Find the headers to use as dependencies.
     set(SEARCH_GLOB "")
@@ -301,21 +302,34 @@ function(add_release_header_library TARGET)
     add_custom_command(
         OUTPUT "${DST_HDR_PATH}"
         COMMENT "Partially pre-processing and inlining ${h_ENTRY}"
+
+        # Run PCPP, expanding all macros that don't start with `__`, and aren't guarded by
+        # `#ifndef __XCMAKE_PREPROCESS_FINAL_UNDEF__`.
         COMMAND "${PCPP}"
                 --passthru-unfound-includes # No error for non-existent includes.
                 --passthru-unknown-exprs # No error for uses of unknown macros.
                 --passthru-magic-macros # Don't modify macros starting with double underscore.
+                --passthru-comments # Don't strip comments (sed uses them).
                 --line-directive # Disable insertion of line directives (yes, this flag does that).
                 "${PCPP_ARGS}" -o "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}-pcpp-1.h" "${SRC_HDR_PATH}"
+
+        # Use sed, not the preprocessor, to delete the `#ifndef __XCMAKE_PREPROCESS_FINAL_UNDEF__` blocks.
+        # This entirely hides the contents of those blocks from pcpp, preserving their definition _and_
+        # preventing them from being expanded during pcpp.
+        COMMAND "${SED}" -i
+                -Ee "s|#ifndef +__XCMAKE_PREPROCESS_FINAL_UNDEF__.*||g\;s|#endif */[/*] *__XCMAKE_PREPROCESS_FINAL_UNDEF__.*||g"
+                "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}-pcpp-1.h"
+
+        # Delete comments.
         COMMAND "${PCPP}"
-                --passthru-defines # Don't strip macros the header still defines.
-                --passthru-unfound-includes
-                --passthru-unknown-exprs
-                --passthru-magic-macros
-                --line-directive
-                --compress # Remove blank lines, and so on.
-                -U__XCMAKE_PREPROCESS_FINAL_UNDEF__ # This is the last preprocessing step.
-                "${PCPP_ARGS}" -o "${DST_HDR_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}-pcpp-1.h"
+            --passthru-defines # Don't strip macros the header still defines.
+            --passthru-unfound-includes
+            --passthru-unknown-exprs
+            --passthru-magic-macros
+            --line-directive
+            --compress # Remove blank lines, and so on.
+            "${PCPP_ARGS}" -o "${DST_HDR_PATH}" "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}-pcpp-1.h"
+
         DEPENDS "${SRC_HEADER_FILES}"
     )
 
