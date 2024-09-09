@@ -264,6 +264,7 @@ function(init_default_flags)
             -Wno-shadow-uncaptured-local         # A useful pattern is to std::move something into a lambda.
             -Wno-global-constructors             # We also use these
             -Wno-missing-prototypes
+            -Wno-switch-default                  # Incompatible with -Wcovered-switch-default, which is better.
             -Wno-switch-enum                     # This is stupid.
             -Wno-unused-template                 # ... We're writing a template library...
             -Wno-float-equal                     # This isn't always wrong...
