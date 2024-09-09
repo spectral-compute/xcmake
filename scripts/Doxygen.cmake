@@ -1,6 +1,13 @@
 include(IncludeGuard)
 include_guard()
 
+option(XCMAKE_DOXYGEN_WERROR "Doxygen warnings are errors." On)
+if (XCMAKE_DOXYGEN_WERROR)
+    set(XCMAKE_DOXYGEN_WERROR_YN YES)
+else()
+    set(XCMAKE_DOXYGEN_WERROR_YN NO)
+endif()
+
 function(add_cppreference_tagfile)
     if (TARGET cppreference_tagfile)
         return()
