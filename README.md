@@ -14,12 +14,13 @@ XCMake is a set of scripts that aim to make using cmake more pleasant. Key featu
 
 ## Getting Started
 
-To add xcmake to your project, add the following incantation to your top-level CMakeLists.txt:
+To add xcmake to your project, add xcmake as a submodule to your project, and call `find_package` as follows in your top-level CMakeLists.txt *before* `project`:
 
 ```cmake
-include(xcmake/scripts/Init.cmake)
+# MUST be before `project`
+find_package(XCmake REQUIRED HINTS [./path_to_submodule_xcmake])
+
 project(YourProjectHere)
-include(XCMake)
 ```
 
 This slight weirdness is necessary due to the need to modify some variables that are mutable only before project() is
