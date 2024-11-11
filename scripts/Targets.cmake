@@ -546,7 +546,7 @@ function(add_export_header TARGET)
 
     # Install the header.
     if (NOT args_NOINSTALL)
-        install(FILES "${EXPORT_HDR_PATH}" DESTINATION "./include/${EXPORT_DIRECTORY_NAME}")
+        install(FILES "${EXPORT_HDR_PATH}" DESTINATION "include/${EXPORT_DIRECTORY_NAME}")
     endif()
 
     # Fix IDE indexing of the header.

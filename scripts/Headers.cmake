@@ -194,7 +194,7 @@ function(add_headers TARGET)
     install(TARGETS ${TARGET} EXPORT ${PROJECT_NAME})
 
     # Transplant the entire output header directory into the right part of the install tree.
-    install(DIRECTORY ${DST_INCLUDE_DIR}/ DESTINATION ./include/${h_INSTALL_DESTINATION})
+    install(DIRECTORY ${DST_INCLUDE_DIR}/ DESTINATION include/${h_INSTALL_DESTINATION})
 endfunction()
 
 # An option to turn off release header building.
@@ -367,5 +367,5 @@ function(add_release_header_library TARGET)
     install(TARGETS ${TARGET} EXPORT "${PROJECT_NAME}")
 
     # Transplant the entire output header directory into the right part of the install tree.
-    install(DIRECTORY "${DST_INCLUDE_DIR}/" DESTINATION ./include/${h_INSTALL_DESTINATION})
+    install(DIRECTORY "${DST_INCLUDE_DIR}/" DESTINATION include/${h_INSTALL_DESTINATION})
 endfunction()
