@@ -31,7 +31,11 @@ function(add_headers TARGET)
 
     # We're going to construct a shadow header directory in the object directory, and install that. This lets us
     # apply transformations to the headers as part of the build process (such as expanding some preprocessor macros).
-    set(SRC_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/${h_HEADER_PATH}")
+    if(IS_ABSOLUTE "${h_HEADER_PATH}")
+        set(SRC_INCLUDE_DIR "${h_HEADER_PATH}")
+    else()
+        set(SRC_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/${h_HEADER_PATH}")
+    endif()
 
     if ("${h_BUILD_DESTINATION}" STREQUAL "")
         set(DST_INCLUDE_DIR "${CMAKE_BINARY_DIR}/include/${TARGET}")
