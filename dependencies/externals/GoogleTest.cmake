@@ -1,7 +1,7 @@
 include_guard(GLOBAL)
 include(ExternalProj)
 
-option(GTEST_TAG "Specify the tag to checkout the gtest fork to" master STRING)
+option(GTEST_TAG "Specify the tag to checkout the gtest fork to" main STRING)
 mark_as_advanced(GTEST_TAG) # This option probably shouldn't exist at all...
 
 include(ExternalProj)
@@ -19,7 +19,7 @@ if(XCMAKE_SYSTEM_GTEST)
         target_link_libraries(${GT_PRODUCT} INTERFACE GTest::${GT_PRODUCT})
     endforeach()
 else()
-    get_ep_url(GTEST_URL git@gitlab.com:spectral-ai/engineering/thirdparty/googletest googletest)
+    get_ep_url(GTEST_URL git@github.com:google/googletest.git googletest)
     add_external_project(googletest
         GIT_REPOSITORY    ${GTEST_URL}
         GIT_TAG           ${GTEST_TAG}
