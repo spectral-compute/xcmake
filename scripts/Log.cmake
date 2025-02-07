@@ -145,6 +145,36 @@ function(fatal_error COLOUR)
     colour_log_impl(FATAL_ERROR ${COLOUR} ${ARGN})
 endfunction()
 
+define_property(
+    GLOBAL PROPERTY xcmake_log_buffer
+    BRIEF_DOCS "Transient configure log storage"
+    FULL_DOCS
+    "Instead of just putting the configure log to an esoteric file"
+    "(${CMAKE_BINARY_DIR}/CMakeFiles/CMakeConfigureLog.yaml - effected by"
+    "`message(CONFIGURE_LOG ...)`), store it in a buffer so that"
+    "it can be printed once an error has occurred."
+)
+
+function(xcmake_log_buffer_clear)
+    set_property(GLOBAL PROPERTY xcmake_log_buffer "")
+endfunction()
+
+function(xcmake_log_buffer_append)
+    set_property(GLOBAL APPEND PROPERTY xcmake_log_buffer ${ARGN})
+endfunction()
+
+function(xcmake_log_buffer_dump)
+    get_property(log GLOBAL PROPERTY xcmake_log_buffer)
+    message(BOLD_YELLOW "        *** BEGIN CONFIGURE LOG BUFFER DUMP ***\n")
+    if (log)
+        _message(${log})
+    else()
+        _message(BOLD_RED "The log seems to be empty... ermmmm.. Wat???")
+    endif()
+    xcmake_log_buffer_clear()
+    message(BOLD_YELLOW "         *** END CONFIGURE LOG BUFFER DUMP ***")
+endfunction()
+
 # `message()` is overridden in a backward-compatible way.
 # Some examples:
 
@@ -182,7 +212,8 @@ function(message MODE)
     elseif("${UP_MODE}" STREQUAL CHECK_FAIL)
         colour_log_impl(CHECK_FAIL ${ARGN})
     elseif("${UP_MODE}" STREQUAL CONFIGURE_LOG)
-        # blackhole it :D
+        xcmake_log_buffer_append(${ARGN})
+        _message(CONFIGURE_LOG ${ARGN})
     else()
         colour_log_impl(STATUS "${MODE}" ${ARGN})
     endif()
