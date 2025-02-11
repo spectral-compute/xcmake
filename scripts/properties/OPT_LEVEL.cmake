@@ -66,7 +66,7 @@ function(OPT_LEVEL_EFFECTS TARGET)
     target_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
         # NVCC does nothing, since O2 is the default, and it doesn't accept it twice!
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2 /Ob2>
-        $<${IS_CLANG}:-Ofast>
+        $<${IS_CLANG}:-O3 -ffast-math>
         ${CLANG_LTO_FLAGS}
     )
     target_optional_compile_options(${TARGET}_unsafe_OPT_LEVEL_EFFECTS INTERFACE
