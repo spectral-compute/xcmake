@@ -73,11 +73,6 @@ endmacro()
 # This accepts the same arguments as `target_compile_options`, except that you may only use one keyword at a time.
 # Use multiple calls if you want to use multiple different keywords (or make the argument parsing more clever...)
 function(target_optional_compile_options TARGET)
-    if (XCMAKE_USE_NVCC)
-        # You may not have nice things
-        return()
-    endif()
-
     cmake_parse_arguments("d" "BEFORE" "" "" ${ARGN})
     if (d_BEFORE)
         set(MAYBE_BEFORE BEFORE)
@@ -566,16 +561,14 @@ function(fix_source_file_properties TARGET)
         get_source_file_property(CUR_LANG "${_F}" LANGUAGE)
         get_filename_component(FILE_EXT "${_F}" EXT)
 
-        if (NOT XCMAKE_USE_NVCC)
-            if ((${CUR_LANG} STREQUAL "CUDA") OR ("${FILE_EXT}" STREQUAL ".cu") OR ("${FILE_EXT}" STREQUAL ".cuh"))
-                # This disables cmake's built-in CUDA support, which only does NVCC. This stops
-                # cmake doing automatic things that derail our attempts to do this properly...
-                set(CUDA_TU_FLAGS "$<TARGET_PROPERTY:CUDA_FLAGS,INTERFACE_COMPILE_OPTIONS>")
-                set_source_files_properties(${_F} PROPERTIES
-                    LANGUAGE CXX
-                    COMPILE_OPTIONS "$<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},CUDA>>,${CUDA_TU_FLAGS},>"
-                )
-            endif()
+        if ((${CUR_LANG} STREQUAL "CUDA") OR ("${FILE_EXT}" STREQUAL ".cu") OR ("${FILE_EXT}" STREQUAL ".cuh"))
+            # This disables cmake's built-in CUDA support, which only does NVCC. This stops
+            # cmake doing automatic things that derail our attempts to do this properly...
+            set(CUDA_TU_FLAGS "$<TARGET_PROPERTY:CUDA_FLAGS,INTERFACE_COMPILE_OPTIONS>")
+            set_source_files_properties(${_F} PROPERTIES
+                LANGUAGE CXX
+                COMPILE_OPTIONS "$<IF:$<BOOL:$<TARGET_PROPERTY:${TARGET},CUDA>>,${CUDA_TU_FLAGS},>"
+            )
         endif()
     endforeach()
 endfunction()
