@@ -19,7 +19,7 @@ if(XCMAKE_SYSTEM_GTEST)
         target_link_libraries(${GT_PRODUCT} INTERFACE GTest::${GT_PRODUCT})
     endforeach()
 else()
-    get_ep_url(GTEST_URL git@github.com:google/googletest.git googletest)
+    get_ep_url(GTEST_URL https://github.com/google/googletest.git googletest)
     add_external_project(googletest
         GIT_REPOSITORY    ${GTEST_URL}
         GIT_TAG           ${GTEST_TAG}
