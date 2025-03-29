@@ -16,8 +16,8 @@ else()
     get_ep_url(DOCOPT_URL https://github.com/docopt/docopt.cpp.git docopt)
     add_external_project(docopt_proj
         GIT_REPOSITORY ${DOCOPT_URL}
-        GIT_TAG 42ebcec9dc2c99a1b3a4542787572045763ad196
-        CMAKE
+        GIT_TAG 400e6dd8e59196c914dcc2c56caf7dae7efa5eb3
+        CMAKE_ARGS -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DBUILD_SHARED_LIBS=Off
         CXX_FLAGS "${DOCOPT_FLAGS}"
         STATIC_LIBRARIES docopt
     )
