@@ -3,12 +3,12 @@ include(ExternalProj)
 include(externals/GoogleTest)
 
 option(XCMAKE_SYSTEM_GBENCH "Use system gbench rather than build our own" On)
-mark_as_advanced(XCMAKE_SYSTEM_GTEST) # Should really just be using the find-or-build-package system...
+mark_as_advanced(XCMAKE_SYSTEM_GBENCH) # Should really just be using the find-or-build-package system...
 
 option(GBENCH_TAG "Specify the tag to checkout from the gbench repo (if SYSTEM_GBENCH is off)" v1.9.1 STRING)
 mark_as_advanced(GBENCH_TAG)
 
-if(SYSTEM_GBENCH)
+if (XCMAKE_SYSTEM_GBENCH)
     find_package(benchmark)
 else()
     add_external_project(googlebench
