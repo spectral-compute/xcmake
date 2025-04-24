@@ -9,7 +9,7 @@ option(GBENCH_TAG "Specify the tag to checkout from the gbench repo (if SYSTEM_G
 mark_as_advanced(GBENCH_TAG)
 
 if (XCMAKE_SYSTEM_GBENCH)
-    find_package(benchmark)
+    find_package(benchmark REQUIRED)
     add_library(benchmark ALIAS benchmark::benchmark)
     add_library(benchmark_main ALIAS benchmark::benchmark_main)
 else()
