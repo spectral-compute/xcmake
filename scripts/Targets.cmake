@@ -80,6 +80,8 @@ function(target_optional_compile_options TARGET)
         set(MAYBE_BEFORE "")
     endif ()
 
+    set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
     # Pop the keyword off.
     list(GET d_UNPARSED_ARGUMENTS 0 KEYWORD)
     list(REMOVE_AT d_UNPARSED_ARGUMENTS 0)
