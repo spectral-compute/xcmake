@@ -10,6 +10,8 @@ mark_as_advanced(GBENCH_TAG)
 
 if (XCMAKE_SYSTEM_GBENCH)
     find_package(benchmark)
+    add_library(benchmark ALIAS benchmark::benchmark)
+    add_library(benchmark_main ALIAS benchmark::benchmark_main)
 else()
     add_external_project(googlebench
         GIT_REPOSITORY    https://github.com/google/benchmark
