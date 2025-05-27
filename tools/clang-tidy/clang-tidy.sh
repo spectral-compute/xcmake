@@ -31,17 +31,4 @@ findFail '\t' $1 "line indented with tab characters"
 findFail $'\\s$' $1 "Trailing whitespace"
 findFail $'\r'\$ $1 "CRLF detected - use LF instead"
 
-TMP_SCRIPT=$(mktemp)
-
-# A self-deleting shell-script that runs the compilation job.
-cat << EOF > $TMP_SCRIPT
-set -o errexit
-clang-tidy ${EXTRA_ARGS} --header-filter="$SRCDIR/.*" --vfsoverlay="$(dirname "$0")/vfs.yaml" $@
-rm $TMP_SCRIPT
-EOF
-chmod a+x $TMP_SCRIPT
-
-# Run the script, using socat to trick it into yielding colour output.
-# socat propagates the return code of the script, and hence any failure from
-# clang-tidy.
-socat -d -u EXEC:$TMP_SCRIPT,pty,stderr STDOUT
+clang-tidy ${EXTRA_ARGS} --use-color --header-filter="$SRCDIR/.*" --vfsoverlay="$(dirname "$0")/vfs.yaml" "$@"
