@@ -3,31 +3,142 @@
 Checks: "\
 clang-analyzer-*,\
 boost-use-to-string,\
+android-cloexec-accept,\
+android-cloexec-accept4,\
+android-cloexec-creat,\
+android-cloexec-dup,\
+android-cloexec-epoll-create,\
+android-cloexec-epoll-create1,\
+android-cloexec-fopen,\
+android-cloexec-inotify-init,\
+android-cloexec-inotify-init1,\
+android-cloexec-memfd-create,\
+android-cloexec-open,\
+android-cloexec-pipe,\
+android-cloexec-pipe2,\
+android-cloexec-socket,\
+android-comparison-in-temp-failure-retry,\
+bugprone-argument-comment,\
+bugprone-assignment-in-if-condition,\
+bugprone-assert-side-effect,\
+bugprone-bad-signal-to-kill-thread,\
+bugprone-bitwise-pointer-cast,\
+bugprone-bool-pointer-implicit-conversion,\
+bugprone-capturing-this-in-member-variable,\
+bugprone-chained-comparison,\
+bugprone-compare-pointer-to-member-virtual-function,\
+bugprone-copy-constructor-init,\
+bugprone-dangling-handle,\
+bugprone-dynamic-static-initializers,\
+bugprone-empty-catch,\
+bugprone-forward-declaration-namespace,\
+bugprone-forwarding-reference-overload.7
+bugprone-fold-init-type,\
+bugprone-inaccurate-erase,\
+bugprone-inc-dec-in-conditions,\
+bugprone-incorrect-enable-if,\
+bugprone-incorrect-enable-shared-from-this,\
+bugprone-incorrect-roundings,\
+bugprone-infinite-loop,\
 bugprone-integer-division,\
+bugprone-lambda-function-name,\
+bugprone-macro-repeated-side-effects,\
+bugprone-misleading-setter-of-reference,\
+bugprone-misplaced-operator-in-strlen-in-alloc,\
+bugprone-misplaced-pointer-arithmetic-in-alloc,\
+bugprone-misplaced-widening-cast,\
+bugprone-move-forwarding-reference,\
+bugprone-multiple-new-in-one-expression,\
+bugprone-multiple-statement-macro,\
+bugprone-no-escape,\
+bugprone-non-zero-enum-to-bool-conversion,\
+bugprone-nondeterministic-pointer-iteration-order,\
+bugprone-not-null-terminated-result,\
+bugprone-optional-value-conversion,\
+bugprone-parent-virtual-call,\
+bugprone-pointer-arithmetic-on-polymorphic-object,\
+bugprone-posix-return,\
+bugprone-redundant-branch-condition,\
+bugprone-shared-ptr-array-mismatch,\
+bugprone-signal-handler,\
+bugprone-sizeof-container,\
+bugprone-spuriously-wake-up-functions,\
+bugprone-standalone-empty,\
+bugprone-string-constructor,\
+bugprone-string-integer-assignment,\
+bugprone-string-literal-with-embedded-nul,\
+bugprone-stringview-nullptr,\
+bugprone-suspicious-enum-usage,\
+bugprone-suspicious-include,\
+bugprone-suspicious-memory-comparison,\
 bugprone-suspicious-memset-usage,\
+bugprone-suspicious-missing-comma,\
+bugprone-suspicious-realloc-usage,\
+bugprone-suspicious-semicolon,\
+bugprone-suspicious-string-compare,\
+bugprone-suspicious-stringview-data-usage,\
+bugprone-swapped-arguments,\
+bugprone-tagged-union-member-count,\
+bugprone-terminating-continue,\
+bugprone-throw-keyword-missing,\
+bugprone-too-small-loop-variable,\
+bugprone-unchecked-optional-access,\
 bugprone-undefined-memory-manipulation,\
+bugprone-undelegated-constructor,\
+bugprone-unhandled-exception-at-new,\
+bugprone-unintended-char-ostream-output,\
+bugprone-unique-ptr-array-mismatch,\
+bugprone-unsafe-functions,\
+bugprone-unused-local-non-trivial-variable,\
+bugprone-unused-raii,\
+bugprone-unused-return-value,\
+bugprone-use-after-move,\
+bugprone-virtual-near-miss,\
+cert-env33-c,\
 cert-err52-cpp,\
 cert-err60-cpp,\
 cert-flp30-c,\
+cert-oop57-cpp,\
+cert-oop58-cpp,\
+concurrency-thread-canceltype-asynchronous,\
+cppcoreguidelines-avoid-capturing-lambda-coroutines,\
+cppcoreguidelines-avoid-goto,\
+cppcoreguidelines-avoid-reference-coroutine-parameters,\
 cppcoreguidelines-interfaces-global-init,\
-cppcoreguidelines-no-malloc,\
+cppcoreguidelines-missing-std-forward,\
+cppcoreguidelines-no-suspend-with-lock,\
+cppcoreguidelines-rvalue-reference-param-not-moved,\
 cppcoreguidelines-slicing,\
+cppcoreguidelines-virtual-class-destructor,\
+google-build-explicit-make-pair,\
 google-runtime-member-string-references,\
+google-upgrade-googletest-case,\
+hicpp-ignored-remove-result,\
 llvm-namespace-comment,\
+llvm-prefer-isa-or-dyn-cast-in-conditionals,\
+llvm-twine-local,\
 misc-assert-side-effect,\
 misc-bool-pointer-implicit-conversion,\
+misc-confusable-identifiers,\
+misc-coroutine-hostile-raii,\
 misc-dangling-handle,\
 misc-definitions-in-headers,\
 misc-forward-declaration-namespace,\
+misc-header-include-cycle,\
 misc-inaccurate-erase,\
 misc-incorrect-roundings,\
 misc-inefficient-algorithm,\
 misc-lambda-function-name,\
+misc-misleading-bidirectional,\
+misc-misleading-identifier,\
+misc-misplaced-const,\
 misc-move-constructor-init,\
 misc-move-forwarding-reference,\
 misc-multiple-statement-macro,\
+misc-new-delete-overloads,\
 misc-non-copyable-objects,\
 misc-redundant-expression,\
+misc-static-assert,\
 misc-string-constructor,\
 misc-string-integer-assignment,\
 misc-string-literal-with-embedded-nul,\
@@ -35,50 +146,132 @@ misc-suspicious-enum-usage,\
 misc-suspicious-missing-comma,\
 misc-suspicious-semicolon,\
 misc-swapped-arguments,\
+misc-throw-by-value-catch-by-reference,\
 misc-unconventional-assign-operator,\
+misc-uniqueptr-reset-release,\
 misc-undelegated-constructor,\
 misc-uniqueptr-reset-release,\
 misc-unused-alias-decls,\
+misc-unused-parameters,\
 misc-unused-raii,\
 misc-unused-using-decls,\
 misc-use-after-move,\
+modernize-avoid-bind,\
 modernize-deprecated-headers,\
+modernize-deprecated-ios-base-aliases,\
 modernize-loop-convert,\
-modernize-make-unique,modernize-make-shared,\
+modernize-make-shared,\
+modernize-make-unique,\
+modernize-min-max-use-initializer-list,\
+modernize-pass-by-value,\
+modernize-raw-string-literal,\
 modernize-redundant-void-arg,\
 modernize-replace-auto-ptr,\
+modernize-replace-disallow-copy-and-assign-macro,\
 modernize-replace-random-shuffle,\
+modernize-return-braced-init-list,\
 modernize-shrink-to-fit,\
+modernize-unary-static-assert,\
 modernize-use-bool-literals,\
+modernize-use-constraints,\
+modernize-use-default-member-init,\
 modernize-use-emplace,\
-modernize-use-equals-default,modernize-use-equals-delete,\
+modernize-use-equals-default,\
+modernize-use-equals-delete,\
 modernize-use-noexcept,\
 modernize-use-nullptr,\
 modernize-use-override,\
+modernize-use-starts-ends-with,\
+modernize-use-std-format,\
+modernize-use-std-numbers,\
+modernize-use-transparent-functors,\
+modernize-use-uncaught-exceptions,\
+mpi-buffer-deref,\
+mpi-type-mismatch,\
+openmp-exception-escapem,\
+openmp-use-default-none,\
+performance-avoid-endl,\
 performance-faster-string-find,\
 performance-for-range-copy,\
 performance-implicit-conversion-in-loop,\
+performance-inefficient-algorithm,\
 performance-inefficient-string-concatenation,\
 performance-inefficient-vector-operation,\
+performance-move-const-arg,\
+performance-move-constructor-init,\
+performance-no-automatic-move,\
+performance-noexcept-swap,\
+performance-trivially-destructible,\
 performance-type-promotion-in-math-fn,\
 performance-unnecessary-copy-initialization,\
 performance-unnecessary-value-param,\
+portability-std-allocator-const,\
+readability-ambiguous-smartptr-reset-call,\
 readability-avoid-const-params-in-decls,\
+readability-avoid-return-with-void-value,\
+readability-braces-around-statements,\
+readability-container-contains,\
+readability-container-data-pointer,\
 readability-container-size-empty,\
+readability-const-return-type,\
 readability-deleted-default,\
 readability-delete-null-pointer,\
+readability-duplicate-include,\
 readability-misleading-indentation,\
 readability-misplaced-array-index,\
+readability-operators-representation,\
+readability-qualified-auto,\
+readability-redundant-access-specifiers,\
+readability-redundant-casting,\
 readability-redundant-control-flow,\
 readability-redundant-declaration,\
 readability-redundant-function-ptr-dereference,\
+readability-redundant-inline-specifier,\
+readability-redundant-preprocessor,\
 readability-redundant-smartptr-get,\
 readability-redundant-string-cstr,\
 readability-redundant-string-init,\
+readability-reference-to-constructed-temporary,\
 readability-simplify-boolean-expr,\
+readability-simplify-subscript-expr,\
 readability-static-accessed-through-instance,\
 readability-static-definition-in-anonymous-namespace,\
+readability-string-compare,\
 readability-uniqueptr-delete-release"
 
 # Other stuff :)
 WarningsAsErrors: "*"
+
+# TODO (maybe):
+# performance-noexcept-move-constructor
+# performance-noexcept-destructor
+# bugprone-return-const-ref-from-parameter
+# readability-make-member-function-const
+# readability-use-anyofallof
+# bugprone-casting-through-void
+# hicpp-exception-baseclass
+
+# bugprone-implicit-widening-of-multiplication-result
+# modernize-type-traits
+# readability-non-const-parameter
+# misc-include-cleaner
+# llvm-include-order
+# cert-err33-c
+# bugprone-signed-char-misuse
+# bugprone-exception-escape
+# cert-err58-cpp
+# misc-use-internal-linkage
+# modernize-concat-nested-namespaces
+# modernize-use-nodiscard
+# bugprone-multi-level-implicit-pointer-conversion
+# modernize-use-ranges
+# bugprone-switch-missing-default-case
+# bugprone-branch-clone
+# readability-convert-member-functions-to-static
+# readability-inconsistent-declaration-parameter-name
+# bugprone-sizeof-expression
+# cert-err34-c
+# readability-suspicious-call-argument
+
+# Perhaps impossible since we've written a damn memory allocator?
+# performance-no-int-to-ptr
