@@ -59,6 +59,33 @@ macro(check_cuda_compiler_flag FLAG OUTVAR)
     endif()
 endmacro()
 
+macro(check_cxx_diagnostic_flag FLAG OUTVAR)
+    if (NOT DEFINED ${OUTVAR})
+        if (NOT CMAKE_CXX_COMPILER)
+            message(BLUE "Skipping Test ${OUTVAR} - CMAKE_CXX_COMPILER is not set")
+            set(${OUTVAR} 0 CACHE BOOL "")
+        else()
+            message(BLUE "Performing Test ${OUTVAR}")
+            execute_process(
+                COMMAND ${CMAKE_CXX_COMPILER} -c -Werror=unknown-warning-option -o /dev/null "${FLAG}" "${XCMAKE_TOOLS_DIR}/empty.cpp"
+                ERROR_VARIABLE CLANG_OUT
+                RESULT_VARIABLE RETURN_CODE
+            )
+            if ("${CLANG_OUT}" MATCHES "unknown warning option" OR "${CLANG_OUT}" MATCHES "unknown -Werror warning specifier")
+                message(BLUE "Performing Test ${OUTVAR}${RST} - ${YELLOW}Failed${RST}")
+                set(${OUTVAR} 0 CACHE BOOL "")
+            elseif (NOT ${RETURN_CODE} STREQUAL "0")
+                message(Red "Unknown error performing Test ${OUTVAR}${RST} - ${YELLOW}Failed${RST}")
+                message(${CLANG_OUT})
+                set(${OUTVAR} 0 CACHE BOOL "")
+            else()
+                message(BLUE "Performing Test ${OUTVAR}${RST} - ${GREEN}Success${RST}")
+                set(${OUTVAR} 1 CACHE BOOL "")
+            endif()
+        endif()
+    endif()
+endmacro()
+
 # Try to add some compile options, but - for each one - only do so if the compiler accepts them.
 # This is useful for things like warning or optimisation flags that aren't strictly required, but are
 # preferred. It means your cmake script can work with lots of different compiler versions without the need
@@ -90,7 +117,12 @@ function(target_optional_compile_options TARGET)
         string(MAKE_C_IDENTIFIER ${_F} CACHE_VAR)
         set(CACHE_VAR_CUDA ${CACHE_VAR}_CUDA)
         if (XCMAKE_CHECK_COMPILE_FLAGS)
-            check_cxx_compiler_flag(${_F} ${CACHE_VAR})
+            if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND "${_F}" MATCHES "^-W")
+                # A fast path specifically for diagnostic flags in clang.
+                check_cxx_diagnostic_flag(${_F} ${CACHE_VAR})
+            else()
+                check_cxx_compiler_flag(${_F} ${CACHE_VAR})
+            endif()
             check_cuda_compiler_flag(${_F} ${CACHE_VAR_CUDA})
         else ()
             set(${CACHE_VAR} 1)
