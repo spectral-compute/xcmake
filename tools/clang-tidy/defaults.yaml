@@ -200,6 +200,7 @@ performance-inefficient-vector-operation,\
 performance-move-const-arg,\
 performance-move-constructor-init,\
 performance-no-automatic-move,\
+performance-noexcept-move-constructor,\
 performance-noexcept-swap,\
 performance-trivially-destructible,\
 performance-type-promotion-in-math-fn,\
@@ -243,14 +244,12 @@ readability-uniqueptr-delete-release"
 WarningsAsErrors: "*"
 
 # TODO (maybe):
-# performance-noexcept-move-constructor
-# performance-noexcept-destructor
 # bugprone-return-const-ref-from-parameter
 # readability-make-member-function-const
 # readability-use-anyofallof
 # bugprone-casting-through-void
 # hicpp-exception-baseclass
-
+# performance-noexcept-destructor
 # bugprone-implicit-widening-of-multiplication-result
 # modernize-type-traits
 # readability-non-const-parameter
