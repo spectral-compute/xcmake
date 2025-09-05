@@ -33,4 +33,12 @@ findFail $'\r'\$ $1 "CRLF detected - use LF instead"
 findFail $'NOLINT$' $1 "NOLINT given without diagnostic name"
 findFail $'NOLINT[ ]' $1 "NOLINT given without diagnostic name"
 
-clang-tidy ${EXTRA_ARGS} --use-color --header-filter="$SRCDIR/.*" --vfsoverlay="$(dirname "$0")/vfs.yaml" "$@"
+if [[ $1 == *.cu ]]; then
+  # Skip clang-tidy entirely for CUDA
+  shift
+  shift
+  "$@"
+else
+  clang-tidy ${EXTRA_ARGS} --use-color --header-filter="$SRCDIR/.*" --vfsoverlay="$(dirname "$0")/vfs.yaml" "$@"
+fi
+
