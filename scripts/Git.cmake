@@ -1,5 +1,6 @@
 function(get_git_version OUT)
     find_program(GIT_EXE git REQUIRED)
+    mark_as_advanced(GIT_EXE)
 
     execute_process(
         COMMAND ${GIT_EXE} describe --tags --always
@@ -13,6 +14,7 @@ endfunction()
 
 function(get_git_depth OUT)
     find_program(GIT_EXE git REQUIRED)
+    mark_as_advanced(GIT_EXE)
 
     execute_process(
         COMMAND ${GIT_EXE} rev-list HEAD --count

@@ -134,6 +134,9 @@ function(target_optional_compile_options TARGET)
         if (${CACHE_VAR_CUDA})
             target_compile_options(${TARGET} ${MAYBE_BEFORE} ${KEYWORD} $<$<COMPILE_LANGUAGE:CUDA>:${_F}>)
         endif ()
+
+        mark_as_advanced(${CACHE_VAR})
+        mark_as_advanced(${CACHE_VAR_CUDA})
     endforeach ()
 endfunction()
 
