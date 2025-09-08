@@ -65,21 +65,6 @@ Default: *OFF*
 If true, the target is built with [clang-tidy](https://clang.llvm.org/extra/clang-tidy/). All warnings are treated as
 errors.
 
-#### `CUDA`: Bool
-
-Default: *OFF*
-
-Enable CUDA support. Typically you'll want to use `add_cuda_executable` or `add_cuda_library` instead. This property
-is occasionally useful if you're writing a CMake function and want to check if a given target is CUDA-enabled.
-
-#### `CUDA_REMARKS`: Bool
-
-Default: *OFF*
-
-Enable `spectral-clang`'s enhanced CUDA backend diagnostics. These should not usually be used if
-`CMAKE_BUILD_TYPE` = `Debug` because doing so will usually produce many false positives caused by the optimiser being
-turned off.
-
 #### `DEBUG_INFO`: Bool
 
 Default: `CMAKE_BUILD_TYPE` == `Debug`
@@ -93,6 +78,9 @@ This is mainly useful if you want to selectively enable debug info for some targ
 Default: *OFF*
 
 Run the `include-what-you-use` tool on this target.
+
+REMOVEME -- If we are removing XCMake's CUDA support, what is to be written
+here?
 
 This differs from CMake's native support for IWYU by adding support for CUDA. Using CMake's native support on
 CUDA-enabled targets results in it never finding any problems. XCMake's version will work, but errors in CUDA files
@@ -169,19 +157,6 @@ Enable remarks from the LLVM loop vectoriser.
 Default: *ON*
 
 Warnings are errors.
-
-## CUDA Support
-
-Although CMake now has native support for CUDA, it's hardcoded to use nvcc. XCMake provides convenient CUDA support
-that supports `clang` as well as `nvcc`, and allows targeting AMD GPUs if spectral-clang and redscale are present.
-
-Select GPU target(s) with `-DXCMAKE_GPUS=x,y,z`. Arguments can be NVIDIA targets (eg `sm_61`) or AMD ones.
-Mixing the two will work iff we've added that feature to the compiler yet. If unspecified, the GPUs in the build machine
-will be autodetected and _all of them_ will be targeted.
-
-`add_cuda_library()` and `add_cuda_executable()` are provided for conveniently creating targets that use CUDA.
-This will hook up the CUDA runtime library appropriate for your chosen target GPU(s), and do a few obscure
-things to make cmake not implode when asked to compile CUDA.
 
 ## Doxygen integration
 
