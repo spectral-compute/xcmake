@@ -317,6 +317,8 @@ It's unclear why you'd ever want these things to differ, so this simplification 
 that provides `IMPORTED` target generation. The following extra options are provided:
 - STATIC_LIBRARIES
 - DYNAMIC_LIBRARIES
+- HEADER_LIBRARIES
+- LIBRARIES (whose type is determined by BUILD_SHARED_LIBS)
 - EXECUTABLES
 
 These describe the outputs of the external project build. `IMPORTED` targets will be generated with those names,
