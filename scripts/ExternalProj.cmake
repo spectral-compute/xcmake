@@ -226,7 +226,7 @@ function(add_external_project TARGET)
     endforeach()
 
     foreach (_EXE ${ep_EXECUTABLES})
-        add_executable(${_EXE} STATIC IMPORTED NOINSTALL GLOBAL)
+        add_executable(${_EXE} IMPORTED NOINSTALL GLOBAL)
 
         set(EXE_PATH ${EP_INSTALL_DIR}/${CMAKE_INSTALL_BINDIR}/${_EXE}${CMAKE_EXECUTABLE_SUFFIX})
         list(APPEND ep_BUILD_BYPRODUCTS ${EXE_PATH})
