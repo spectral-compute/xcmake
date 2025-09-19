@@ -465,8 +465,10 @@ function(apply_default_standard_properties TARGET)
     else()
         set(RPATH_ORIGIN "$ORIGIN")
     endif()
-    set_target_properties(${TARGET} PROPERTIES INSTALL_RPATH
-                          "${RPATH_ORIGIN}/$<PATH:RELATIVE_PATH,${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR},${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}>")
+    set_target_properties(${TARGET} PROPERTIES
+        BUILD_RPATH_USE_ORIGIN ON
+        INSTALL_RPATH "${RPATH_ORIGIN}/$<PATH:RELATIVE_PATH,${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR},${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}>"
+    )
 
     # Tack on the default properties that can be represented as interface properties.
     if (NOT TARGET xcmake_default_flags)
