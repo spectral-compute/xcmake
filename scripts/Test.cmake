@@ -54,3 +54,13 @@ function(add_test_shell_script TARGET FILE)
         install(PROGRAMS ${FILE} DESTINATION ${XCMAKE_TEST_INSTALL_PREFIX}${CMAKE_INSTALL_BINDIR})
     endif ()
 endfunction()
+
+# Organise the `build_tests` target for ctest test suites.
+add_custom_target(build_tests)
+function(add_test NAME THE_NAME)
+    # Test names aren't always targets, but if they are, we can collect the deps directly.
+    if (TARGET ${THE_NAME})
+        add_dependencies(build_tests ${THE_NAME})
+    endif()
+    _add_test(NAME ${THE_NAME} ${ARGN}) 
+endfunction()
