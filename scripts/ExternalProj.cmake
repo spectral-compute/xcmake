@@ -81,6 +81,7 @@ function(add_external_project TARGET)
     set(flags
         # Custom
         CMAKE # Allows a CMAKE EP to be declared with no additional CMAKE arguments
+        ALL # Don't exclude from all.
     )
     set(oneValueArgs
         # Built-in
@@ -234,9 +235,15 @@ function(add_external_project TARGET)
         )
     endforeach ()
 
+    if (ep_ALL)
+        set(E_ALL "0")
+    else()
+        set(E_ALL "1")
+    endif()
+
     externalproject_add(
         ${TARGET}
-        EXCLUDE_FROM_ALL 1
+        EXCLUDE_FROM_ALL ${E_ALL}
         PREFIX ${EP_ROOT_DIR}/${TARGET}
         STAMP_DIR ${EP_ROOT_DIR}/stamps
         INSTALL_DIR ${EP_INSTALL_DIR}
