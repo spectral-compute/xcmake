@@ -53,11 +53,18 @@ default_cache_value(CMAKE_ERROR_DEPRECATED ON) # Explode on use of deprecated cm
 # This disables the total download time limit, but leaves the activity timeout unchanged.
 default_cache_value(ExternalData_TIMEOUT_ABSOLUTE 0)
 
+if (DEFINED "ENV{CLION_IDE}" OR DEFINED "ENV{VSCODE_PID}")
+    set(XCMAKE_IN_IDE ON)
+else()
+    set(XCMAKE_IN_IDE OFF)
+endif()
+
 # Remind the user to stop drinking drain cleaner
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
     message(FATAL_ERROR "In-tree builds are not wise.")
 endif()
-if (NOT CMAKE_INSTALL_PREFIX AND NOT DEFINED ENV{CLION_IDE})
+
+if (NOT CMAKE_INSTALL_PREFIX AND NOT XCMAKE_IN_IDE)
     message(FATAL_ERROR "Please specify a value for `CMAKE_INSTALL_PREFIX`.")
 endif()
 
