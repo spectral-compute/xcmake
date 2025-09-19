@@ -6,10 +6,16 @@ define_xcmake_target_property(
     DEFAULT ON
 )
 target_compile_options(WERROR_EFFECTS INTERFACE
-    $<$<CXX_COMPILER_ID:MSVC>:/WX>                          # MSVC
-    $<$<CXX_COMPILER_ID:Clang,AppleClang,GNU>:-Werror>      # Clang/GCC
-    $<$<CXX_COMPILER_ID:NVCC>:-Werror all-warnings>         # NVCC
+    # It's silly that we need to list them all 3 times, but that ends up being less awful than doing
+    # complex genexp logic :D
+    $<$<COMPILE_LANG_AND_ID:C,NVIDIA>:-Werror all-warnings>
+    $<$<COMPILE_LANG_AND_ID:CXX,NVIDIA>:-Werror all-warnings>
+    $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-Werror all-warnings>
 
-    # Required if a target is using CMake's builtin CUDA support
-    $<$<COMPILE_LANGUAGE:CUDA>:-Werror all-warnings>
+    $<$<COMPILE_LANG_AND_ID:C,MSVC>:/WX>     # MSVC
+    $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX>   # MSVC
+
+    $<$<COMPILE_LANG_AND_ID:C,Clang,AppleClang,GNU>:-Werror>       # Everything else
+    $<$<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang,GNU>:-Werror>     # Everything else
+    $<$<COMPILE_LANG_AND_ID:CUDA,Clang,AppleClang,GNU>:-Werror>    # Everything else
 )
