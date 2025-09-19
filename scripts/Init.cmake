@@ -88,8 +88,6 @@ endif()
 
 # Sensible defaults for Cmake's built-in CUDA support.
 default_cache_value(CMAKE_CUDA_STANDARD 20)
-default_cache_value(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
-default_cache_value(CMAKE_CUDA_FLAGS "--expt-relaxed-constexpr --expt-extended-lambda")
 
 # Target properties to track DLL search paths.
 define_property(TARGET PROPERTY DLL_SEARCH_PATHS

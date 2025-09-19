@@ -56,6 +56,7 @@ macro(check_cuda_compiler_flag FLAG OUTVAR)
                 set(${OUTVAR} 1 CACHE BOOL "")
             endif()
         endif()
+        mark_as_advanced(${OUTVAR})
     endif()
 endmacro()
 
@@ -136,7 +137,6 @@ function(target_optional_compile_options TARGET)
         endif ()
 
         mark_as_advanced(${CACHE_VAR})
-        mark_as_advanced(${CACHE_VAR_CUDA})
     endforeach ()
 endfunction()
 
@@ -438,6 +438,13 @@ function(init_default_flags)
             $<IF:$<BOOL:$<TARGET_PROPERTY:ASSERTIONS>>,,$<$<COMPILE_LANGUAGE:CXX>:/GS->>
         )
     endif ()
+
+    # Enable some "please work" flags for nvcc
+    if (${CMAKE_CXX_COMPILER_ID} STREQUAL "NVIDIA")
+        target_compile_options(xcmake_default_flags INTERFACE
+            $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:--expt-relaxed-constexpr --expt-extended-lambda>
+        )
+    endif()
 endfunction()
 
 # Apply standard CMake properties that we set to specific values.
