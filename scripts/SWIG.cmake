@@ -59,7 +59,7 @@ function(add_swig_bindings_to TARGET)
         # Politely ask for some Python that doesn't segfault, please. Defaults that work? Nahhh.
         target_compile_definitions(${SWIG_TARGET} PRIVATE -DPy_LIMITED_API=0x03040000)
         set_target_properties(${SWIG_TARGET}
-            PROPERTIES WERROR OFF
+            PROPERTIES COMPILE_WARNING_AS_ERROR OFF
             CXX_CLANG_TIDY ""
             SWIG_USE_TARGET_INCLUDE_DIRECTORIES ON
         )
