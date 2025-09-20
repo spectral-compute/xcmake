@@ -155,7 +155,7 @@ Enable `std::filesystem` for this target.
 
 #### `STRIP`: Bool
 
-Default: *ON* iff `CMAKE_BUILD_TYPE` = `Release`
+Default: *ON* if `CMAKE_BUILD_TYPE` = `Release`
 
 Strip the output binary.
 
