@@ -3,6 +3,7 @@
 XCMake is a set of scripts that aim to make using cmake more pleasant. Key features include:
 
 - Less astonishing default behaviours for many of cmake's existing features.
+- Compilation warnings as errors on by default.
 - Doxygen integration
 - Simplified generation of installers and packages for distribution.
 - Coloured logging.
@@ -163,12 +164,6 @@ Strip the output binary.
 Default: *OFF*
 
 Enable remarks from the LLVM loop vectoriser.
-
-#### `WERROR`: Bool
-
-Default: *ON*
-
-Warnings are errors.
 
 ## CUDA Support
 
