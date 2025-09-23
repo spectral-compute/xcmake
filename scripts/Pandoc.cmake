@@ -41,8 +41,6 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
     find_package (Python3 REQUIRED COMPONENTS Interpreter)
 
     add_custom_command(OUTPUT "${OUT_FILE}"
-        COMMAND "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${MARKDOWN_FILE}" ${XCMAKE_SANITISE_TRADEMARKS}
-
         # Preprocess the markdown.
         COMMAND "${Python3_EXECUTABLE}" "${XCMAKE_TOOLS_DIR}/pandoc/preprocessor.py"
                 -i "${MARKDOWN_FILE}" -o "${INTERMEDIATE_FILE}.1" -t "${COMPONENT_INSTALL_ROOT}${INSTALL_DESTINATION}"
@@ -74,7 +72,6 @@ function (add_pandoc_markdown TARGET BASEDIR MARKDOWN_FILE INSTALL_DESTINATION)
             "${XCMAKE_TOOLS_DIR}/pandoc/preprocessor.py"
             "${XCMAKE_TOOLS_DIR}/pandoc/url-rewriter.sh"
             "${XCMAKE_TOOLS_DIR}/pandoc/code-snippet-dependencies.py"
-            "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh"
         DEPFILE "${OUT_FILE}.d"
         WORKING_DIRECTORY "${d_MANUAL_SRC}"
     )

@@ -11,7 +11,6 @@ include(Documentation)
 
 # XCmake-specific build options
 option(XCMAKE_PACKAGING "Enable installer generation. Disables lots of other things." OFF)
-option(XCMAKE_SANITISE_TRADEMARKS "A list of trademarks to scan headers/documentation for. The last symbol of the word shall be the appropriate special symbol. Formatted as a list of <word>:<I<owner> pairs" "" STRING)
 option(XCMAKE_ENABLE_TESTS "Build unit tests for all projects" ON)
 option(XCMAKE_ENABLE_DOCS "Generate documentation for all projects" ON)
 option(XCMAKE_PRIVATE_DOCS "Build 'private' documentation" ON)

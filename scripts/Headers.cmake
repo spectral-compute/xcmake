@@ -168,13 +168,6 @@ function(add_headers TARGET)
             add_dependencies(${FILE_TGT}_PCPP ${FILE_TGT}_PCPP_OUT)
         endif()
 
-        if (NOT WIN32)
-            add_custom_command(OUTPUT "${OUTPUT_HDR_PATH}" APPEND
-                COMMAND ${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh "${FULL_HDR_PATH}" ${XCMAKE_SANITISE_TRADEMARKS}
-                DEPENDS ${HEADER_PROCESS_DEPENDENCIES}
-            )
-        endif()
-
         add_custom_command(OUTPUT "${OUTPUT_HDR_PATH}" APPEND
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FULL_HDR_PATH}" "${OUTPUT_HDR_PATH}"
             DEPENDS ${HEADER_PROCESS_DEPENDENCIES}
@@ -346,15 +339,6 @@ function(add_release_header_library TARGET)
             COMMAND "${CLANG_FORMAT}" -i "${DST_HDR_PATH}" --sort-includes=0 "-style=${FORMAT}"
         )
 
-    endif()
-
-    # Run the trademark sanitizer.
-    if (NOT WIN32)
-        add_custom_command(
-            OUTPUT "${DST_HDR_PATH}" APPEND
-            COMMAND "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${FULL_HDR_PATH}" "${XCMAKE_SANITISE_TRADEMARKS}"
-            DEPENDS "${XCMAKE_TOOLS_DIR}/tm-sanitiser.sh" "${SRC_HEADER_FILES}"
-        )
     endif()
 
     # Create a target for the above. Name it with _ALL for compatibility with users of the ORIGINAL_SOURCES property.
