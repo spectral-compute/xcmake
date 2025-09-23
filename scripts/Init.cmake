@@ -58,6 +58,7 @@ default_cache_value(ExternalData_TIMEOUT_ABSOLUTE 0)
 
 if (DEFINED "ENV{CLION_IDE}" OR DEFINED "ENV{VSCODE_PID}")
     set(XCMAKE_IN_IDE ON)
+    add_compile_definitions(__XCMAKE_IN_IDE__)
 else()
     set(XCMAKE_IN_IDE OFF)
 endif()
