@@ -140,6 +140,7 @@ function(add_external_project TARGET)
             "-DCMAKE_C_FLAGS=${C_FLAGS}"
             "-DCMAKE_EXE_LINKER_FLAGS=${LINKER_FLAGS}"
             "-DCMAKE_SHARED_LINKER_FLAGS=${LINKER_FLAGS}"
+            -G${CMAKE_GENERATOR}
 
             # Avoid install-time logspam
             -DCMAKE_INSTALL_MESSAGE=NEVER
