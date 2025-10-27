@@ -332,7 +332,11 @@ function(add_release_header_library TARGET)
 
     # Format the header.
     if (NOT "${h_FORMAT}" STREQUAL "")
-        find_program(CLANG_FORMAT "clang-format" REQUIRED DOC "Clang source formatter.")
+        get_filename_component(COMPILER_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
+        find_program(CLANG_FORMAT "clang-format" REQUIRED
+            DOC "Clang source formatter."
+            HINTS "${COMPILER_DIR}"
+        )
         string(REGEX REPLACE "[ \t\r\n]+" " " FORMAT "${h_FORMAT}") # Allow nicer formatted strings.
         add_custom_command(
             OUTPUT "${DST_HDR_PATH}" APPEND
