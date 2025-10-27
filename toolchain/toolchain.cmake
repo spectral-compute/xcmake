@@ -112,23 +112,11 @@ if(WIN32)
     if (_BAD_VS)
         message(FATAL_ERROR "Using Visual Studio project files as the generator disables use of Clang. Use -G\"NMake Makefiles JOM\"")
     endif()
-    find_default_program(CMAKE_LINKER "lld-link.exe")
     find_default_program(CMAKE_C_COMPILER "clang-cl.exe")
     find_default_program(CMAKE_CXX_COMPILER "clang-cl.exe")
 else()
-    find_default_program(CMAKE_LINKER ld.lld ld.gold ld.bfd ld)
     find_default_program(CMAKE_C_COMPILER clang)
     find_default_program(CMAKE_CXX_COMPILER clang++)
-
-    # Make sure that CMAKE_LINKER actually sets the linker. Can hook this up to XCMAKE_CLANG_LINKER_FLAGS if we ever care...
-    # -fuse-ld is an unknown argument to lld-link
-    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        default_cache_value(CMAKE_STATIC_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
-        default_cache_value(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
-        default_cache_value(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
-        default_cache_value(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=${CMAKE_LINKER}")
-        default_cache_value(CMAKE_CXX_LINK_OPTIONS_IPO "-fuse-ld=${CMAKE_LINKER}")
-    endif()
 endif()
 
 # Handle the XCMAKE_SHOW_TRIBBLE case.
