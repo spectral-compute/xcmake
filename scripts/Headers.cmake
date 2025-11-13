@@ -1,3 +1,10 @@
+macro(find_pcpp)
+    find_program(PCPP
+        NAMES pcpp pcpp-python
+        REQUIRED
+    )
+endmacro()
+
 # Create a header target with the specified target name.
 #
 # TARGET The name of the target to create.
@@ -58,7 +65,7 @@ function(add_headers TARGET)
     # Find PCPP if we're going to use it.
     if (h_DEFINE_MACRO OR h_UNDEFINE_MACRO OR h_NEVERDEFINE_MACRO OR h_COMPRESS)
         set(PCPP_DIR "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}/pcpp")
-        find_program(PCPP pcpp REQUIRED DOC "Python C PreProcessor program.")
+        find_pcpp()
     else()
         set(PCPP_DIR)
     endif()
@@ -252,8 +259,7 @@ function(add_release_header_library TARGET)
         set(DST_INCLUDE_DIR "${h_BUILD_DESTINATION}")
     endif()
 
-    # Find PCPP.
-    find_program(PCPP pcpp REQUIRED DOC "Python C PreProcessor program.")
+    find_pcpp()
     find_program(SED sed REQUIRED DOC "sed")
 
     # Find the headers to use as dependencies.
