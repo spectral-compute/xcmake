@@ -65,6 +65,12 @@ function(add_test)
         add_dependencies(build_tests ${l_NAME})
     endif()
 
+    if (DEFINED XCMAKE_TEST_WORKING_DIRECTORY)
+        set(WDIR "${XCMAKE_TEST_WORKING_DIRECTORY}")
+    else()
+        set(WDIR "${CMAKE_INSTALL_PREFIX}")
+    endif()
+
     # By default, ctest depends on the entire object tree, which is enormous.
     # This is deeply silly, because we only actually need the exeuctables. I claim
     # that people don't actually want this nonsense, so we override the options here.
@@ -98,6 +104,6 @@ function(add_test)
         NAME ${l_NAME}
 
         COMMAND ${NEW_CMD}
-        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
+        WORKING_DIRECTORY "${WDIR}"
     )
 endfunction()
