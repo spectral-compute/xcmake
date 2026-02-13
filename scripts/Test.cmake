@@ -57,10 +57,47 @@ endfunction()
 
 # Organise the `build_tests` target for ctest test suites.
 add_custom_target(build_tests)
-function(add_test NAME THE_NAME)
+function(add_test)
+    cmake_parse_arguments("l" "${flags}" "NAME;WORKING_DIRECTORY" "CONFIGURATIONS;COMMAND" ${ARGN})
+
     # Test names aren't always targets, but if they are, we can collect the deps directly.
-    if (TARGET ${THE_NAME})
-        add_dependencies(build_tests ${THE_NAME})
+    if (TARGET ${l_NAME})
+        add_dependencies(build_tests ${l_NAME})
     endif()
-    _add_test(NAME ${THE_NAME} ${ARGN}) 
+
+    # By default, ctest depends on the entire object tree, which is enormous.
+    # This is deeply silly, because we only actually need the exeuctables. I claim
+    # that people don't actually want this nonsense, so we override the options here.
+    #
+    # This becomes extra annoying due to this behaviour:
+    # > If <command> specifies an executable target (created by add_executable()) it will
+    # > automatically be replaced by the location of the executable created at build time.
+    #
+    # That's okay, we can fix that with enough cursed bullshit.
+    set(NEW_CMD)
+    foreach (_T IN LISTS l_COMMAND)
+        if (TARGET ${_T})
+            get_target_property(_T_TY ${_T} TYPE)
+            if ("${_T_TY}" STREQUAL "EXECUTABLE")
+                get_target_property(_NAME ${_T} RUNTIME_OUTPUT_NAME)
+                if (_NAME)
+                    list(APPEND NEW_CMD "./test/bin/${_NAME}")
+                else()
+                    list(APPEND NEW_CMD "./test/bin/${_T}")
+                endif()
+                add_dependencies(build_tests ${_T})
+            else()
+                list(APPEND NEW_CMD "${_T}")
+            endif()
+        else()
+            list(APPEND NEW_CMD "${_T}")
+        endif()
+    endforeach()
+
+    _add_test(
+        NAME ${l_NAME}
+
+        COMMAND ${NEW_CMD}
+        WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}
+    )
 endfunction()
