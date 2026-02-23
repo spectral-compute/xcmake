@@ -347,8 +347,10 @@ function(add_release_header_library TARGET)
         add_custom_command(
             OUTPUT "${DST_HDR_PATH}" APPEND
             COMMAND "${CLANG_FORMAT}" -i "${DST_HDR_PATH}" --sort-includes=0 "-style=${FORMAT}"
-        )
 
+            # Remove stupid whitespace from partial macro processing.
+            COMMAND "${SED}" -i -Ee "s/ +\\\\$/ \\\\/g" "${DST_HDR_PATH}"
+        )
     endif()
 
     # Create a target for the above. Name it with _ALL for compatibility with users of the ORIGINAL_SOURCES property.
