@@ -15,6 +15,7 @@ option(XCMAKE_ENABLE_TESTS "Build unit tests for all projects" ON)
 option(XCMAKE_ENABLE_DOCS "Generate documentation for all projects" ON)
 option(XCMAKE_PRIVATE_DOCS "Build 'private' documentation" ON)
 option(XCMAKE_PROJECTS_ARE_COMPONENTS "Assume a 1-1 mapping between projects and components. This simplifies some issues surrounding exports and installer generation." ON)
+option(XCMAKE_IS_CI "Tune the build for best oneshot performance, at the expense of incremental build coherency." OFF)
 
 if (XCMAKE_PACKAGING)
     set(DEFAULT_INSTALL_DLLS OFF)
@@ -74,3 +75,10 @@ set(XCMAKE_GENERATED_DIR ${CMAKE_BINARY_DIR}/generated CACHE INTERNAL "")
 file(MAKE_DIRECTORY "${XCMAKE_GENERATED_DIR}")
 
 init_default_flags()
+
+# Digest the flags
+if (XCMAKE_IS_CI)
+    set(_XCMAKE_CFG_DEPS "")
+else ()
+    set(_XCMAKE_CFG_DEPS "CONFIGURE_DEPENDS")
+endif()

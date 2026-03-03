@@ -79,7 +79,9 @@ function (get_cpp_dependencies)
     list(REMOVE_DUPLICATES deps)
 
     # We probably want cmake to rerun to get this list if any of the dependencies change.
-    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${args_SOURCES} ${deps})
+    if (NOT ${XCMAKE_IS_CI})
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${args_SOURCES} ${deps})
+    endif()
 
     # If the result is to be relative to some path, then remove the results that are not within that path, and make the
     # rest relative.

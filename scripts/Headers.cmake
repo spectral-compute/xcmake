@@ -60,7 +60,7 @@ function(add_headers TARGET)
     foreach(_ext IN LISTS h_HEADER_EXT)
         list(APPEND SEARCH_GLOB "${SRC_INCLUDE_DIR}/*${_ext}")
     endforeach ()
-    file(GLOB_RECURSE SRC_HEADER_FILES RELATIVE "${SRC_INCLUDE_DIR}" CONFIGURE_DEPENDS ${SEARCH_GLOB})
+    file(GLOB_RECURSE SRC_HEADER_FILES RELATIVE "${SRC_INCLUDE_DIR}" ${_XCMAKE_CFG_DEPS} ${SEARCH_GLOB})
 
     # Find PCPP if we're going to use it.
     if (h_DEFINE_MACRO OR h_UNDEFINE_MACRO OR h_NEVERDEFINE_MACRO OR h_COMPRESS)
@@ -267,7 +267,7 @@ function(add_release_header_library TARGET)
     foreach(_ext IN LISTS h_HEADER_EXT)
         list(APPEND SEARCH_GLOB "${SRC_INCLUDE_DIR}/*${_ext}")
     endforeach ()
-    file(GLOB_RECURSE SRC_HEADER_FILES CONFIGURE_DEPENDS ${SEARCH_GLOB})
+    file(GLOB_RECURSE SRC_HEADER_FILES ${_XCMAKE_CFG_DEPS} ${SEARCH_GLOB})
 
     # Handle the empty entry point case. Do an abbreviated version of the stuff below.
     if ("${h_ENTRY}" STREQUAL "")

@@ -29,7 +29,7 @@ function(find_sources OUT)
     endforeach()
 
     file(GLOB_RECURSE FOUND_SOURCES
-        CONFIGURE_DEPENDS
+        ${_XCMAKE_CFG_DEPS}
         LIST_DIRECTORIES OFF
         ${GLOB_PATTERN}
     )
