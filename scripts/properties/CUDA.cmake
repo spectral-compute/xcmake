@@ -100,8 +100,8 @@ macro (populate_cuda_property)
             endif()
         endif()
 
-        if (NOT XCMAKE_CUDA_SYMBOL_HASHING)
-            target_compile_options(CUDA_FLAGS INTERFACE -fcuda-disable-symbol-hashing)
+        if (XCMAKE_CUDA_SYMBOL_HASHING)
+            target_compile_options(CUDA_FLAGS INTERFACE -fcuda-symbol-hashing)
         endif()
 
         message(BOLD_GREEN "Using NVIDIA CUDA ${CUDAToolkit_VERSION} from ${CUDAToolkit_BIN_DIR}/../")
