@@ -39,6 +39,7 @@ endfunction()
 
 option(XCMAKE_FORCE_COLOUR "Force coloured compiler output" OFF)
 option(XCMAKE_CHECK_COMPILE_FLAGS "Check compiler flag compatibility at CMAKE configure time" ON)
+option(XCMAKE_OPTION_FILE "Use an option file to hide diagnostics-related warning flags from commandlines." ON)
 
 macro(check_cuda_compiler_flag FLAG OUTVAR)
     if (NOT DEFINED ${OUTVAR} AND "${CMAKE_CUDA_COMPILER}")
@@ -114,6 +115,8 @@ function(target_optional_compile_options TARGET)
     list(GET d_UNPARSED_ARGUMENTS 0 KEYWORD)
     list(REMOVE_AT d_UNPARSED_ARGUMENTS 0)
 
+    set(ACCEPTED_CXX_FLAGS "" PARENT_SCOPE)
+    set(ACCEPTED_CUDA_FLAGS "" PARENT_SCOPE)
     foreach (_F ${d_UNPARSED_ARGUMENTS})
         string(MAKE_C_IDENTIFIER ${_F} CACHE_VAR)
         set(CACHE_VAR_CUDA ${CACHE_VAR}_CUDA)
@@ -131,13 +134,17 @@ function(target_optional_compile_options TARGET)
 
         if (${CACHE_VAR})
             target_compile_options(${TARGET} ${MAYBE_BEFORE} ${KEYWORD} $<$<COMPILE_LANGUAGE:C,CXX>:${_F}>)
+            set(ACCEPTED_CXX_FLAGS "${ACCEPTED_CXX_FLAGS} ${_F}")
         endif ()
         if (${CACHE_VAR_CUDA})
             target_compile_options(${TARGET} ${MAYBE_BEFORE} ${KEYWORD} $<$<COMPILE_LANGUAGE:CUDA>:${_F}>)
+            set(ACCEPTED_CUDA_FLAGS "${ACCEPTED_CUDA_FLAGS} ${_F}")
         endif ()
 
         mark_as_advanced(${CACHE_VAR})
     endforeach ()
+    set(ACCEPTED_CXX_FLAGS "${ACCEPTED_CXX_FLAGS}" PARENT_SCOPE)
+    set(ACCEPTED_CUDA_FLAGS "${ACCEPTED_CUDA_FLAGS}" PARENT_SCOPE)
 endfunction()
 
 # Get the name of the primary output file produced by the given target.
@@ -259,6 +266,7 @@ function(init_default_flags)
 
     # An interface target to hold our default flags.
     _add_library(xcmake_default_flags INTERFACE)
+    _add_library(xcmake_default_diagnostic_flags INTERFACE)
 
     # Configure aggressive defaults for compiler warnings...
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -271,7 +279,7 @@ function(init_default_flags)
         # gcc, leaving many of the most useful things turned off. You *can* run around enabling things one by one, but
         # there's far too many for this to be realistic (and you have to keep doing it as more get added).
         # Instead, we use `-Weverything`, and switch off the (many) contradictions that ensue.
-        target_optional_compile_options(xcmake_default_flags BEFORE INTERFACE
+        target_optional_compile_options(xcmake_default_diagnostic_flags BEFORE INTERFACE
             -Weverything # We like warnings.
 
             # Don't warn for using cool things.
@@ -369,6 +377,19 @@ function(init_default_flags)
             -fdiagnostics-show-category=name
         )
 
+        if (XCMAKE_OPTION_FILE)
+            # By default, move the many diagnostics flags to a file cos it's slightly neater.
+            file(WRITE "${XCMAKE_GENERATED_DIR}/cxx_warn_flags.cfg" "${ACCEPTED_CXX_FLAGS}")
+            file(WRITE "${XCMAKE_GENERATED_DIR}/cuda_warn_flags.cfg" "${ACCEPTED_CUDA_FLAGS}")
+
+            target_compile_options(xcmake_default_flags INTERFACE
+                $<$<COMPILE_LANGUAGE:C,CXX>:--config "${XCMAKE_GENERATED_DIR}/cxx_warn_flags.cfg">
+                $<$<COMPILE_LANGUAGE:CUDA>:--config "${XCMAKE_GENERATED_DIR}/cuda_warn_flags.cfg">
+            )
+        else()
+            # With no option file, just stick the flags right in there.
+            target_link_libraries(xcmake_default_flags INTERFACE xcmake_default_diagnostic_flags)
+        endif()
 
         if (NOT DEFINED ENV{CLION_IDE})
             # Some flags break clion's clangd, so need to be omitted.
