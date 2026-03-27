@@ -383,8 +383,8 @@ function(init_default_flags)
             file(WRITE "${XCMAKE_GENERATED_DIR}/cuda_warn_flags.cfg" "${ACCEPTED_CUDA_FLAGS}")
 
             target_compile_options(xcmake_default_flags INTERFACE
-                $<$<COMPILE_LANGUAGE:C,CXX>:--config "${XCMAKE_GENERATED_DIR}/cxx_warn_flags.cfg">
-                $<$<COMPILE_LANGUAGE:CUDA>:--config "${XCMAKE_GENERATED_DIR}/cuda_warn_flags.cfg">
+                $<$<COMPILE_LANGUAGE:C,CXX>:--config "${XCMAKE_GENERATED_DIR}/cxx_warn_flags.cfg" >
+                $<$<COMPILE_LANGUAGE:CUDA>:--config "${XCMAKE_GENERATED_DIR}/cuda_warn_flags.cfg" >
             )
         else()
             # With no option file, just stick the flags right in there.
