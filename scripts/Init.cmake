@@ -56,7 +56,10 @@ default_cache_value(CMAKE_ERROR_DEPRECATED ON) # Explode on use of deprecated cm
 # This disables the total download time limit, but leaves the activity timeout unchanged.
 default_cache_value(ExternalData_TIMEOUT_ABSOLUTE 0)
 
-if (DEFINED "ENV{CLION_IDE}" OR DEFINED "ENV{VSCODE_PID}")
+if (DEFINED "ENV{CLION_IDE}" OR
+    DEFINED "ENV{VSCODE_PID}" OR
+    DEFINED "ENV{ZED_WORKTREE_ROOT}"
+)
     set(XCMAKE_IN_IDE ON)
     add_compile_definitions(__XCMAKE_IN_IDE__)
 else()
