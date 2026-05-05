@@ -233,6 +233,11 @@ readability-uniqueptr-delete-release"
 # Other stuff :)
 WarningsAsErrors: "*"
 
+CheckOptions:
+# Mark f16s as triviallycopyable
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: __half,__half2,_Float16
+
 # TODO (maybe):
 # bugprone-return-const-ref-from-parameter
 # readability-make-member-function-const
