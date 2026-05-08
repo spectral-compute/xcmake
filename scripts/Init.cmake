@@ -60,10 +60,8 @@ if (DEFINED "ENV{CLION_IDE}" OR
     DEFINED "ENV{VSCODE_PID}" OR
     DEFINED "ENV{ZED_WORKTREE_ROOT}"
 )
-    set(XCMAKE_IN_IDE ON)
+    default_cache_value(XCMAKE_IN_IDE ON)
     add_compile_definitions(__XCMAKE_IN_IDE__)
-else()
-    set(XCMAKE_IN_IDE OFF)
 endif()
 
 # Remind the user to stop drinking drain cleaner
