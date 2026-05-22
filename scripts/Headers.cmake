@@ -119,6 +119,7 @@ function(add_headers TARGET)
         set(OUTPUT_HDR_PATH "${DST_INCLUDE_DIR}/${SRC_HDR_FILE}")
 
         list(APPEND ORIGINAL_SOURCES "${FULL_SRC_HDR_PATH}")
+        list(APPEND OUTPUT_HEADERS "${OUTPUT_HDR_PATH}")
 
         add_custom_command(OUTPUT "${OUTPUT_HDR_PATH}"
             COMMENT "Preparing ${SRC_HDR_FILE} for deployment..."
@@ -190,15 +191,19 @@ function(add_headers TARGET)
 
     # Set up the interface library. This is the target that was requested.
     add_library(${TARGET} INTERFACE)
-    target_include_directories(${TARGET} INTERFACE
-        $<BUILD_INTERFACE:${DST_INCLUDE_DIR}>
-        $<INSTALL_INTERFACE:include/${h_INSTALL_DESTINATION}>
+    target_sources(
+        ${TARGET} INTERFACE
+        FILE_SET HEADERS
+        TYPE HEADERS
+        FILES ${OUTPUT_HEADERS}
+        BASE_DIRS ${DST_INCLUDE_DIR}
     )
     add_dependencies(${TARGET} ${TARGET}_ALL)
-    install(TARGETS ${TARGET} EXPORT ${PROJECT_NAME})
-
-    # Transplant the entire output header directory into the right part of the install tree.
-    install(DIRECTORY ${DST_INCLUDE_DIR}/ DESTINATION include/${h_INSTALL_DESTINATION})
+    install(
+        TARGETS ${TARGET}
+        EXPORT ${PROJECT_NAME}
+        FILE_SET HEADERS DESTINATION include/${h_INSTALL_DESTINATION}
+    )
 endfunction()
 
 # An option to turn off release header building.
@@ -361,11 +366,17 @@ function(add_release_header_library TARGET)
 
     # Set up the interface library. This is the target that was requested.
     add_library(${TARGET} INTERFACE)
-    target_include_directories(${TARGET} INTERFACE "$<BUILD_INTERFACE:${DST_INCLUDE_DIR}>"
-                                                   "$<INSTALL_INTERFACE:include/${h_INSTALL_DESTINATION}>")
+    target_sources(
+        ${TARGET} INTERFACE
+        FILE_SET HEADERS
+        TYPE HEADERS
+        FILES ${DST_HDR_PATH}
+        BASE_DIRS ${DST_INCLUDE_DIR}
+    )
     add_dependencies(${TARGET} ${TARGET}_ALL)
-    install(TARGETS ${TARGET} EXPORT "${PROJECT_NAME}")
-
-    # Transplant the entire output header directory into the right part of the install tree.
-    install(DIRECTORY "${DST_INCLUDE_DIR}/" DESTINATION include/${h_INSTALL_DESTINATION})
+    install(
+        TARGETS ${TARGET}
+        EXPORT ${PROJECT_NAME}
+        FILE_SET HEADERS DESTINATION include/${h_INSTALL_DESTINATION}
+    )
 endfunction()
