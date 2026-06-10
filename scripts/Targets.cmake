@@ -707,6 +707,8 @@ endfunction()
 function (add_shell_script TARGET FILE)
     cmake_parse_arguments(args "NOINSTALL" "" "" ${ARGN})
 
+    find_program(SHELLCHECK_BIN shellcheck REQUIRED)
+
     # Make the path absolute.
     if (NOT IS_ABSOLUTE ${FILE})
         set(FILE ${CMAKE_CURRENT_LIST_DIR}/${FILE})
@@ -717,8 +719,8 @@ function (add_shell_script TARGET FILE)
 
     add_custom_command(
         OUTPUT ${STAMP_FILE}
-        COMMAND shellcheck -e SC2086,SC1117 ${FILE}
-        COMMAND ${CMAKE_COMMAND} -E touch ${STAMP_FILE}
+        COMMAND "${SHELLCHECK_BIN}" -e SC2086,SC1117 ${FILE}
+        COMMAND "${CMAKE_COMMAND}" -E touch ${STAMP_FILE}
         COMMENT "Shellcheck for ${TARGET}..."
         DEPENDS ${FILE}
     )
