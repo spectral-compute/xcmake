@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-SRCDIR="$1"
-shift
+BINARY="$1"
+SRCDIR="$2"
+shift 2
 
 EXTRA_ARGS=
 while echo "$1" | grep -qE '^--extra-arg-before[= ]' ; do
@@ -39,6 +40,6 @@ if [[ $1 == *.cu ]]; then
   shift
   "$@"
 else
-  clang-tidy ${EXTRA_ARGS} --use-color --header-filter="$SRCDIR/.*" --vfsoverlay="$(dirname "$0")/vfs.yaml" "$@"
+  $BINARY ${EXTRA_ARGS} --use-color --header-filter="$SRCDIR/.*" --vfsoverlay="$(dirname "$0")/vfs.yaml" "$@"
 fi
 
