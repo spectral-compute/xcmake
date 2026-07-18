@@ -139,6 +139,7 @@ include(CompilationDB)
 include(InstallExternal)
 include(Filesystem)
 include(XCMakeCheckLanguage)
+include(NinjaCheckDeps)
 
 # All targets should, by default, have hidden visibility. This isn't in the toolchain because it's useful to be able to
 # build others' libraries with that toolchain.
