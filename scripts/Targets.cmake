@@ -291,6 +291,7 @@ function(init_default_flags)
             -Wno-c++20-compat-pedantic
             -Wno-c++23-compat-pedantic
             -Wno-c99-compat
+            -Wno-pre-c23-compat                  # Don't warn about merely using modern C features.
 
             -Wno-spectral-extensions
 
