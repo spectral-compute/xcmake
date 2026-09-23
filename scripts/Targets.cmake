@@ -839,3 +839,22 @@ function(handle_symlinks TARGET)
         COMMENT "Creating symbolic links for ${EXE_DIR}/${TARGET}.exe"
     )
 endfunction()
+
+# Handy functions for asserting targets are various types.
+
+function (require_target_type TGT KIND)
+    get_target_property(_T ${TGT} TYPE)
+    if (NOT "${_T}" STREQUAL "${KIND}" AND NOT "${XCMAKE_IN_IDE}")
+        fatal_error("${TGT} is required to be a ${KIND} library, but is instead of type ${_T}")
+    endif()
+endfunction()
+
+function (require_shared_library TGT)
+    require_target_type(${TGT} SHARED_LIBRARY)
+endfunction()
+function (require_static_library TGT)
+    require_target_type(${TGT} STATIC_LIBRARY)
+endfunction()
+function (require_executable TGT)
+    require_target_type(${TGT} EXECUTABLE)
+endfunction()
