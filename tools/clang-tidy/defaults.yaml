@@ -181,7 +181,6 @@ mpi-type-mismatch,\
 openmp-exception-escapem,\
 openmp-use-default-none,\
 performance-avoid-endl,\
-performance-faster-string-find,\
 performance-for-range-copy,\
 performance-implicit-conversion-in-loop,\
 performance-inefficient-algorithm,\
