@@ -17,7 +17,6 @@ function(OPT_LEVEL_EFFECTS TARGET)
     # Bits and pieces to build the optimization levels below.
     set(IS_CLANG $<COMPILE_LANG_AND_ID:CXX,Clang,AppleClang>)
     set(IS_IPO $<BOOL:$<TARGET_PROPERTY:${TARGET},INTERPROCEDURAL_OPTIMIZATION>>)
-    set(CLANG_LTO_FLAGS $<$<AND:${IS_CLANG},${IS_IPO}>:-fwhole-program-vtables>)
 
     # Individual optimization levels.
     add_library(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE)
@@ -30,7 +29,6 @@ function(OPT_LEVEL_EFFECTS TARGET)
         $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O0>                   # NVCC
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/Od>                      # MSVC
         $<${IS_CLANG}:-O0>
-        ${CLANG_LTO_FLAGS}
     )
     target_optional_compile_options(${TARGET}_none_OPT_LEVEL_EFFECTS INTERFACE
         -Wno-pass-failed  # Don't complain that loops didn't unroll and so on just because the pass is not enabled.
@@ -40,7 +38,6 @@ function(OPT_LEVEL_EFFECTS TARGET)
         $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O2>         # NVCC
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O1>            # O1 is "optimise for size" on MSVC...
         $<${IS_CLANG}:-Oz>
-        ${CLANG_LTO_FLAGS}
         # Can probably do more here if you care enough to bother...
     )
 
@@ -57,7 +54,6 @@ function(OPT_LEVEL_EFFECTS TARGET)
         $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-O2>                   # NVCC
         $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/O2 /Ob2>                 # MSVC
         $<${IS_CLANG}:-O3>
-        ${CLANG_LTO_FLAGS}
     )
     target_optional_compile_options(${TARGET}_speed_OPT_LEVEL_EFFECTS INTERFACE
         -finline-functions
